@@ -76,6 +76,27 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
 
         }
 
+        public IEnumerable<RepLbResult> GetRepLb(int count, int skip = 0)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            if (count == 0)
+                return new List<RepLbResult>();
+
+            return _set
+                .Include(wi => wi.Waifu)
+                .OrderByDescending(x => x.Reputation)
+                .Skip(skip)
+                .Take(count)
+                .Select(x => new RepLbResult
+                {
+                    Username = x.Waifu.Username,
+                    Discrim = x.Waifu.Discriminator,
+                    Reputation = x.Reputation
+                })
+                .ToList();
+        }
+
         public decimal GetTotalValue()
         {
             return _set
@@ -102,8 +123,8 @@ WHERE UserId = (SELECT Id from DiscordUser WHERE UserId={userId}) AND
         public WaifuInfoStats GetWaifuInfo(ulong userId)
         {
             _context.Database.ExecuteSqlCommand($@"
-INSERT OR IGNORE INTO WaifuInfo (AffinityId, ClaimerId, Price, WaifuId, Immune, Reputation)
-VALUES ({null}, {null}, {1}, (SELECT Id FROM DiscordUser WHERE UserId={userId}), {false}, {0});");
+INSERT OR IGNORE INTO WaifuInfo (AffinityId, ClaimerId, Price, WaifuId, Immune, Reputation, Info)
+VALUES ({null}, {null}, {1}, (SELECT Id FROM DiscordUser WHERE UserId={userId}), {false}, {0}, {null});");
 
             return _set
                 .Where(w => w.WaifuId == _context.Set<DiscordUser>()
@@ -145,6 +166,8 @@ VALUES ({null}, {null}, {1}, (SELECT Id FROM DiscordUser WHERE UserId={userId}),
                     Price = w.Price,
 
                     Reputation = w.Reputation,
+
+                    Info = w.Info,
 
                     Claims30 = _set
                         .Include(x => x.Waifu)

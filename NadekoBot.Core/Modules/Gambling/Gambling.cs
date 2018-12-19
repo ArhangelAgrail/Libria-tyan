@@ -105,11 +105,9 @@ namespace NadekoBot.Modules.Gambling
                         rep += 1;
                         w.Reputation = rep;
                     }
-                        
-
                     await uow.CompleteAsync();
                 }
-                await ReplyConfirmLocalized("rep", period).ConfigureAwait(false);
+                await ReplyConfirmLocalized("rep", Format.Bold(target.ToString()), period).ConfigureAwait(false);
             }
             else
                 await ReplyErrorLocalized("self_rep").ConfigureAwait(false);

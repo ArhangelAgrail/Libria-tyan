@@ -54,6 +54,7 @@ namespace NadekoBot.Modules.Gambling.Services
                         Immune = true,
                         Reputation = 0
                     });
+                    success = true;
                 }
                 else
                     if (w.Immune != true)
@@ -64,6 +65,38 @@ namespace NadekoBot.Modules.Gambling.Services
                     }
 
                await uow.CompleteAsync();
+            }
+
+            return (success);
+        }
+
+        public async Task<bool> SetInfo(IUser target, string info)
+        {
+            var success = false;
+            using (var uow = _db.UnitOfWork)
+            {
+                var w = uow.Waifus.ByWaifuUserId(target.Id);
+
+                if (w == null)
+                {
+                    var thisUser = uow.DiscordUsers.GetOrCreate(target);
+                    uow.Waifus.Add(new WaifuInfo()
+                    {
+                        Waifu = thisUser,
+                        Price = 1,
+                        Claimer = null,
+                        Immune = false,
+                        Reputation = 0,
+                        Info = info
+                    });
+                }
+                else
+                    {
+                        w.Info = info;
+                        success = true;
+                    }
+
+                await uow.CompleteAsync();
             }
 
             return (success);
@@ -336,6 +369,14 @@ namespace NadekoBot.Modules.Gambling.Services
             }
         }
 
+        public IEnumerable<RepLbResult> GetTopRepAtPage(int page)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.Waifus.GetRepLb(9, page * 9);
+            }
+        }
+
         public async Task<(WaifuInfo, DivorceResult, long, TimeSpan?)> DivorceWaifuAsync(IUser user, ulong targetId)
         {
             DivorceResult result;
@@ -420,6 +461,56 @@ namespace NadekoBot.Modules.Gambling.Services
             return true;
         }
 
+        /*public async Task<bool> GiftWaifuAsync(ulong from, int count, IUser giftedWaifu, WaifuItem itemObj)
+        {
+            if (!await _cs.RemoveAsync(from, "Bought waifu item", itemObj.Price*count, gamble: true))
+            {
+                return false;
+            }
+
+            using (var uow = _db.UnitOfWork)
+            {
+                var w = uow.Waifus.ByWaifuUserId(giftedWaifu.Id, set => set.Include(x => x.Items)
+                    .Include(x => x.Claimer));
+                if (w == null)
+                {
+                    uow.Waifus.Add(w = new WaifuInfo()
+                    {
+                        Affinity = null,
+                        Claimer = null,
+                        Price = 1,
+                        Waifu = uow.DiscordUsers.GetOrCreate(giftedWaifu),
+                    });
+                }
+
+                for (int i = 0; i < count; i++)
+                    await AddItems(giftedWaifu, itemObj);
+
+                if (w.Claimer?.UserId == from)
+                {
+                    w.Price += (int)(itemObj.Price * count * 0.95);
+                }
+                else
+                    w.Price += (itemObj.Price * count) / 2;
+
+                await uow.CompleteAsync();
+            }
+
+            return true;
+        }*/
+
+        /*public async Task<bool> AddItems(IUser giftedWaifu, WaifuItem itemObj)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var w = uow.Waifus.ByWaifuUserId(giftedWaifu.Id, set => set.Include(x => x.Items)
+                    .Include(x => x.Claimer));
+                w.Items.Add(itemObj);
+                await uow.CompleteAsync();
+            }
+            return true;
+        }*/
+
         public WaifuInfoStats GetFullWaifuInfoAsync(IGuildUser target)
         {
             using (var uow = _db.UnitOfWork)
@@ -440,11 +531,20 @@ namespace NadekoBot.Modules.Gambling.Services
                         Items = new List<WaifuItem>(),
                         Immune = false,
                         Reputation = 0,
-                        Price = 1
+                        Price = 1,
+                        Info = null
                     };
                 }
 
                 return wi;
+            }
+        }
+
+        public ClubInfo GetClubName(IGuildUser target)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.Clubs.GetByMember(target.Id);
             }
         }
 
@@ -468,30 +568,66 @@ namespace NadekoBot.Modules.Gambling.Services
         public string GetRepTitle(int count)
         {
             ClaimTitle title;
-            if (count == 0)
-                title = ClaimTitle.Lonely;
-            else if (count < 10)
-                title = ClaimTitle.Devoted;
+            if (count < 10)
+                title = ClaimTitle.Status0;
             else if (count < 20)
-                title = ClaimTitle.Rookie;
+                title = ClaimTitle.Status1;
             else if (count < 30)
-                title = ClaimTitle.Schemer;
-            else if (count < 40)
-                title = ClaimTitle.Dilettante;
+                title = ClaimTitle.Status2;
             else if (count < 50)
-                title = ClaimTitle.Intermediate;
-            else if (count < 60)
-                title = ClaimTitle.Seducer;
+                title = ClaimTitle.Status3;
             else if (count < 70)
-                title = ClaimTitle.Expert;
-            else if (count < 80)
-                title = ClaimTitle.Veteran;
-            else if (count < 90)
-                title = ClaimTitle.Incubis;
+                title = ClaimTitle.Status4;
             else if (count < 100)
-                title = ClaimTitle.Harem_King;
+                title = ClaimTitle.Status5;
+            else if (count < 150)
+                title = ClaimTitle.Status6;
+            else if (count < 200)
+                title = ClaimTitle.Status7;
+            else if (count < 250)
+                title = ClaimTitle.Status8;
+            else if (count < 300)
+                title = ClaimTitle.Status9;
+            else if (count < 350)
+                title = ClaimTitle.Status10;
+            else if (count < 400)
+                title = ClaimTitle.Status11;
+            else if (count < 450)
+                title = ClaimTitle.Status12;
+            else if (count < 500)
+                title = ClaimTitle.Status13;
+            else if (count < 600)
+                title = ClaimTitle.Status14;
+            else if (count < 700)
+                title = ClaimTitle.Status15;
+            else if (count < 800)
+                title = ClaimTitle.Status16;
+            else if (count < 900)
+                title = ClaimTitle.Status17;
+            else if (count < 1000)
+                title = ClaimTitle.Status18;
+            else if (count < 1100)
+                title = ClaimTitle.Status19;
+            else if (count < 1200)
+                title = ClaimTitle.Status20;
+            else if (count < 1300)
+                title = ClaimTitle.Status21;
+            else if (count < 1400)
+                title = ClaimTitle.Status22;
+            else if (count < 1500)
+                title = ClaimTitle.Status23;
+            else if (count < 1600)
+                title = ClaimTitle.Status24;
+            else if (count < 1700)
+                title = ClaimTitle.Status25;
+            else if (count < 1800)
+                title = ClaimTitle.Status26;
+            else if (count < 1900)
+                title = ClaimTitle.Status27;
+            else if (count < 2000)
+                title = ClaimTitle.Status28;
             else
-                title = ClaimTitle.Harem_God;
+                title = ClaimTitle.Status29;
 
             return title.ToString().Replace('_', ' ');
         }
@@ -503,19 +639,19 @@ namespace NadekoBot.Modules.Gambling.Services
                 title = AffinityTitle.Pure;
             else if (count < 2)
                 title = AffinityTitle.Faithful;
-            else if (count < 4)
+            else if (count < 3)
                 title = AffinityTitle.Defiled;
-            else if (count < 9)
+            else if (count < 4)
                 title = AffinityTitle.Cheater;
-            else if (count < 12)
+            else if (count < 5)
                 title = AffinityTitle.Tainted;
-            else if (count < 16)
+            else if (count < 6)
                 title = AffinityTitle.Corrupted;
-            else if (count < 20)
+            else if (count < 7)
                 title = AffinityTitle.Lewd;
-            else if (count < 25)
+            else if (count < 8)
                 title = AffinityTitle.Sloot;
-            else if (count < 35)
+            else if (count < 9)
                 title = AffinityTitle.Depraved;
             else
                 title = AffinityTitle.Harlot;

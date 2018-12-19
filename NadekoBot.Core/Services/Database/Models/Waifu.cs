@@ -16,13 +16,14 @@ namespace NadekoBot.Core.Services.Database.Models
 
         public bool Immune { get; set; }
         public int Reputation { get; set; }
+        public string Info { get; set; }
 
         public int Price { get; set; }
         public List<WaifuItem> Items { get; set; } = new List<WaifuItem>();
 
         public override string ToString()
         {
-            var claimer = "no one";
+            var claimer = "никем";
             var status = "";
 
             var waifuUsername = Waifu.Username.TrimTo(20);
@@ -34,18 +35,33 @@ namespace NadekoBot.Core.Services.Database.Models
             }
             if (AffinityId == null)
             {
-                status = $"... but {waifuUsername}'s heart is empty";
+                status = $"... но сердце {waifuUsername} никому не принадлежит";
             }
             else if (AffinityId == ClaimerId)
             {
-                status = $"... and {waifuUsername} likes {claimerUsername} too <3";
+                status = $"... и {waifuUsername} тоже в восторге от {claimerUsername} >:з";
             }
             else
             {
-                status = $"... but {waifuUsername}'s heart belongs to {Affinity.Username.TrimTo(20)}#{Affinity.Discriminator}";
+                status = $"... но сердце {waifuUsername} принадлежит {Affinity.Username.TrimTo(20)}#{Affinity.Discriminator}";
             }
-            return $"**{waifuUsername}#{Waifu.Discriminator}** - claimed by **{claimer}**\n\t{status}";
+
+            if (ClaimerId == null)
+            {
+                return $"**{waifuUsername}#{Waifu.Discriminator}** - {claimer} не присвоен\n\t{status}";
+            }
+            else
+                return $"**{waifuUsername}#{Waifu.Discriminator}** - присвоен **{claimer}**\n\t{status}";
+
         }
+    }
+
+    public class RepLbResult
+    {
+        public string Username { get; set; }
+        public string Discrim { get; set; }
+
+        public int Reputation { get; set; }
     }
 
     public class WaifuLbResult
@@ -63,7 +79,7 @@ namespace NadekoBot.Core.Services.Database.Models
 
         public override string ToString()
         {
-            var claimer = "no one";
+            var claimer = "никем";
             var status = "";
 
             var waifuUsername = Username.TrimTo(20);
@@ -75,17 +91,23 @@ namespace NadekoBot.Core.Services.Database.Models
             }
             if (Affinity == null)
             {
-                status = $"... but {waifuUsername}'s heart is empty";
+                status = $"... но сердце {waifuUsername} никому не принадлежит";
             }
             else if (Affinity + AffinityDiscrim == Claimer + ClaimerDiscrim)
             {
-                status = $"... and {waifuUsername} likes {claimerUsername} too <3";
+                status = $"... и {waifuUsername} тоже в восторге от {claimerUsername} >:з";
             }
             else
             {
-                status = $"... but {waifuUsername}'s heart belongs to {Affinity.TrimTo(20)}#{AffinityDiscrim}";
+                status = $"... но сердце {waifuUsername} принадлежит {Affinity.TrimTo(20)}#{AffinityDiscrim}";
             }
-            return $"**{waifuUsername}#{Discrim}** - claimed by **{claimer}**\n\t{status}";
+
+            if (Claimer == null)
+            {
+                return $"**{waifuUsername}#{Discrim}** - {claimer} не присвоен\n\t{status}";
+            }
+            else
+                return $"**{waifuUsername}#{Discrim}** - присвоен **{claimer}**\n\t{status}";
         }
     }
 }

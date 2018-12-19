@@ -33,6 +33,20 @@ namespace NadekoBot.Modules.Gambling
             }
 
             [NadekoCommand, Usage, Description, Aliases]
+            [RequireContext(ContextType.Guild)]
+            public async Task About([Remainder] string info = null)
+            {
+                var success = await _service.SetInfo(Context.User, info);
+                if (success)
+                {
+                    await ReplyConfirmLocalized("info_success");
+                    return;
+                }
+                else
+                    await ReplyConfirmLocalized("info_not_success");
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
             public async Task WaifuReset()
             {
                 var price = _service.GetResetPrice(Context.User);
@@ -227,12 +241,55 @@ namespace NadekoBot.Modules.Gambling
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
+            public async Task RepLb(int page = 1)
+            {
+                page--;
+
+                if (page < 0)
+                    return;
+
+                if (page > 100)
+                    page = 100;
+
+                var waifus = _service.GetTopRepAtPage(page);
+
+                if (waifus.Count() == 0)
+                {
+                    await ReplyConfirmLocalized("rep_none");
+                    return;
+                }
+
+                var embed = new EmbedBuilder()
+                    .WithTitle(GetText("rep_top"))
+                    .WithOkColor();
+
+                var i = 0;
+                foreach (var w in waifus)
+                {
+                    var j = i++;
+                    embed.AddField(efb => efb.WithName("#" + ((page * 9) + j + 1) + " " + w.Username + "#" + w.Discrim + " - \"" + GetText(_service.GetRepTitle(w.Reputation)) + "\"").WithValue(GetText("reputation") + " ☆ +" + w.Reputation.ToString()).WithIsInline(false));
+                }
+
+                await Context.Channel.EmbedAsync(embed);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [RequireContext(ContextType.Guild)]
             public async Task WaifuInfo([Remainder]IGuildUser target = null)
             {
                 if (target == null)
                     target = (IGuildUser)Context.User;
                 var wi = _service.GetFullWaifuInfoAsync(target);
                 var affInfo = _service.GetAffinityTitle(wi.AffinityCount);
+                var club = _service.GetClubName(target);
+
+                string clubName = "-";
+                if (club != null)
+                    clubName = club.Name;
+
+                string info = wi.Info;
+                if (info == null)
+                    info = GetText("about_me");
 
                 var nobody = GetText("nobody");
                 var i = 0;
@@ -246,16 +303,17 @@ namespace NadekoBot.Modules.Gambling
                         .Select(x => string.Join(" ", x)));
 
                 var embed = new EmbedBuilder()
-                    .WithOkColor()
-                    .WithTitle(GetText("waifu") + " " + wi.FullName + " - \"" + GetText(_service.GetRepTitle(wi.Reputation)) + "\"")
-                    .AddField(efb => efb.WithName(GetText("price")).WithValue(wi.Price.ToString()).WithIsInline(true))
+                    .WithColor(3553599)
+                    .WithAuthor(name: GetText("waifu") + " " + wi.FullName + " - \"" + GetText(_service.GetRepTitle(wi.Reputation)) + "\"", iconUrl: target.GetAvatarUrl())
+                    .AddField(efb => efb.WithName(GetText("price")).WithValue(wi.Price.ToString() + " :cherry_blossom:").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("claimed_by")).WithValue(wi.ClaimerName ?? nobody).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("likes")).WithValue(wi.AffinityName ?? nobody).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("changes_of_heart")).WithValue($"{wi.AffinityCount} - \"{GetText(affInfo)}\"").WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("divorces")).WithValue(wi.DivorceCount.ToString()).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("reputation")).WithValue(wi.Reputation.ToString()).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("gifts")).WithValue(itemsStr).WithIsInline(false))
-                    .AddField(efb => efb.WithName($"Вайфу ({wi.ClaimCount})").WithValue(wi.ClaimCount == 0 ? nobody : string.Join("\n", wi.Claims30)).WithIsInline(false));
+                    .AddField(efb => efb.WithName(GetText("club")).WithValue(clubName).WithIsInline(true))
+                    .AddField(efb => efb.WithName(GetText("reputation")).WithValue("**+" + wi.Reputation.ToString() + "**").WithIsInline(true))
+                    .AddField(efb => efb.WithName(GetText("gifts")).WithValue(itemsStr).WithIsInline(true))
+                    .AddField(efb => efb.WithName(GetText("Waifus", wi.ClaimCount)).WithValue(wi.ClaimCount == 0 ? nobody + "\n_______" : string.Join("\n", wi.Claims30) + "\n_______").WithIsInline(false))
+                    .WithFooter(text: GetText("info") + " " + info, iconUrl: "http://www.picshare.ru/uploads/181213/sK6tzE73ub.png");
 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
             }
@@ -280,7 +338,7 @@ namespace NadekoBot.Modules.Gambling
                                         .OrderBy(x => x.Price)
                                         .Skip(9 * cur)
                                         .Take(9)
-                                        .ForEach(x => embed.AddField(f => f.WithName(x.ItemEmoji + " " + GetText(x.Item.ToString())).WithValue(x.Price).WithIsInline(true)));
+                                        .ForEach(x => embed.AddField(f => f.WithName(x.ItemEmoji + " " + x.Item.ToString()).WithValue(x.Price).WithIsInline(true)));
 
                     return embed;
                 }, Enum.GetValues(typeof(WaifuItem.ItemName)).Length, 9);
@@ -306,6 +364,27 @@ namespace NadekoBot.Modules.Gambling
                     await ReplyErrorLocalized("not_enough", Bc.BotConfig.CurrencySign);
                 }
             }
+
+            /*[NadekoCommand, Usage, Description, Aliases]
+            [RequireContext(ContextType.Guild)]
+            [Priority(2)]
+            public async Task WaifuGift(int count, WaifuItem.ItemName item, [Remainder] IUser waifu)
+            {
+                if (waifu.Id == Context.User.Id)
+                    return;
+
+                var itemObj = WaifuItem.GetItemObject(item, Bc.BotConfig.WaifuGiftMultiplier);
+                bool sucess = await _service.GiftWaifuAsync(Context.User.Id, count, waifu, itemObj);
+
+                if (sucess)
+                {
+                    await ReplyConfirmLocalized("waifu_gift_count", Format.Bold(count.ToString()), Format.Bold(item.ToString() + " " + itemObj.ItemEmoji), Format.Bold(waifu.ToString()));
+                }
+                else
+                {
+                    await ReplyErrorLocalized("not_enough", Bc.BotConfig.CurrencySign);
+                }
+            }*/
         }
     }
 }

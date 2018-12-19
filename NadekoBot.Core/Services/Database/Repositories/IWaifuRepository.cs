@@ -9,6 +9,7 @@ namespace NadekoBot.Core.Services.Database.Repositories
     public interface IWaifuRepository : IRepository<WaifuInfo>
     {
         IEnumerable<WaifuLbResult> GetTop(int count, int skip = 0);
+        IEnumerable<RepLbResult> GetRepLb(int count, int skip = 0);
         WaifuInfo ByWaifuUserId(ulong userId, Func<DbSet<WaifuInfo>, IQueryable<WaifuInfo>> includes = null);
         IEnumerable<string> GetWaifuNames(ulong userId);
         decimal GetTotalValue();
@@ -27,6 +28,7 @@ namespace NadekoBot.Core.Services.Database.Repositories
         public int ClaimCount { get; set; }
         public bool Immune { get; set; }
         public int Reputation { get; set; }
+        public string Info { get; set; }
         public List<WaifuItem> Items { get; set; }
         public List<string> Claims30 { get; set; }
     }
