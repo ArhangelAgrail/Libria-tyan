@@ -303,7 +303,7 @@ namespace NadekoBot.Modules.Gambling
                         .Select(x => string.Join(" ", x)));
 
                 var embed = new EmbedBuilder()
-                    .WithColor(3553599)
+                    .WithColor(16738816)
                     .WithAuthor(name: GetText("waifu") + " " + wi.FullName + " - \"" + GetText(_service.GetRepTitle(wi.Reputation)) + "\"", iconUrl: target.GetAvatarUrl())
                     .AddField(efb => efb.WithName(GetText("price")).WithValue(wi.Price.ToString() + " :cherry_blossom:").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("claimed_by")).WithValue(wi.ClaimerName ?? nobody).WithIsInline(true))

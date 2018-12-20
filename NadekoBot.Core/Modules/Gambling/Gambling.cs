@@ -204,6 +204,78 @@ namespace NadekoBot.Modules.Gambling
         }
 
         [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        [OwnerOnly]
+        public async Task RaffleAward([Remainder] IRole role = null)
+        {
+            role = role ?? Context.Guild.EveryoneRole;
+
+            var members = (await role.GetMembersAsync().ConfigureAwait(false));
+            var membersArray = members as IUser[] ?? members.ToArray();
+            if (membersArray.Length == 0)
+            {
+                return;
+            }
+            var usr = membersArray[new NadekoRandom().Next(0, membersArray.Length)];
+
+            var user = usr as SocketGuildUser;
+            var amount = 0;
+            var awardRole1 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 461111950458224640);
+            var awardRole2 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 405341253807374349);
+            var awardRole3 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 405341261277560842);
+            var awardRole4 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 475305705230958598);
+            var awardRole5 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 425627158581346314);
+            var awardRole6 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 475306009011683359);
+            var awardRole7 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 405340766240636928);
+            var awardRole8 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 475306363673772043);
+            var awardRole9 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 405338590290378763);
+            var awardRole10 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 425657999105982464);
+            var awardRole11 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 408903151568158740);
+            var awardRole12 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 408902786294480897);
+
+            if (user.Roles.Contains(awardRole1))
+                amount = 500;
+            else
+                if (user.Roles.Contains(awardRole2))
+                amount = 1000;
+            else
+                if (user.Roles.Contains(awardRole3))
+                amount = 1500;
+            else
+                if (user.Roles.Contains(awardRole4))
+                amount = 2000;
+            else
+                if (user.Roles.Contains(awardRole5))
+                amount = 3000;
+            else
+                if (user.Roles.Contains(awardRole6))
+                amount = 4000;
+            else
+                if (user.Roles.Contains(awardRole7))
+                amount = 5000;
+            else
+                if (user.Roles.Contains(awardRole8))
+                amount = 7000;
+            else
+                if (user.Roles.Contains(awardRole9))
+                amount = 10000;
+            else
+                if (user.Roles.Contains(awardRole10))
+                amount = 15000;
+            else
+                if (user.Roles.Contains(awardRole11))
+                amount = 30000;
+            else
+                if (user.Roles.Contains(awardRole12))
+                amount = 50000;
+            else
+                amount = 500;
+
+            await Award(amount, usr.Id);
+            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user"), $"**{usr.Username}#{usr.Discriminator}**", footer: $"ID: {usr.Id}").ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
         [Priority(1)]
         public async Task Cash([Remainder] IUser user = null)
         {

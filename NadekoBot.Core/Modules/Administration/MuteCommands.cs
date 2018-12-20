@@ -52,7 +52,6 @@ namespace NadekoBot.Modules.Administration
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
-            [RequireUserPermission(GuildPermission.ManageRoles)]
             [RequireUserPermission(GuildPermission.MuteMembers)]
             [Priority(0)]
             public async Task Mute(IGuildUser user)
@@ -70,7 +69,6 @@ namespace NadekoBot.Modules.Administration
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
-            [RequireUserPermission(GuildPermission.ManageRoles)]
             [RequireUserPermission(GuildPermission.MuteMembers)]
             [Priority(1)]
             public async Task Mute(IGuildUser user, StoopidTime time, [Remainder] string reason = null)
