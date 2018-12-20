@@ -271,8 +271,11 @@ namespace NadekoBot.Modules.Gambling
             else
                 amount = 500;
 
-            await Award(amount, usr.Id);
-            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user"), $"**{usr.Username}#{usr.Discriminator}**", footer: $"ID: {usr.Id}").ConfigureAwait(false);
+            await _cs.AddAsync(usr.Id,
+                $"Awarded by raffle. ({Context.User.Username}/{Context.User.Id})",
+                amount,
+                gamble: (Context.Client.CurrentUser.Id != usr.Id)).ConfigureAwait(false);
+            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user"), $"**{usr.Username}#{usr.Discriminator}** получает {amount} :cherry_blossom:", footer: $"ID: {usr.Id}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
