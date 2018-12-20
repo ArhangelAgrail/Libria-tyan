@@ -287,5 +287,32 @@ namespace NadekoBot.Modules.Xp
             await Task.Delay(1000).ConfigureAwait(false);
             await ReplyConfirmLocalized("template_reloaded").ConfigureAwait(false);
         }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        [OwnerOnly]
+        public async Task AddCard(string name, ulong roleId, int image)
+            => _service.XpCardAdd(name, roleId, image);
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        [OwnerOnly]
+        public async Task DelCard(string name)
+            => _service.XpCardDel(name);
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        public async Task SetCard(string name)
+        {
+            IGuildUser user = await Context.Guild.GetUserAsync(Context.User.Id);
+
+            using (var uow = _db.UnitOfWork)
+            {
+                if (!user.RoleIds.Contains(uow.XpCards.GetXpCardRoleId(name)))
+                    return;
+
+                _service.XpCardSet(user.Id, name);
+            }
+        }
     }
 }

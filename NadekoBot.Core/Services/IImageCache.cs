@@ -27,7 +27,7 @@ namespace NadekoBot.Core.Services
         byte[] RategirlMatrix { get; }
         byte[] RategirlDot { get; }
 
-        byte[] XpBackground { get; }
+        IReadOnlyList<byte[]> XpBackground { get; }
 
         byte[] Rip { get; }
         byte[] RipOverlay { get; }

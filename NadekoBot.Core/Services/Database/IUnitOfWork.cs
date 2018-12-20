@@ -21,6 +21,7 @@ namespace NadekoBot.Core.Services.Database
         IWarningsRepository Warnings { get; }
         IModLogRepository ModLog { get; }
         IXpRepository Xp { get; }
+        IXpCardRepository XpCards { get; }
         IClubRepository Clubs { get; }
         IPollsRepository Polls { get; }
         IPlantedCurrencyRepository PlantedCurrency { get; }

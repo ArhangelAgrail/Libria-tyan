@@ -55,7 +55,7 @@ namespace NadekoBot.Core.Services.Impl
 
         public byte[] RategirlDot => GetByteData(ImageKey.Rategirl_Dot);
 
-        public byte[] XpBackground => GetByteData(ImageKey.Xp_Bg);
+        public IReadOnlyList<byte[]> XpBackground => GetByteArrayData(ImageKey.XpBg);
 
         public byte[] Rip => GetByteData(ImageKey.Rip_Bg);
 
@@ -80,7 +80,7 @@ namespace NadekoBot.Core.Services.Impl
             Slots_Emojis,
             Rategirl_Matrix,
             Rategirl_Dot,
-            Xp_Bg,
+            XpBg,
             Rip_Bg,
             Rip_Overlay,
             Currency,

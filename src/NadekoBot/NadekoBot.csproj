@@ -16,7 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="credentials.json" />
     <PackageReference Include="NLog" Version="4.5.8" />
     <None Update="credentials_example.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -44,9 +44,10 @@
     "Matrix": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rategirl/matrix.png",
     "Dot": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rategirl/dot.png"
   },
-  "Xp": {
-    "Bg": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/xp/bg.png"
-  },
+  "XpBg": [
+    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/xp/bg.png",
+	"https://media.discordapp.net/attachments/471180585214279710/522771189178040320/xp.jpg"
+  ],
   "Rip": {
     "Bg": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rip/rip.png",
     "Overlay": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rip/overlay.png"
