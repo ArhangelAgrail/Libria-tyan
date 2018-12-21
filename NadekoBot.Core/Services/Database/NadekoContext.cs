@@ -353,7 +353,7 @@ namespace NadekoBot.Core.Services.Database
                 .IsRequired();
             #endregion
 
-            #region QUOTES
+            #region XpCards
 
             var xpCardEntity = modelBuilder.Entity<XpCard>();
             xpCardEntity.HasIndex(x => x.Name);
