@@ -308,10 +308,13 @@ namespace NadekoBot.Modules.Xp
 
             using (var uow = _db.UnitOfWork)
             {
-                if (!user.RoleIds.Contains(uow.XpCards.GetXpCardRoleId(name)))
-                    return;
-
-                _service.XpCardSet(user.Id, name);
+                ulong roleId = uow.XpCards.GetXpCardRoleId(name);
+                if (user.RoleIds.Contains(roleId))
+                    _service.XpCardSet(user.Id, name);
+                else
+                {
+                    await Context.Channel.EmbedAsync(new EmbedBuilder().WithDescription("Что бы использовать эту карточку, вы должны иметь роль <@&" + roleId + ">")).ConfigureAwait(false);
+                }
             }
         }
     }

@@ -41,6 +41,7 @@ namespace NadekoBot.Core.Services.Database
         public DbSet<ModLog> ModLog { get; set; }
         public DbSet<UserXpStats> UserXpStats { get; set; }
         public DbSet<ClubInfo> Clubs { get; set; }
+        public DbSet<XpCard> XpCards { get; set; }
 
         //logging
         public DbSet<LogSetting> LogSettings { get; set; }
@@ -350,6 +351,13 @@ namespace NadekoBot.Core.Services.Database
                 .HasOne(x => x.GuildConfig)
                 .WithMany(x => x.SelfAssignableRoleGroupNames)
                 .IsRequired();
+            #endregion
+
+            #region QUOTES
+
+            var xpCardEntity = modelBuilder.Entity<XpCard>();
+            xpCardEntity.HasIndex(x => x.Name);
+
             #endregion
         }
     }
