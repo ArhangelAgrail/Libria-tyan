@@ -291,31 +291,51 @@ namespace NadekoBot.Modules.Xp
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
         [OwnerOnly]
-        public async Task AddCard(string name, ulong roleId, int image)
-            => _service.XpCardAdd(name, roleId, image);
+        public async Task AddCard(string name, IRole role, int image)
+        {
+
+            _service.XpCardAdd(name, role.Id, image);
+            await ReplyConfirmLocalized("template_added").ConfigureAwait(false);
+        }
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
         [OwnerOnly]
         public async Task DelCard(string name)
-            => _service.XpCardDel(name);
+        {
+            _service.XpCardDel(name);
+            await ReplyConfirmLocalized("template_deleted").ConfigureAwait(false);
+        }
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
         public async Task SetCard(string name)
         {
-            IGuildUser user = await Context.Guild.GetUserAsync(Context.User.Id);
-
-            using (var uow = _db.UnitOfWork)
+            var user = Context.User as IGuildUser;
+            if (name == "default")
             {
-                ulong roleId = uow.XpCards.GetXpCardRoleId(name);
-                if (user.RoleIds.Contains(roleId))
-                    _service.XpCardSet(user.Id, name);
-                else
-                {
-                    await Context.Channel.EmbedAsync(new EmbedBuilder().WithDescription("Что бы использовать эту карточку, вы должны иметь роль <@&" + roleId + ">")).ConfigureAwait(false);
-                }
+                _service.XpCardSetDefault(user.Id);
+                await ReplyConfirmLocalized("template_default", name).ConfigureAwait(false);
             }
+            else
+                using (var uow = _db.UnitOfWork)
+                {
+                    ulong roleId = uow.XpCards.GetXpCardRoleId(name);
+                    if (roleId == 0)
+                    {
+                        await ReplyConfirmLocalized("template_none", roleId).ConfigureAwait(false);
+                    }
+                    else
+                    if (user.RoleIds.Contains(roleId))
+                    {
+                        _service.XpCardSet(user.Id, name);
+                        await ReplyConfirmLocalized("template_set", name).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyConfirmLocalized("template_error", roleId).ConfigureAwait(false);
+                    }
+                }
         }
     }
 }

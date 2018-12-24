@@ -17,9 +17,6 @@
 
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.5.8" />
-    <None Update="credentials.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="credentials_example.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

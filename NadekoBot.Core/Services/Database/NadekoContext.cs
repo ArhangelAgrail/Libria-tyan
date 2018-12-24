@@ -355,9 +355,8 @@ namespace NadekoBot.Core.Services.Database
 
             #region XpCards
 
-            var xpCardEntity = modelBuilder.Entity<XpCard>();
-            xpCardEntity.HasIndex(x => x.Name);
-
+            var xpCard = modelBuilder.Entity<XpCard>();
+            xpCard.HasIndex(x => x.Name);
             #endregion
         }
     }

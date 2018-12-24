@@ -962,6 +962,15 @@ namespace NadekoBot.Modules.Xp.Services
             }
         }
 
+        public void XpCardSetDefault(ulong userId)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                uow.XpCards.SetDefault(userId);
+                uow.Complete();
+            }
+        }
+
         public void XpCardSet(ulong userId, string name)
         {
             using (var uow = _db.UnitOfWork)
@@ -970,5 +979,6 @@ namespace NadekoBot.Modules.Xp.Services
                 uow.Complete();
             }
         }
+
     }
 }
