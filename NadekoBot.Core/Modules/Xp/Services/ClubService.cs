@@ -195,8 +195,6 @@ namespace NadekoBot.Modules.Xp.Services
                     return false;
 
                 var applicant = club.Applicants.FirstOrDefault(x => x.User.ToString().ToUpperInvariant() == userName.ToUpperInvariant());
-                if (applicant == null)
-                    return false;
 
                 applicant.User.Club = club;
                 applicant.User.IsClubAdmin = false;
@@ -228,6 +226,8 @@ namespace NadekoBot.Modules.Xp.Services
                 if (du.Club == null || du.Club.OwnerId == du.Id)
                     return false;
 
+                var club = GetClubByMember(user);
+
                 du.Club = null;
                 du.IsClubAdmin = false;
                 uow.Complete();
@@ -245,7 +245,7 @@ namespace NadekoBot.Modules.Xp.Services
                 var club = uow.Clubs.GetByOwner(userId);
                 if (club == null)
                     return false;
-
+                
                 club.MinimumLevelReq = level;
                 uow.Complete();
             }
@@ -275,27 +275,41 @@ namespace NadekoBot.Modules.Xp.Services
                 club = uow.Clubs.GetByOwner(userId);
                 if (club == null)
                     return false;
-
+                
                 uow.Clubs.Remove(club);
                 uow.Complete();
             }
             return true;
         }
 
-        public bool Ban(ulong bannerId, string userName, out ClubInfo club)
+        public async Task<bool> RoleCreate(IUser user, IRole role)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var club = uow.Clubs.GetByOwner(user.Id);
+
+                var users = club.Users;
+                var du = user as IGuildUser;
+
+                club.roleId = role.Id;
+                club.Currency -= 500000;
+                uow.Complete();
+
+                foreach (var usrs in users)
+                {
+                    var usr = await du.Guild.GetUserAsync(usrs.UserId);
+                    await usr.AddRoleAsync(role).ConfigureAwait(false);
+                }
+            }
+            return true;
+        }
+
+        public bool Ban(ulong bannerId, DiscordUser usr, out ClubInfo club)
         {
             using (var uow = _db.UnitOfWork)
             {
                 club = uow.Clubs.GetByOwnerOrAdmin(bannerId);
                 if (club == null)
-                    return false;
-
-                var usr = club.Users.FirstOrDefault(x => x.ToString().ToUpperInvariant() == userName.ToUpperInvariant())
-                    ?? club.Applicants.FirstOrDefault(x => x.User.ToString().ToUpperInvariant() == userName.ToUpperInvariant())?.User;
-                if (usr == null)
-                    return false;
-
-                if (club.OwnerId == usr.Id || (usr.IsClubAdmin && club.Owner.UserId != bannerId)) // can't ban the owner kek, whew
                     return false;
 
                 club.Bans.Add(new ClubBans
@@ -334,19 +348,12 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
-        public bool Kick(ulong kickerId, string userName, out ClubInfo club)
+        public bool Kick(ulong kickerId, DiscordUser usr, out ClubInfo club)
         {
             using (var uow = _db.UnitOfWork)
             {
                 club = uow.Clubs.GetByOwnerOrAdmin(kickerId);
                 if (club == null)
-                    return false;
-
-                var usr = club.Users.FirstOrDefault(x => x.ToString().ToUpperInvariant() == userName.ToUpperInvariant());
-                if (usr == null)
-                    return false;
-
-                if (club.OwnerId == usr.Id || (usr.IsClubAdmin && club.Owner.UserId != kickerId))
                     return false;
 
                 club.Users.Remove(usr);
@@ -368,6 +375,46 @@ namespace NadekoBot.Modules.Xp.Services
             {
                 return uow.Clubs.GetClubLeaderboardPage(page);
             }
+        }
+
+        public string GetStorageProgress(int amount, int maxAmount)
+        {
+            double percent = (double)amount / (double)maxAmount;
+            string result = "";
+
+            if (percent < 0.1)
+                result = "▬▬▬▬▬▬▬▬▬▬";
+            else
+                if (percent < 0.2)
+                result = "[▬](https://anilibria.tv)▬▬▬▬▬▬▬▬▬";
+            else
+                if (percent < 0.3)
+                result = "[▬▬](https://anilibria.tv)▬▬▬▬▬▬▬▬";
+            else
+                if (percent < 0.4)
+                result = "[▬▬▬](https://anilibria.tv)▬▬▬▬▬▬▬";
+            else
+                if (percent < 0.5)
+                result = "[▬▬▬▬](https://anilibria.tv)▬▬▬▬▬▬";
+            else
+                if (percent < 0.6)
+                result = "[▬▬▬▬▬](https://anilibria.tv)▬▬▬▬▬";
+            else
+                if (percent < 0.7)
+                result = "[▬▬▬▬▬▬](https://anilibria.tv)▬▬▬▬";
+            else
+                if (percent < 0.8)
+                result = "[▬▬▬▬▬▬▬](https://anilibria.tv)▬▬▬";
+            else
+                if (percent < 0.9)
+                result = "[▬▬▬▬▬▬▬▬](https://anilibria.tv)▬▬";
+            else
+                if (percent < 1)
+                result = "[▬▬▬▬▬▬▬▬▬](https://anilibria.tv)▬";
+            else
+                result = "[▬▬▬▬▬▬▬▬▬▬](https://anilibria.tv)";
+
+            return result;
         }
     }
 }

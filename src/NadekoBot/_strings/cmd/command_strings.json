@@ -3425,5 +3425,33 @@
     "usage": [
       "{0}economy"
     ]
+  },
+  "rep": {
+    "cmd": "rep",
+    "desc": "Uses give some metioned user +1 reputation",
+    "usage": [
+      "{0}rep @user"
+    ]
+  },
+  "setcard": {
+    "cmd": "setcard",
+    "desc": "Sets background for `.xp` if u have role for this background. For reset this user CardName - `default`.",
+    "usage": [
+      "{0}setcard CardName or {0}setcard default"
+    ]
+  },
+  "clubrolecreate": {
+    "cmd": "clubrolecreate crcreate",
+    "desc": "Club owner can create role for club, if club have enough currency (500 000), role will gived all club users.",
+    "usage": [
+      "{0}crcreate"
+    ]
+  },
+  "investclub": {
+    "cmd": "investclub clubdonate",
+    "desc": "Club users can donate currency to club.",
+    "usage": [
+      "{0}investclub 1000 or {0}clubdonate all or {0}investclub half"
+    ]
   }
 }

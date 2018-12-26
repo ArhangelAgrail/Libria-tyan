@@ -50,5 +50,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\NadekoBot.Core\NadekoBot.Core.csproj" />
   </ItemGroup>
-  <ProjectExtensions><VisualStudio><UserProperties _3strings_4ResponseStrings_1ru-RU_1json__JSONSchema="http://json.schemastore.org/appsscript" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 </Project>

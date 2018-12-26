@@ -484,7 +484,9 @@ namespace NadekoBot.Modules.Gambling.Services
                 }
 
                 for (int i = 0; i < count; i++)
-                    await AddItems(giftedWaifu, itemObj);
+                {
+                    AddItems(giftedWaifu, itemObj);
+                }
 
                 if (w.Claimer?.UserId == from)
                 {
@@ -499,16 +501,15 @@ namespace NadekoBot.Modules.Gambling.Services
             return true;
         }*/
 
-        /*public async Task<bool> AddItems(IUser giftedWaifu, WaifuItem itemObj)
+        /*public void AddItems(IUser giftedWaifu, WaifuItem itemObj)
         {
             using (var uow = _db.UnitOfWork)
             {
                 var w = uow.Waifus.ByWaifuUserId(giftedWaifu.Id, set => set.Include(x => x.Items)
                     .Include(x => x.Claimer));
                 w.Items.Add(itemObj);
-                await uow.CompleteAsync();
+                uow.Complete();
             }
-            return true;
         }*/
 
         public WaifuInfoStats GetFullWaifuInfoAsync(IGuildUser target)
