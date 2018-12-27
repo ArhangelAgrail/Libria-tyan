@@ -129,6 +129,12 @@ namespace NadekoBot.Modules.Xp
                             return l;
                     });
 
+                var maxAmount = 500000;
+                if (club.roleId != 0)
+                    maxAmount = 300000;
+
+                var progress = _service.GetStorageProgress(club.Currency, maxAmount);
+
                 await Context.SendPaginatedConfirmAsync(0, (page) =>
                 {
                     var embed = new EmbedBuilder()
@@ -136,6 +142,8 @@ namespace NadekoBot.Modules.Xp
                         .WithTitle($"{club.ToString()}")
                         .WithDescription(GetText("level_x", lvl.Level) + $" ({club.Xp} xp)")
                         .AddField(GetText("description"), string.IsNullOrWhiteSpace(club.Description) ? "-" : club.Description, false)
+                        .AddField(GetText("owner_and_role"), $" ▹<@{club.Owner.UserId}>\n" + (club.roleId != 0 ? $"▹<@&{club.roleId}>" : "У клуба нет роли"), true)
+                        .AddField(GetText("storage"), $" **{club.Currency}/{maxAmount}** :cherry_blossom:\n{progress}", true)
                         .AddField(GetText("members"), string.Join("\n", users
                             .Skip(page * 10)
                             .Take(10)
@@ -251,8 +259,23 @@ namespace NadekoBot.Modules.Xp
             [Priority(0)]
             public async Task ClubAccept([Remainder]string userName)
             {
+                var clb = _service.GetClubByMember(Context.User);
+
+                if (clb == null)
+                {
+                    await ReplyErrorLocalized("club_null");
+                    return;
+                }
+
                 if (_service.AcceptApplication(Context.User.Id, userName, out var discordUser))
                 {
+                    if (clb.roleId != 0)
+                    {
+                        var du = Context.User as IGuildUser;
+                        var gu = await du.Guild.GetUserAsync(discordUser.UserId);
+                        var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
+                        await gu.AddRoleAsync(role).ConfigureAwait(false);
+                    }
                     await ReplyConfirmLocalized("club_accepted", Format.Bold(discordUser.ToString())).ConfigureAwait(false);
                 }
                 else
@@ -262,8 +285,19 @@ namespace NadekoBot.Modules.Xp
             [NadekoCommand, Usage, Description, Aliases]
             public async Task Clubleave()
             {
+                var clb = _service.GetClubByMember(Context.User);
+
                 if (_service.LeaveClub(Context.User))
+                {
+                    if (clb.roleId != 0)
+                    {
+                        var du = Context.User as IGuildUser;
+                        var gu = await du.Guild.GetUserAsync(Context.User.Id);
+                        var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
+                        await gu.RemoveRoleAsync(role).ConfigureAwait(false);
+                    }
                     await ReplyConfirmLocalized("club_left").ConfigureAwait(false);
+                }
                 else
                     await ReplyErrorLocalized("club_not_in_club").ConfigureAwait(false);
             }
@@ -275,12 +309,42 @@ namespace NadekoBot.Modules.Xp
 
             [NadekoCommand, Usage, Description, Aliases]
             [Priority(0)]
-            public Task ClubKick([Remainder]string userName)
+            public async Task ClubKick([Remainder]string userName)
             {
-                if (_service.Kick(Context.User.Id, userName, out var club))
-                    return ReplyConfirmLocalized("club_user_kick", Format.Bold(userName), Format.Bold(club.ToString()));
+                var clb = _service.GetClubByMember(Context.User);
+
+                if (clb == null)
+                {
+                    await ReplyErrorLocalized("club_null");
+                    return;
+                }   
+
+                var usr = clb.Users.FirstOrDefault(x => x.ToString().ToUpperInvariant() == userName.ToUpperInvariant());
+                if (usr == null)
+                {
+                    await ReplyErrorLocalized("club_user_not_found");
+                    return;
+                }
+
+                if (clb.OwnerId == usr.Id || (usr.IsClubAdmin && clb.Owner.UserId != Context.User.Id))
+                {
+                    await ReplyErrorLocalized("club_not_owner");
+                    return;
+                }
+
+                if (_service.Kick(Context.User.Id, usr, out var club))
+                {
+                    if (clb.roleId != 0)
+                    {
+                        var du = Context.User as IGuildUser;
+                        var gu = await du.Guild.GetUserAsync(usr.UserId);
+                        var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
+                        await gu.RemoveRoleAsync(role).ConfigureAwait(false);
+                    }
+                    await ReplyConfirmLocalized("club_user_kick", Format.Bold(userName), Format.Bold(club.ToString()));
+                }
                 else
-                    return ReplyErrorLocalized("club_user_kick_fail");
+                    await ReplyErrorLocalized("club_user_kick_fail");
             }
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -290,12 +354,43 @@ namespace NadekoBot.Modules.Xp
 
             [NadekoCommand, Usage, Description, Aliases]
             [Priority(0)]
-            public Task ClubBan([Remainder]string userName)
+            public async Task ClubBan([Remainder]string userName)
             {
-                if (_service.Ban(Context.User.Id, userName, out var club))
-                    return ReplyConfirmLocalized("club_user_banned", Format.Bold(userName), Format.Bold(club.ToString()));
+                var clb = _service.GetClubByMember(Context.User);
+
+                if (clb == null)
+                {
+                    await ReplyErrorLocalized("club_null");
+                    return;
+                }
+
+                var usr = clb.Users.FirstOrDefault(x => x.ToString().ToUpperInvariant() == userName.ToUpperInvariant())
+                    ?? clb.Applicants.FirstOrDefault(x => x.User.ToString().ToUpperInvariant() == userName.ToUpperInvariant())?.User;
+                if (usr == null)
+                {
+                    await ReplyErrorLocalized("club_user_not_found");
+                    return;
+                }
+                    
+                if (clb.OwnerId == usr.Id || (usr.IsClubAdmin && clb.Owner.UserId != Context.User.Id))
+                {
+                    await ReplyErrorLocalized("club_not_owner");
+                    return;
+                }
+
+                if (_service.Ban(Context.User.Id, usr, out var club))
+                {
+                    if (clb.roleId != 0)
+                    {
+                        var du = Context.User as IGuildUser;
+                        var gu = await du.Guild.GetUserAsync(usr.UserId);
+                        var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
+                        await gu.RemoveRoleAsync(role).ConfigureAwait(false);
+                    }
+                    await ReplyConfirmLocalized("club_user_banned", Format.Bold(userName), Format.Bold(club.ToString()));
+                }
                 else
-                    return ReplyErrorLocalized("club_user_ban_fail");
+                    await ReplyErrorLocalized("club_user_ban_fail");
             }
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -344,6 +439,13 @@ namespace NadekoBot.Modules.Xp
             {
                 if (_service.Disband(Context.User.Id, out ClubInfo club))
                 {
+                    if (club.roleId != 0)
+                    {
+                        var du = Context.User as IGuildUser;
+                        var role = du.Guild.Roles.FirstOrDefault(x => x.Id == club.roleId);
+
+                        await role.DeleteAsync().ConfigureAwait(false);
+                    }
                     await ReplyConfirmLocalized("club_disbanded", Format.Bold(club.ToString())).ConfigureAwait(false);
                 }
                 else
@@ -371,6 +473,40 @@ namespace NadekoBot.Modules.Xp
                 }
 
                 return Context.Channel.EmbedAsync(embed);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            public async Task ClubRoleCreate()
+            {
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    await ReplyErrorLocalized("club_null").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Owner.UserId != Context.User.Id)
+                {
+                    await ReplyErrorLocalized("club_not_owner").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.roleId != 0)
+                {
+                    await ReplyErrorLocalized("club_role_exists").ConfigureAwait(false);
+                    return;
+                }
+                    
+                if (club.Currency < 500000)
+                {
+                    await ReplyErrorLocalized("club_not_enough").ConfigureAwait(false);
+                    return;
+                } 
+
+                var role = await Context.Guild.CreateRoleAsync(club.Name + " club").ConfigureAwait(false);
+
+                await _service.RoleCreate(Context.User, role);
+                await ReplyConfirmLocalized("club_role_created").ConfigureAwait(false);
             }
         }
     }

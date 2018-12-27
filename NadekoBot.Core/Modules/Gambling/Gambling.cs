@@ -219,19 +219,20 @@ namespace NadekoBot.Modules.Gambling
             var usr = membersArray[new NadekoRandom().Next(0, membersArray.Length)];
 
             var user = usr as SocketGuildUser;
+            var users = user as IGuildUser;
             var amount = 0;
-            var awardRole1 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 461111950458224640);
-            var awardRole2 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 405341253807374349);
-            var awardRole3 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 405341261277560842);
-            var awardRole4 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 475305705230958598);
-            var awardRole5 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 425627158581346314);
-            var awardRole6 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 475306009011683359);
-            var awardRole7 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 405340766240636928);
-            var awardRole8 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 475306363673772043);
-            var awardRole9 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 405338590290378763);
-            var awardRole10 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 425657999105982464);
-            var awardRole11 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 408903151568158740);
-            var awardRole12 = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 408902786294480897);
+            var awardRole1 = users.Guild.Roles.FirstOrDefault(x => x.Id == 461111950458224640);
+            var awardRole2 = users.Guild.Roles.FirstOrDefault(x => x.Id == 405341253807374349);
+            var awardRole3 = users.Guild.Roles.FirstOrDefault(x => x.Id == 405341261277560842);
+            var awardRole4 = users.Guild.Roles.FirstOrDefault(x => x.Id == 475305705230958598);
+            var awardRole5 = users.Guild.Roles.FirstOrDefault(x => x.Id == 425627158581346314);
+            var awardRole6 = users.Guild.Roles.FirstOrDefault(x => x.Id == 475306009011683359);
+            var awardRole7 = users.Guild.Roles.FirstOrDefault(x => x.Id == 405340766240636928);
+            var awardRole8 = users.Guild.Roles.FirstOrDefault(x => x.Id == 475306363673772043);
+            var awardRole9 = users.Guild.Roles.FirstOrDefault(x => x.Id == 405338590290378763);
+            var awardRole10 = users.Guild.Roles.FirstOrDefault(x => x.Id == 425657999105982464);
+            var awardRole11 = users.Guild.Roles.FirstOrDefault(x => x.Id == 408903151568158740);
+            var awardRole12 = users.Guild.Roles.FirstOrDefault(x => x.Id == 408902786294480897);
 
             if (user.Roles.Contains(awardRole1))
                 amount = 500;
@@ -355,6 +356,35 @@ namespace NadekoBot.Modules.Gambling
             await _cs.AddAsync(receiver, $"Gift from {Context.User.Username} ({Context.User.Id}) - {msg}.", amount, true).ConfigureAwait(false);
             await ReplyConfirmLocalized("gifted", amount + CurrencySign, Format.Bold(receiver.ToString()), msg)
                 .ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        [Priority(0)]
+        public async Task InvestClub(ShmartNumber amount)
+        {
+            if (amount <= 0)
+                return;
+            using (var uow = _db.UnitOfWork)
+            {
+                var club = uow.Clubs.GetByMember(Context.User.Id);
+                if (club == null)
+                {
+                    await ReplyErrorLocalized("no_club").ConfigureAwait(false);
+                    return;
+                }
+
+                var success = await _cs.RemoveAsync((IGuildUser)Context.User, $"Invest into {club.Name} storage.", amount, false, gamble: true).ConfigureAwait(false);
+                if (!success)
+                {
+                    await ReplyErrorLocalized("not_enough", CurrencyPluralName).ConfigureAwait(false);
+                    return;
+                }
+
+                club.Currency += (int)amount;
+                await uow.CompleteAsync();
+                await ReplyConfirmLocalized("club_invested", amount + CurrencySign, Format.Bold(club.Name)).ConfigureAwait(false);
+            }
         }
 
         [NadekoCommand, Usage, Description, Aliases]
