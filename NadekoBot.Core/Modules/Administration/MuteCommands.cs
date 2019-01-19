@@ -78,7 +78,7 @@ namespace NadekoBot.Modules.Administration
                 var mod = _images.ImageUrls.Moderation;
                 Uri imageToSend = mod.Mute[0];
 
-                if (time.Time < TimeSpan.FromMinutes(1) || time.Time > TimeSpan.FromDays(1))
+                if (time.Time < TimeSpan.FromMinutes(1))
                     return;
 
                 var log = new ModLog()

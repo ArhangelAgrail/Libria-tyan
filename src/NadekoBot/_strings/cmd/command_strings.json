@@ -3435,7 +3435,7 @@
   },
   "setcard": {
     "cmd": "setcard",
-    "desc": "Sets background for `.xp` if u have role for this background. For reset this user CardName - `default`.",
+    "desc": "Sets background for `.xp` if u have role for this background. For reset this use CardName - `default`.",
     "usage": [
       "{0}setcard CardName or {0}setcard default"
     ]

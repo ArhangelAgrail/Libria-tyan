@@ -130,8 +130,8 @@ namespace NadekoBot.Modules.Xp
                     });
 
                 var maxAmount = 500000;
-                if (club.roleId != 0)
-                    maxAmount = 300000;
+                //if (club.roleId != 0)
+                    //maxAmount = 300000;
 
                 var progress = _service.GetStorageProgress(club.Currency, maxAmount);
 
@@ -139,7 +139,7 @@ namespace NadekoBot.Modules.Xp
                 {
                     var embed = new EmbedBuilder()
                         .WithOkColor()
-                        .WithTitle($"{club.ToString()}")
+                        .WithTitle($"{club.Name}")
                         .WithDescription(GetText("level_x", lvl.Level) + $" ({club.Xp} xp)")
                         .AddField(GetText("description"), string.IsNullOrWhiteSpace(club.Description) ? "-" : club.Description, false)
                         .AddField(GetText("owner_and_role"), $" ▹<@{club.Owner.UserId}>\n" + (club.roleId != 0 ? $"▹<@&{club.roleId}>" : "У клуба нет роли"), true)
@@ -455,6 +455,33 @@ namespace NadekoBot.Modules.Xp
             }
 
             [NadekoCommand, Usage, Description, Aliases]
+            [OwnerOnly]
+            public async Task ClubDisband([Remainder]string clubName = null)
+            {
+                if (!_service.GetClubByName(clubName, out ClubInfo club))
+                {
+                    await ReplyErrorLocalized("club_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (_service.Disband(club))
+                {
+                    if (club.roleId != 0)
+                    {
+                        var du = Context.User as IGuildUser;
+                        var role = du.Guild.Roles.FirstOrDefault(x => x.Id == club.roleId);
+
+                        await role.DeleteAsync().ConfigureAwait(false);
+                    }
+                    await ReplyConfirmLocalized("club_disbanded", Format.Bold(club.ToString())).ConfigureAwait(false);
+                }
+                else
+                {
+                    await ReplyErrorLocalized("club_disband_error").ConfigureAwait(false);
+                }
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
             public Task ClubLeaderboard(int page = 1)
             {
                 if (--page < 0)
@@ -463,13 +490,14 @@ namespace NadekoBot.Modules.Xp
                 var clubs = _service.GetClubLeaderboardPage(page);
 
                 var embed = new EmbedBuilder()
-                    .WithTitle(GetText("club_leaderboard", page + 1))
+                    .WithTitle(GetText("club_leaderboard"))
+                    .WithFooter(GetText("page", page + 1))
                     .WithOkColor();
 
                 var i = page * 9;
                 foreach (var club in clubs)
                 {
-                    embed.AddField($"#{++i} " + club.ToString(), club.Xp.ToString() + " xp", false);
+                    embed.AddField($"#{++i} " + club.Name + $" - [{GetText("club_users", club.Users.Count)}]", GetText("club_leaderboard_xp", new LevelStats(club.Xp).Level, club.Xp.ToString()), false);
                 }
 
                 return Context.Channel.EmbedAsync(embed);

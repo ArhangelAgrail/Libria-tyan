@@ -49,17 +49,17 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
                 ?.Club;
         }
 
-        public ClubInfo GetByName(string name, int discrim, Func<DbSet<ClubInfo>, IQueryable<ClubInfo>> func = null)
+        public ClubInfo GetByName(string name/*, int discrim*/, Func<DbSet<ClubInfo>, IQueryable<ClubInfo>> func = null)
         {
             if (func == null)
                 return _set
-                    .Where(x => x.Name == name && x.Discrim == discrim)
+                    .Where(x => x.Name == name/* && x.Discrim == discrim*/)
                     .Include(x => x.Users)
                     .Include(x => x.Bans)
                     .Include(x => x.Applicants)
                     .FirstOrDefault();
 
-            return func(_set).FirstOrDefault(x => x.Name == name && x.Discrim == discrim);
+            return func(_set).FirstOrDefault(x => x.Name == name/* && x.Discrim == discrim*/);
         }
 
         public int GetNextDiscrim(string clubName)
@@ -87,6 +87,7 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
         {
             return _set
                 .OrderByDescending(x => x.Xp)
+                .Include(x => x.Users)
                 .Skip(page * 9)
                 .Take(9)
                 .ToArray();

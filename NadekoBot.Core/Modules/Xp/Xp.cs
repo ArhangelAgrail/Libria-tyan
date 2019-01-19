@@ -291,9 +291,8 @@ namespace NadekoBot.Modules.Xp
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
         [OwnerOnly]
-        public async Task AddCard(string name, IRole role, int image)
+        public async Task AddCard(IRole role, int image, [Remainder]string name)
         {
-
             _service.XpCardAdd(name, role.Id, image);
             await ReplyConfirmLocalized("template_added").ConfigureAwait(false);
         }
@@ -301,7 +300,7 @@ namespace NadekoBot.Modules.Xp
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
         [OwnerOnly]
-        public async Task DelCard(string name)
+        public async Task DelCard([Remainder]string name)
         {
             _service.XpCardDel(name);
             await ReplyConfirmLocalized("template_deleted").ConfigureAwait(false);
@@ -309,7 +308,7 @@ namespace NadekoBot.Modules.Xp
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
-        public async Task SetCard(string name)
+        public async Task SetCard([Remainder]string name)
         {
             var user = Context.User as IGuildUser;
             if (name == "default")
@@ -323,7 +322,7 @@ namespace NadekoBot.Modules.Xp
                     ulong roleId = uow.XpCards.GetXpCardRoleId(name);
                     if (roleId == 0)
                     {
-                        await ReplyConfirmLocalized("template_none", roleId).ConfigureAwait(false);
+                        await ReplyErrorLocalized("template_none", roleId).ConfigureAwait(false);
                     }
                     else
                     if (user.RoleIds.Contains(roleId))
@@ -333,7 +332,7 @@ namespace NadekoBot.Modules.Xp
                     }
                     else
                     {
-                        await ReplyConfirmLocalized("template_error", roleId).ConfigureAwait(false);
+                        await ReplyErrorLocalized("template_error", roleId).ConfigureAwait(false);
                     }
                 }
         }

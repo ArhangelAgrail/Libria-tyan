@@ -571,49 +571,49 @@ namespace NadekoBot.Modules.Gambling.Services
             ClaimTitle title;
             if (count < 10)
                 title = ClaimTitle.Status0;
-            else if (count < 20)
-                title = ClaimTitle.Status1;
             else if (count < 30)
-                title = ClaimTitle.Status2;
+                title = ClaimTitle.Status1;
             else if (count < 50)
-                title = ClaimTitle.Status3;
+                title = ClaimTitle.Status2;
             else if (count < 70)
-                title = ClaimTitle.Status4;
+                title = ClaimTitle.Status3;
             else if (count < 100)
+                title = ClaimTitle.Status4;
+            else if (count < 130)
                 title = ClaimTitle.Status5;
             else if (count < 150)
                 title = ClaimTitle.Status6;
             else if (count < 200)
                 title = ClaimTitle.Status7;
-            else if (count < 250)
-                title = ClaimTitle.Status8;
             else if (count < 300)
-                title = ClaimTitle.Status9;
+                title = ClaimTitle.Status8;
             else if (count < 350)
-                title = ClaimTitle.Status10;
+                title = ClaimTitle.Status9;
             else if (count < 400)
-                title = ClaimTitle.Status11;
-            else if (count < 450)
-                title = ClaimTitle.Status12;
+                title = ClaimTitle.Status10;
             else if (count < 500)
-                title = ClaimTitle.Status13;
+                title = ClaimTitle.Status11;
+            else if (count < 550)
+                title = ClaimTitle.Status12;
             else if (count < 600)
-                title = ClaimTitle.Status14;
+                title = ClaimTitle.Status13;
             else if (count < 700)
-                title = ClaimTitle.Status15;
+                title = ClaimTitle.Status14;
             else if (count < 800)
-                title = ClaimTitle.Status16;
+                title = ClaimTitle.Status15;
             else if (count < 900)
-                title = ClaimTitle.Status17;
+                title = ClaimTitle.Status16;
             else if (count < 1000)
-                title = ClaimTitle.Status18;
+                title = ClaimTitle.Status17;
             else if (count < 1100)
-                title = ClaimTitle.Status19;
+                title = ClaimTitle.Status18;
             else if (count < 1200)
-                title = ClaimTitle.Status20;
+                title = ClaimTitle.Status19;
             else if (count < 1300)
-                title = ClaimTitle.Status21;
+                title = ClaimTitle.Status20;
             else if (count < 1400)
+                title = ClaimTitle.Status21;
+            else if (count < 1450)
                 title = ClaimTitle.Status22;
             else if (count < 1500)
                 title = ClaimTitle.Status23;

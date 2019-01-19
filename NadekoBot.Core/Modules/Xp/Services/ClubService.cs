@@ -135,19 +135,19 @@ namespace NadekoBot.Modules.Xp.Services
         public bool GetClubByName(string clubName, out ClubInfo club)
         {
             club = null;
-            var arr = clubName.Split('#');
-            if (arr.Length < 2 || !int.TryParse(arr[arr.Length - 1], out var discrim))
-                return false;
+            //var arr = clubName.Split('#');
+            //if (arr.Length < 2 || !int.TryParse(arr[arr.Length - 1], out var discrim))
+                //return false;
 
             //incase club has # in it
-            var name = string.Concat(arr.Except(new[] { arr[arr.Length - 1] }));
+            //var name = string.Concat(arr.Except(new[] { arr[arr.Length - 1] }));
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(clubName))
                 return false;
 
             using (var uow = _db.UnitOfWork)
             {
-                club = uow.Clubs.GetByName(name, discrim);
+                club = uow.Clubs.GetByName(clubName/*, discrim*/);
                 if (club == null)
                     return false;
                 else
@@ -276,6 +276,19 @@ namespace NadekoBot.Modules.Xp.Services
                 if (club == null)
                     return false;
                 
+                uow.Clubs.Remove(club);
+                uow.Complete();
+            }
+            return true;
+        }
+
+        public bool Disband(ClubInfo club)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                if (club == null)
+                    return false;
+
                 uow.Clubs.Remove(club);
                 uow.Complete();
             }
