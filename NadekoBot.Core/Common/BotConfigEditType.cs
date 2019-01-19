@@ -123,6 +123,11 @@
         /// Minimum amount of currency a user can gamble with in a single gamble. Set 0 to disable.
         /// Default is 0.
         /// </summary>
+        MinimumLevel,
+        /// <summary>
+        /// Minimum level for use `.rep` and `.give` commands. Set 0 to disable.
+        /// Default is 0.
+        /// </summary>
         MinBet,
         /// <summary>
         /// Maximum amount of currency a user can gamble with in a single gamble. Set 0 to disable.

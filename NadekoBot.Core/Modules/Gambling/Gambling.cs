@@ -9,6 +9,7 @@ using NadekoBot.Core.Services;
 using NadekoBot.Core.Services.Database.Models;
 using NadekoBot.Extensions;
 using NadekoBot.Modules.Gambling.Services;
+using NadekoBot.Modules.Xp.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,19 +73,27 @@ namespace NadekoBot.Modules.Gambling
         [NadekoCommand, Usage, Description, Aliases]
         public async Task Rep([Remainder]IUser target)
         {
-            var period = 6;
+            var period = Bc.BotConfig.TimelyCurrencyPeriod;
 
             if (Context.User.Id != target.Id)
             {
-                TimeSpan? rem;
-                if ((rem = _cache.AddRepGive(Context.User.Id, period)) != null)
-                {
-                    await ReplyErrorLocalized("rep_already_gived", rem?.ToString(@"dd\d\ hh\h\ mm\m\ ss\s")).ConfigureAwait(false);
-                    return;
-                }
-
                 using (var uow = _db.UnitOfWork)
                 {
+                    var du = uow.DiscordUsers.GetOrCreate(Context.User);
+
+                    if (new LevelStats(du.TotalXp).Level < Bc.BotConfig.MinimumLevel)
+                    {
+                        await ReplyErrorLocalized("lvl_rep", Bc.BotConfig.MinimumLevel).ConfigureAwait(false);
+                        return;
+                    }
+
+                    TimeSpan? rem;
+                    if ((rem = _cache.AddRepGive(Context.User.Id, period)) != null)
+                    {
+                        await ReplyErrorLocalized("rep_already_gived", rem?.ToString(@"dd\d\ hh\h\ mm\m\ ss\s")).ConfigureAwait(false);
+                        return;
+                    }
+
                     var w = uow.Waifus.ByWaifuUserId(target.Id);
 
                     if (w == null)
@@ -276,7 +285,7 @@ namespace NadekoBot.Modules.Gambling
                 $"Awarded by raffle. ({Context.User.Username}/{Context.User.Id})",
                 amount,
                 gamble: (Context.Client.CurrentUser.Id != usr.Id)).ConfigureAwait(false);
-            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user"), $"**{usr.Username}#{usr.Discriminator}** получает {amount} :cherry_blossom:", footer: $"ID: {usr.Id}").ConfigureAwait(false);
+            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user"), $"{GetText("raffled_result", usr.Id, amount)}", footer: $"ID: {usr.Id}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -347,6 +356,18 @@ namespace NadekoBot.Modules.Gambling
         {
             if (amount <= 0 || Context.User.Id == receiver.Id || receiver.IsBot)
                 return;
+
+            using (var uow = _db.UnitOfWork)
+            {
+                var du = uow.DiscordUsers.GetOrCreate(Context.User);
+
+                if (new LevelStats(du.TotalXp).Level < Bc.BotConfig.MinimumLevel)
+                {
+                    await ReplyErrorLocalized("lvl_give", Bc.BotConfig.MinimumLevel).ConfigureAwait(false);
+                    return;
+                }
+            }
+
             var success = await _cs.RemoveAsync((IGuildUser)Context.User, $"Gift to {receiver.Username} ({receiver.Id}).", amount, false).ConfigureAwait(false);
             if (!success)
             {

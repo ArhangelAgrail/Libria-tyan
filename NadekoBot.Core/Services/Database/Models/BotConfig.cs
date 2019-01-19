@@ -75,6 +75,7 @@ Nadeko Support Server: https://discord.gg/nadekobot";
         public float PatreonCurrencyPerCent { get; set; } = 1.0f;
         public int WaifuGiftMultiplier { get; set; } = 1;
         public int MinimumTriviaWinReq { get; set; }
+        public int MinimumLevel { get; set; } = 0;
         public int MinBet { get; set; } = 0;
         public int MaxBet { get; set; } = 0;
         public ConsoleOutputType ConsoleOutputType { get; set; } = ConsoleOutputType.Normal;

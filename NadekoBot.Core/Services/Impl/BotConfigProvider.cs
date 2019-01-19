@@ -161,6 +161,12 @@ namespace NadekoBot.Core.Services.Impl
                         else
                             return false;
                         break;
+                    case BotConfigEditType.MinimumLevel:
+                        if (int.TryParse(newValue, out var lmin) && lmin >= 0)
+                            bc.MinimumLevel = lmin;
+                        else
+                            return false;
+                        break;
                     case BotConfigEditType.MinBet:
                         if (int.TryParse(newValue, out var gmin) && gmin >= 0)
                             bc.MinBet = gmin;
