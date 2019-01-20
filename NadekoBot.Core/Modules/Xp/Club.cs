@@ -97,7 +97,7 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
-                await ClubInformation(club.ToString()).ConfigureAwait(false);
+                await ClubInformation(club.Name).ConfigureAwait(false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -435,6 +435,7 @@ namespace NadekoBot.Modules.Xp
             }
 
             [NadekoCommand, Usage, Description, Aliases]
+            [Priority(1)]
             public async Task ClubDisband()
             {
                 if (_service.Disband(Context.User.Id, out ClubInfo club))
@@ -456,6 +457,7 @@ namespace NadekoBot.Modules.Xp
 
             [NadekoCommand, Usage, Description, Aliases]
             [OwnerOnly]
+            [Priority(0)]
             public async Task ClubDisband([Remainder]string clubName = null)
             {
                 if (!_service.GetClubByName(clubName, out ClubInfo club))
