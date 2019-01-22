@@ -355,7 +355,7 @@ namespace NadekoBot.Modules.Administration
             [RequireUserPermission(GuildPermission.BanMembers)]
             [RequireBotPermission(GuildPermission.BanMembers)]
             [Priority(1)]
-            public async Task Ban(IGuildUser user, string msg = null)
+            public async Task Ban(IGuildUser user, [Remainder] string msg = null)
             {
                 var tm = DateTime.UtcNow;
                 tm = TimeZoneInfo.ConvertTime(tm, _tz.GetTimeZoneOrUtc(user.Guild.Id));
