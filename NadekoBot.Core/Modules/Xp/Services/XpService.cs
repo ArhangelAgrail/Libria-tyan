@@ -944,6 +944,15 @@ namespace NadekoBot.Modules.Xp.Services
             }
         }
 
+        public void ClubsXpReset(ulong guildId)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                uow.Xp.ResetClubsXp();
+                uow.Complete();
+            }
+        }
+
         public void XpCardAdd(string name, ulong roleId, int image)
         {
             using (var uow = _db.UnitOfWork)

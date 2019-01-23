@@ -653,41 +653,40 @@ namespace NadekoBot.Modules.Gambling
             => InternallBetroll(amount);
 
         [NadekoCommand, Usage, Description, Aliases]
-        public async Task Leaderboard(int page = 1)
+        public Task Leaderboard(int page = 1)
         {
-            if (page < 1)
-                return;
+            if (--page < 0 || page > 100)
+                return Task.CompletedTask;
 
-            List<DiscordUser> richest;
-            using (var uow = _db.UnitOfWork)
+            return Context.SendPaginatedConfirmAsync(page, (curPage) =>
             {
-                richest = uow.DiscordUsers.GetTopRichest(_client.CurrentUser.Id, 9, 9 * (page - 1)).ToList();
-            }
+                List<DiscordUser> richest;
+                using (var uow = _db.UnitOfWork)
+                {
+                    richest = uow.DiscordUsers.GetTopRichest(_client.CurrentUser.Id, 9, 9 * curPage).ToList();
+                }
 
-            var embed = new EmbedBuilder()
-                .WithOkColor()
-                .WithTitle(CurrencySign + " " + GetText("leaderboard"))
-                .WithFooter(efb => efb.WithText(GetText("page", page)));
+                var embed = new EmbedBuilder()
+                    .WithOkColor()
+                    .WithTitle(CurrencySign + " " + GetText("leaderboard"))
+                    .WithFooter(GetText("page", curPage + 1));
 
-            if (!richest.Any())
-            {
-                embed.WithDescription(GetText("no_users_found"));
-                await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
-                return;
-            }
+                if (!richest.Any())
+                    return embed.WithDescription("-");
+                else
+                {
+                    for (var i = 0; i < richest.Count; i++)
+                    {
+                        var x = richest[i];
+                        var usrStr = x.ToString().TrimTo(20, true);
 
-            for (var i = 0; i < richest.Count; i++)
-            {
-                var x = richest[i];
-                var usrStr = x.ToString().TrimTo(20, true);
-
-                var j = i;
-                embed.AddField(efb => efb.WithName("#" + (9 * (page - 1) + j + 1) + " " + usrStr)
-                                         .WithValue(x.CurrencyAmount.ToString() + " " + CurrencySign)
-                                         .WithIsInline(true));
-            }
-
-            await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+                        embed.AddField(efb => efb.WithName("#" + (i + 1 + curPage * 9) + " " + usrStr)
+                                                 .WithValue(x.CurrencyAmount.ToString() + " " + CurrencySign)
+                                                 .WithIsInline(true));
+                    }
+                    return embed;
+                }
+            }, 1000, 10, addPaginatedFooter: false);
         }
 
 

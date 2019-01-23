@@ -202,6 +202,7 @@ namespace NadekoBot.Modules.Xp
 
                 var embed = new EmbedBuilder()
                     .WithTitle(GetText("server_leaderboard"))
+                    .WithFooter(GetText("page", curPage + 1))
                     .WithOkColor();
 
                 if (!users.Any())

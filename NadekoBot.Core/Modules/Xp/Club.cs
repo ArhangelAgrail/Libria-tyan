@@ -120,6 +120,7 @@ namespace NadekoBot.Modules.Xp
                 var users = club.Users
                     .OrderByDescending(x =>
                     {
+                        //var l = x.TotalXp - x.ClubXp;
                         var l = new LevelStats(x.TotalXp).Level;
                         if (club.OwnerId == x.Id)
                             return int.MaxValue;
@@ -151,6 +152,7 @@ namespace NadekoBot.Modules.Xp
                             {
                                 var l = new LevelStats(x.TotalXp);
                                 var lvlStr = Format.Bold($" ⟪{l.Level}⟫");
+                                //var lvlStr = Format.Bold($" ⟪{x.TotalXp - x.ClubXp} xp⟫");
                                 if (club.OwnerId == x.Id)
                                     return x.ToString() + "🌟" + lvlStr;
                                 else if (x.IsClubAdmin)
@@ -486,23 +488,30 @@ namespace NadekoBot.Modules.Xp
             [NadekoCommand, Usage, Description, Aliases]
             public Task ClubLeaderboard(int page = 1)
             {
-                if (--page < 0)
+                if (--page < 0 || page > 100)
                     return Task.CompletedTask;
 
-                var clubs = _service.GetClubLeaderboardPage(page);
-
-                var embed = new EmbedBuilder()
-                    .WithTitle(GetText("club_leaderboard"))
-                    .WithFooter(GetText("page", page + 1))
-                    .WithOkColor();
-
-                var i = page * 9;
-                foreach (var club in clubs)
+                return Context.SendPaginatedConfirmAsync(page, (curPage) =>
                 {
-                    embed.AddField($"#{++i} " + club.Name + $" - [{GetText("club_users", club.Users.Count)}]", GetText("club_leaderboard_xp", new LevelStats(club.Xp).Level, club.Xp.ToString()), false);
-                }
+                    var clubs = _service.GetClubLeaderboardPage(curPage);
 
-                return Context.Channel.EmbedAsync(embed);
+                    var embed = new EmbedBuilder()
+                        .WithTitle(GetText("club_leaderboard"))
+                        .WithFooter(GetText("page", curPage + 1))
+                        .WithOkColor();
+
+                    if (!clubs.Any())
+                        return embed.WithDescription("-");
+                    else
+                    {
+                        var i = curPage * 9;
+                        foreach (var club in clubs)
+                        {
+                            embed.AddField($"#{++i} " + club.Name + $" - [{GetText("club_users", club.Users.Count)}]", GetText("club_leaderboard_xp", new LevelStats(club.Xp).Level, club.Xp.ToString()), false);
+                        }
+                        return embed;
+                    }
+                }, 1000, 10, addPaginatedFooter: false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]

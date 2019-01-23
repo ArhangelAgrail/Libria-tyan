@@ -593,11 +593,11 @@ namespace NadekoBot.Modules.Gambling.Services
                 title = ClaimTitle.Status10;
             else if (count < 500)
                 title = ClaimTitle.Status11;
-            else if (count < 550)
-                title = ClaimTitle.Status12;
             else if (count < 600)
-                title = ClaimTitle.Status13;
+                title = ClaimTitle.Status12;
             else if (count < 700)
+                title = ClaimTitle.Status13;
+            else if (count < 750)
                 title = ClaimTitle.Status14;
             else if (count < 800)
                 title = ClaimTitle.Status15;
@@ -609,26 +609,58 @@ namespace NadekoBot.Modules.Gambling.Services
                 title = ClaimTitle.Status18;
             else if (count < 1200)
                 title = ClaimTitle.Status19;
-            else if (count < 1300)
+            else if (count < 1250)
                 title = ClaimTitle.Status20;
-            else if (count < 1400)
+            else if (count < 1300)
                 title = ClaimTitle.Status21;
-            else if (count < 1450)
+            else if (count < 1400)
                 title = ClaimTitle.Status22;
             else if (count < 1500)
                 title = ClaimTitle.Status23;
-            else if (count < 1600)
+            else if (count < 1550)
                 title = ClaimTitle.Status24;
             else if (count < 1700)
                 title = ClaimTitle.Status25;
-            else if (count < 1800)
+            else if (count < 1750)
                 title = ClaimTitle.Status26;
-            else if (count < 1900)
+            else if (count < 1800)
                 title = ClaimTitle.Status27;
-            else if (count < 2000)
+            else if (count < 1900)
                 title = ClaimTitle.Status28;
-            else
+            else if (count < 2000)
                 title = ClaimTitle.Status29;
+            else if (count < 2500)
+                title = ClaimTitle.Status30;
+            else if (count < 2100)
+                title = ClaimTitle.Status31;
+            else if (count < 2200)
+                title = ClaimTitle.Status32;
+            else if (count < 2300)
+                title = ClaimTitle.Status33;
+            else if (count < 2400)
+                title = ClaimTitle.Status34;
+            else if (count < 2500)
+                title = ClaimTitle.Status35;
+            else if (count < 2600)
+                title = ClaimTitle.Status36;
+            else if (count < 2700)
+                title = ClaimTitle.Status37;
+            else if (count < 2800)
+                title = ClaimTitle.Status38;
+            else if (count < 2900)
+                title = ClaimTitle.Status39;
+            else if (count < 3000)
+                title = ClaimTitle.Status40;
+            else if (count < 3500)
+                title = ClaimTitle.Status41;
+            else if (count < 3600)
+                title = ClaimTitle.Status42;
+            else if (count < 3800)
+                title = ClaimTitle.Status43;
+            else if (count < 4000)
+                title = ClaimTitle.Status44;
+            else
+                title = ClaimTitle.Status45;
 
             return title.ToString().Replace('_', ' ');
         }

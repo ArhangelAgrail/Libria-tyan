@@ -207,70 +207,63 @@ namespace NadekoBot.Modules.Gambling
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
-            public async Task WaifuLeaderboard(int page = 1)
+            public Task WaifuLeaderboard(int page = 1)
             {
-                page--;
+                if (--page < 0 || page > 100)
+                    return Task.CompletedTask;
 
-                if (page < 0)
-                    return;
-
-                if (page > 100)
-                    page = 100;
-                
-                var waifus = _service.GetTopWaifusAtPage(page);
-
-                if (waifus.Count() == 0)
+                return Context.SendPaginatedConfirmAsync(page, (curPage) =>
                 {
-                    await ReplyConfirmLocalized("waifus_none");
-                    return;
-                }
+                    var users = _service.GetTopWaifusAtPage(curPage);
 
-                var embed = new EmbedBuilder()
-                    .WithTitle(GetText("waifus_top_waifus"))
-                    .WithOkColor();
+                    var embed = new EmbedBuilder()
+                        .WithTitle(GetText("waifus_top_waifus"))
+                        .WithFooter(GetText("page", curPage + 1))
+                        .WithOkColor();
 
-                var i = 0;
-                foreach (var w in waifus)
-                {
-                    var j = i++;
-                    embed.AddField(efb => efb.WithName("#" + ((page * 9) + j + 1) + " - " + w.Price + Bc.BotConfig.CurrencySign).WithValue(w.ToString()).WithIsInline(false));
-                }
-
-                await Context.Channel.EmbedAsync(embed);
+                    if (!users.Any())
+                        return embed.WithDescription("-");
+                    else
+                    {
+                        var i = curPage * 9;
+                        foreach (var w in users)
+                        {
+                            embed.AddField(efb => efb.WithName($"#{++i} - " + w.Price + Bc.BotConfig.CurrencySign).WithValue(w.ToString()).WithIsInline(false));
+                        }
+                        return embed;
+                    }
+                }, 1000, 10, addPaginatedFooter: false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
-            public async Task RepLb(int page = 1)
+            public Task RepLb(int page = 1)
             {
-                page--;
+                if (--page < 0 || page > 100)
+                    return Task.CompletedTask;
 
-                if (page < 0)
-                    return;
-
-                if (page > 100)
-                    page = 100;
-
-                var waifus = _service.GetTopRepAtPage(page);
-
-                if (waifus.Count() == 0)
+                return Context.SendPaginatedConfirmAsync(page, (curPage) =>
                 {
-                    await ReplyConfirmLocalized("rep_none");
-                    return;
-                }
+                    var users = _service.GetTopRepAtPage(curPage);
 
-                var embed = new EmbedBuilder()
-                    .WithTitle(GetText("rep_top"))
-                    .WithOkColor();
+                    var embed = new EmbedBuilder()
+                        .WithTitle(GetText("rep_top"))
+                        .WithFooter(GetText("page", curPage + 1))
+                        .WithOkColor();
 
-                var i = 0;
-                foreach (var w in waifus)
-                {
-                    var j = i++;
-                    embed.AddField(efb => efb.WithName("#" + ((page * 9) + j + 1) + " " + w.Username + "#" + w.Discrim + " - \"" + GetText(_service.GetRepTitle(w.Reputation)) + "\"").WithValue(GetText("reputation") + " ☆ +" + w.Reputation.ToString()).WithIsInline(false));
-                }
-
-                await Context.Channel.EmbedAsync(embed);
+                    if (!users.Any())
+                        return embed.WithDescription("-");
+                    else
+                    {
+                        var i = curPage * 9;
+                        foreach (var w in users)
+                        {
+                            var j = i++;
+                            embed.AddField(efb => efb.WithName($"#{++i} " + w.Username + "#" + w.Discrim + " - \"" + GetText(_service.GetRepTitle(w.Reputation)) + "\"").WithValue(GetText("reputation") + " ☆ +" + w.Reputation.ToString()).WithIsInline(false));
+                        }
+                        return embed;
+                    }
+                }, 1000, 10, addPaginatedFooter: false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]

@@ -66,5 +66,11 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
         {
             _context.Database.ExecuteSqlCommand($"DELETE FROM UserXpStats WHERE GuildId={guildId};");
         }
+
+        public void ResetClubsXp()
+        {
+            _context.Database.ExecuteSqlCommand($"UPDATE Clubs SET Xp=0");
+            _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET ClubXp=TotalXp");
+        }
     }
 }

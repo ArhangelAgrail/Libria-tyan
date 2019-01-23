@@ -198,6 +198,7 @@ namespace NadekoBot.Modules.Xp.Services
 
                 applicant.User.Club = club;
                 applicant.User.IsClubAdmin = false;
+                applicant.User.ClubXp = applicant.User.TotalXp;
                 club.Applicants.Remove(applicant);
 
                 //remove that user's all other applications
