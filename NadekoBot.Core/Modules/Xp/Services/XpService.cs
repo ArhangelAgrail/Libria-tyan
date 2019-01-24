@@ -626,10 +626,9 @@ namespace NadekoBot.Modules.Xp.Services
             if (stats.User.XpCardRole != 0 && !user.RoleIds.Contains(stats.User.XpCardRole))
             {
                 XpCardSetDefault(user.Id);
-                return await GenerateXpImageAsync(await GetUserStatsAsync(user));
-            } else {
-                return await GenerateXpImageAsync(stats);
+                stats = await GetUserStatsAsync(user);
             }
+            return await GenerateXpImageAsync(stats);
         }
 
 
