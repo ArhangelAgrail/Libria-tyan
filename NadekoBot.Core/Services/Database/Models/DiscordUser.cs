@@ -20,6 +20,7 @@ namespace NadekoBot.Core.Services.Database.Models
         public long CurrencyAmount { get; set; }
 
         public int XpCardImage { get; set; }
+        public ulong XpCardRole { get; set; }
 
         public override bool Equals(object obj)
         {

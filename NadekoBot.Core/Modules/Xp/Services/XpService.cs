@@ -623,6 +623,8 @@ namespace NadekoBot.Modules.Xp.Services
         public async Task<(Stream Image, IImageFormat Format)> GenerateXpImageAsync(IGuildUser user)
         {
             var stats = await GetUserStatsAsync(user);
+            if (stats.User.XpCardRole != 0 && !user.RoleIds.Contains(stats.User.XpCardRole))
+                XpCardSetDefault(user.Id);
             return await GenerateXpImageAsync(stats);
         }
 

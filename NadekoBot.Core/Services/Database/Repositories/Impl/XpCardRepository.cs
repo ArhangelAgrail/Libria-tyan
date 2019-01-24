@@ -1,7 +1,6 @@
 ﻿using NadekoBot.Core.Services.Database.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace NadekoBot.Core.Services.Database.Repositories.Impl
 {
@@ -24,11 +23,13 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
         public void SetXpCard(ulong userId, string name)
         {
             _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET XpCardImage=(SELECT Image FROM XpCards WHERE Name={name}) WHERE UserId={userId};");
+            _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET XpCardRole=(SELECT RoleId FROM XpCards WHERE Name={name}) WHERE UserId={userId};");
         }
 
         public void SetDefault(ulong userId)
         {
             _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET XpCardImage=0 WHERE UserId={userId};");
+            _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET XpCardRole=0 WHERE UserId={userId};");
         }
 
         public ulong GetXpCardRoleId(string name)
