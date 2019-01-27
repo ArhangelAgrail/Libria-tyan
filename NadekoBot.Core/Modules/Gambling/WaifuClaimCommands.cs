@@ -258,8 +258,38 @@ namespace NadekoBot.Modules.Gambling
                         var i = curPage * 9;
                         foreach (var w in users)
                         {
-                            var j = i++;
                             embed.AddField(efb => efb.WithName($"#{++i} " + w.Username + "#" + w.Discrim + " - \"" + GetText(_service.GetRepTitle(w.Reputation)) + "\"").WithValue(GetText("reputation") + " ☆ +" + w.Reputation.ToString()).WithIsInline(false));
+                        }
+                        return embed;
+                    }
+                }, 1000, 10, addPaginatedFooter: false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [RequireContext(ContextType.Guild)]
+            public Task RepLog(IUser user, int page = 1)
+            {
+                if (--page < 0 || page > 100)
+                    return Task.CompletedTask;
+
+                return Context.SendPaginatedConfirmAsync(page, (curPage) =>
+                {
+                    var users = _service.GetRepLogByUser(user.Id, curPage);
+
+                    var embed = new EmbedBuilder()
+                        .WithTitle(GetText("rep_top"))
+                        .WithFooter(GetText("page", curPage + 1))
+                        .WithOkColor();
+
+                    if (!users.Any())
+                        return embed.WithDescription("-");
+                    else
+                    {
+                        var i = curPage * 9;
+                        foreach (var w in users)
+                        {
+                            var j = i++;
+                            embed.AddField(efb => efb.WithName($"#{++i} <@{w.UserId}>").WithValue(GetText("reputation") + " ☆ +").WithIsInline(false));
                         }
                         return embed;
                     }

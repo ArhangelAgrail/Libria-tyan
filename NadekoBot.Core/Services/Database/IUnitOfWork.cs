@@ -20,6 +20,7 @@ namespace NadekoBot.Core.Services.Database
         IDiscordUserRepository DiscordUsers { get; }
         IWarningsRepository Warnings { get; }
         IModLogRepository ModLog { get; }
+        IRepLogRepository RepLog { get; }
         IXpRepository Xp { get; }
         IXpCardRepository XpCards { get; }
         IClubRepository Clubs { get; }

@@ -77,45 +77,20 @@ namespace NadekoBot.Modules.Gambling
 
             if (Context.User.Id != target.Id)
             {
-                using (var uow = _db.UnitOfWork)
+                if (_service.GetUserLevel(Context.User) < Bc.BotConfig.MinimumLevel)
                 {
-                    var du = uow.DiscordUsers.GetOrCreate(Context.User);
-
-                    if (new LevelStats(du.TotalXp).Level < Bc.BotConfig.MinimumLevel)
-                    {
-                        await ReplyErrorLocalized("lvl_rep", Bc.BotConfig.MinimumLevel).ConfigureAwait(false);
-                        return;
-                    }
-
-                    TimeSpan? rem;
-                    if ((rem = _cache.AddRepGive(Context.User.Id, period)) != null)
-                    {
-                        await ReplyErrorLocalized("rep_already_gived", rem?.ToString(@"dd\d\ hh\h\ mm\m\ ss\s")).ConfigureAwait(false);
-                        return;
-                    }
-
-                    var w = uow.Waifus.ByWaifuUserId(target.Id);
-
-                    if (w == null)
-                    {
-                        var thisUser = uow.DiscordUsers.GetOrCreate(target);
-                        uow.Waifus.Add(new WaifuInfo()
-                        {
-                            Waifu = thisUser,
-                            Price = 1,
-                            Claimer = null,
-                            Immune = false,
-                            Reputation = 1
-                        });
-                    }
-                    else
-                    {
-                        int rep = w.Reputation;
-                        rep += 1;
-                        w.Reputation = rep;
-                    }
-                    await uow.CompleteAsync();
+                    await ReplyErrorLocalized("lvl_rep", Bc.BotConfig.MinimumLevel).ConfigureAwait(false);
+                    return;
                 }
+
+                TimeSpan? rem;
+                if ((rem = _cache.AddRepGive(Context.User.Id, period)) != null)
+                {
+                    await ReplyErrorLocalized("rep_already_gived", rem?.ToString(@"dd\d\ hh\h\ mm\m\ ss\s")).ConfigureAwait(false);
+                    return;
+                }
+
+                await _service.GiveReputation(target, Context.User);
                 await ReplyConfirmLocalized("rep", Format.Bold(target.ToString()), period).ConfigureAwait(false);
             }
             else
@@ -313,33 +288,40 @@ namespace NadekoBot.Modules.Gambling
         public Task CurrencyTransactions(IUser usr, int page) =>
             InternalCurrencyTransactions(usr.Id, page);
 
-        private async Task InternalCurrencyTransactions(ulong userId, int page)
+        private Task InternalCurrencyTransactions(ulong userId, int page)
         {
-            if (--page < 0)
-                return;
 
-            var trs = new List<CurrencyTransaction>();
-            using (var uow = _db.UnitOfWork)
+            if (--page < 0 || page > 125)
+                return Task.CompletedTask;
+
+            return Context.SendPaginatedConfirmAsync(page, (curPage) =>
             {
-                trs = uow.CurrencyTransactions.GetPageFor(userId, page);
-            }
+                var trs = new List<CurrencyTransaction>();
+                using (var uow = _db.UnitOfWork)
+                {
+                    trs = uow.CurrencyTransactions.GetPageFor(userId, curPage);
+                }
 
-            var embed = new EmbedBuilder()
-                .WithTitle(GetText("transactions",
+                var embed = new EmbedBuilder()
+                    .WithTitle(GetText("transactions",
                     ((SocketGuild)Context.Guild)?.GetUser(userId)?.ToString() ?? $"{userId}"))
-                .WithOkColor();
+                    .WithFooter(GetText("page", curPage + 1))
+                    .WithOkColor();
 
-            var desc = "";
-            foreach (var tr in trs)
-            {
-                var type = tr.Amount > 0 ? "🔵" : "🔴";
-                var date = Format.Code($"〖{tr.DateAdded:HH:mm yyyy-MM-dd}〗");
-                desc += $"\\{type} {date} {Format.Bold(tr.Amount.ToString())}\n\t{tr.Reason?.Trim()}\n";
-            }
-
-            embed.WithDescription(desc);
-            embed.WithFooter(GetText("page", page + 1));
-            await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+                if (!trs.Any())
+                    return embed.WithDescription("-");
+                else
+                {
+                    var desc = "";
+                    foreach (var tr in trs)
+                    {
+                        var type = tr.Amount > 0 ? "🔵" : "🔴";
+                        var date = Format.Code($"〖{tr.DateAdded:HH:mm yyyy-MM-dd}〗");
+                        desc += $"\\{type} {date} {Format.Bold(tr.Amount.ToString())}\n\t{tr.Reason?.Trim()}\n";
+                    }
+                    return embed.WithDescription(desc);
+                }
+            }, 1000, 10, addPaginatedFooter: false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]

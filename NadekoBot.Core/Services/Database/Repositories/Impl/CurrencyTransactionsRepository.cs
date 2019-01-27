@@ -19,5 +19,13 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
                 .Take(15)
                 .ToList();
         }
+
+        public string GetInvestedAmount(ulong userId, string clubName)
+        {
+            string reason = $"Invest into {clubName} storage.";
+            return _set.Where(x => x.UserId == userId && x.Reason == reason)
+                .Sum(x => x.Amount)
+                .ToString();
+        }
     }
 }

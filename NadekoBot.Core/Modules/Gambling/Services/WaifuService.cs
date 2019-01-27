@@ -377,6 +377,14 @@ namespace NadekoBot.Modules.Gambling.Services
             }
         }
 
+        public IEnumerable<RepLogResult> GetRepLogByUser(ulong userId, int page)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.RepLog.GetRepLog(userId, 9, page * 9);
+            }
+        }
+
         public async Task<(WaifuInfo, DivorceResult, long, TimeSpan?)> DivorceWaifuAsync(IUser user, ulong targetId)
         {
             DivorceResult result;

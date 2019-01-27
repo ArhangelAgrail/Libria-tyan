@@ -45,6 +45,9 @@ namespace NadekoBot.Core.Services.Database
         private IModLogRepository _modlog;
         public IModLogRepository ModLog => _modlog ?? (_modlog = new ModLogRepository(_context));
 
+        private IRepLogRepository _replog;
+        public IRepLogRepository RepLog => _replog ?? (_replog = new RepLogRepository(_context));
+
         private IXpRepository _xp;
         public IXpRepository Xp => _xp ?? (_xp = new XpRepository(_context));
 

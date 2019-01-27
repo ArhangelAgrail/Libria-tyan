@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Core.Services.Database.Models;
 using NadekoBot.Extensions;
@@ -69,7 +70,7 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
-                await ReplyConfirmLocalized("club_created", Format.Bold(club.ToString())).ConfigureAwait(false);
+                await ReplyConfirmLocalized("club_created", Format.Bold(club.Name)).ConfigureAwait(false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -131,13 +132,13 @@ namespace NadekoBot.Modules.Xp
                     });
 
                 var maxAmount = 500000;
-                //if (club.roleId != 0)
-                    //maxAmount = 300000;
+                if (club.roleId != 0)
+                    maxAmount = 1000000;
 
                 var progress = _service.GetStorageProgress(club.Currency, maxAmount);
 
                 await Context.SendPaginatedConfirmAsync(0, (page) =>
-                {
+                {   
                     var embed = new EmbedBuilder()
                         .WithOkColor()
                         .WithTitle($"{club.Name}")
@@ -191,7 +192,7 @@ namespace NadekoBot.Modules.Xp
                             .Select(x => x.ToString()));
 
                         return new EmbedBuilder()
-                            .WithTitle(GetText("club_bans_for", club.ToString()))
+                            .WithTitle(GetText("club_bans_for", club.Name))
                             .WithDescription(toShow)
                             .WithOkColor();
 
@@ -223,7 +224,7 @@ namespace NadekoBot.Modules.Xp
                             .Select(x => x.ToString()));
 
                         return new EmbedBuilder()
-                            .WithTitle(GetText("club_apps_for", club.ToString()))
+                            .WithTitle(GetText("club_apps_for", club.Name))
                             .WithDescription(toShow)
                             .WithOkColor();
 
@@ -244,7 +245,17 @@ namespace NadekoBot.Modules.Xp
 
                 if (_service.ApplyToClub(Context.User, club))
                 {
-                    await ReplyConfirmLocalized("club_applied", Format.Bold(club.ToString())).ConfigureAwait(false);
+                    try
+                    {
+                        var owner = (Context.Guild as SocketGuild)?.GetUser(club.Owner.UserId);
+                        await (await owner.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithOkColor()
+                                         .WithAuthor(GetText("club_new_apply", club.Name))
+                                         .WithFooter("ID: " + Context.User.Id)
+                                         .WithDescription(GetText("club_new_applycant", Context.User.Username, Context.User.Discriminator, Context.User.Id)))
+                            .ConfigureAwait(false);
+                    }
+                    catch { }
+                    await ReplyConfirmLocalized("club_applied", Format.Bold(club.Name)).ConfigureAwait(false);
                 }
                 else
                 {
@@ -343,7 +354,7 @@ namespace NadekoBot.Modules.Xp
                         var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
                         await gu.RemoveRoleAsync(role).ConfigureAwait(false);
                     }
-                    await ReplyConfirmLocalized("club_user_kick", Format.Bold(userName), Format.Bold(club.ToString()));
+                    await ReplyConfirmLocalized("club_user_kick", Format.Bold(userName), Format.Bold(club.Name));
                 }
                 else
                     await ReplyErrorLocalized("club_user_kick_fail");
@@ -389,7 +400,7 @@ namespace NadekoBot.Modules.Xp
                         var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
                         await gu.RemoveRoleAsync(role).ConfigureAwait(false);
                     }
-                    await ReplyConfirmLocalized("club_user_banned", Format.Bold(userName), Format.Bold(club.ToString()));
+                    await ReplyConfirmLocalized("club_user_banned", Format.Bold(userName), Format.Bold(club.Name));
                 }
                 else
                     await ReplyErrorLocalized("club_user_ban_fail");
@@ -405,7 +416,7 @@ namespace NadekoBot.Modules.Xp
             public Task ClubUnBan([Remainder]string userName)
             {
                 if (_service.UnBan(Context.User.Id, userName, out var club))
-                    return ReplyConfirmLocalized("club_user_unbanned", Format.Bold(userName), Format.Bold(club.ToString()));
+                    return ReplyConfirmLocalized("club_user_unbanned", Format.Bold(userName), Format.Bold(club.Name));
                 else
                     return ReplyErrorLocalized("club_user_unban_fail");
             }
@@ -449,7 +460,7 @@ namespace NadekoBot.Modules.Xp
 
                         await role.DeleteAsync().ConfigureAwait(false);
                     }
-                    await ReplyConfirmLocalized("club_disbanded", Format.Bold(club.ToString())).ConfigureAwait(false);
+                    await ReplyConfirmLocalized("club_disbanded", Format.Bold(club.Name)).ConfigureAwait(false);
                 }
                 else
                 {
@@ -546,6 +557,56 @@ namespace NadekoBot.Modules.Xp
 
                 await _service.RoleCreate(Context.User, role);
                 await ReplyConfirmLocalized("club_role_created").ConfigureAwait(false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            public Task ClubInvestLb(int page = 1)
+            {
+                if (--page < 0 || page > 20)
+                    return Task.CompletedTask;
+
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    return Task.CompletedTask;
+                }
+
+                return Context.SendPaginatedConfirmAsync(page, (curPage) =>
+                {
+                    var users = club.Users
+                    .OrderByDescending(x =>
+                    {
+                        //var l = x.TotalXp - x.ClubXp;
+                        var l = new LevelStats(x.TotalXp).Level;
+                        if (club.OwnerId == x.Id)
+                            return int.MaxValue;
+                        else if (x.IsClubAdmin)
+                            return int.MaxValue / 2 + l;
+                        else
+                            return l;
+                    });
+
+                    var embed = new EmbedBuilder()
+                        .WithTitle(GetText("club_top_investers"))
+                        .WithFooter(GetText("page", curPage + 1))
+                        .WithOkColor()
+                        .AddField(GetText("members"), string.Join("\n", users
+                            .Skip(curPage * 10)
+                            .Take(10)
+                            .Select(x =>
+                            {
+                                var sum = Convert.ToInt32(_service.GetAmountByUser(x.UserId, club.Name)) * -1;
+                                var sumStr = Format.Bold($" - {sum}:cherry_blossom:");
+                                if (club.OwnerId == x.Id)
+                                    return x.ToString() + "🌟" + sumStr;
+                                else if (x.IsClubAdmin)
+                                    return x.ToString() + "⭐" + sumStr;
+                                return x.ToString() + sumStr;
+                            })), false);
+                    return embed;
+                }, club.Users.Count, 10, addPaginatedFooter: false);
+
+
             }
         }
     }

@@ -391,6 +391,14 @@ namespace NadekoBot.Modules.Xp.Services
             }
         }
 
+        public string GetAmountByUser(ulong userId, string clubName)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.CurrencyTransactions.GetInvestedAmount(userId, clubName);
+            }
+        }
+
         public string GetStorageProgress(int amount, int maxAmount)
         {
             double percent = (double)amount / (double)maxAmount;

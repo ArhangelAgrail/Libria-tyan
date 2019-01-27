@@ -1,6 +1,8 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 using NadekoBot.Core.Modules.Gambling.Common;
 using NadekoBot.Core.Services;
+using NadekoBot.Core.Services.Database.Models;
 using NadekoBot.Modules.Gambling.Common.Connect4;
 using NadekoBot.Modules.Gambling.Common.WheelOfFortune;
 using Newtonsoft.Json;
@@ -9,6 +11,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using NadekoBot.Modules.Xp.Common;
 
 namespace NadekoBot.Modules.Gambling.Services
 {
@@ -141,6 +144,59 @@ namespace NadekoBot.Modules.Gambling.Services
         public Task<WheelOfFortuneGame.Result> WheelOfFortuneSpinAsync(ulong userId, long bet)
         {
             return new WheelOfFortuneGame(userId, bet, _cs).SpinAsync();
+        }
+
+        public async Task GiveReputation(IUser target, IUser user)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var du = uow.DiscordUsers.GetOrCreate(user);
+
+                var w = uow.Waifus.ByWaifuUserId(target.Id);
+                var thisUser = uow.DiscordUsers.GetOrCreate(target);
+
+                if (w == null)
+                {
+                    uow.Waifus.Add(new WaifuInfo()
+                    {
+                        Waifu = thisUser,
+                        Price = 1,
+                        Claimer = null,
+                        Immune = false,
+                        Reputation = 1
+                    });
+
+                    /*uow.RepLog.Add(new RepLog()
+                    {
+                        UserId = thisUser.UserId,
+                        FromId = user.Id
+                    });*/
+                }
+                else
+                {
+                    int rep = w.Reputation;
+                    rep += 1;
+                    w.Reputation = rep;
+
+                    /*uow.RepLog.Add(new RepLog()
+                    {
+                        UserId = thisUser.UserId,
+                        FromId = user.Id
+                    });*/
+                }
+                await uow.CompleteAsync();
+            }
+        }
+
+        public int GetUserLevel(IUser user)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var du = uow.DiscordUsers.GetOrCreate(user);
+                var lvl = new LevelStats(du.TotalXp).Level;
+                return lvl;
+            }
+            
         }
     }
 }

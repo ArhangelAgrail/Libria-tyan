@@ -678,7 +678,7 @@ namespace NadekoBot.Modules.Xp.Services
 
                 if (_template.Club.Name.Show)
                 {
-                    var clubName = stats.User.Club?.ToString() ?? "-";
+                    var clubName = stats.User.Club.Name?.ToString() ?? "-";
 
                     var clubFont = _fonts.NotoSans
                         .CreateFont(clubName.Length <= 8
