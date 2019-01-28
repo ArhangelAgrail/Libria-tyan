@@ -3453,5 +3453,12 @@
     "usage": [
       "{0}investclub 1000 or {0}clubdonate all or {0}investclub half"
     ]
+  },
+  "clubinvestlb": {
+    "cmd": "clubinvestlb clubinlb",
+    "desc": "Shows donation statistics on club storage.",
+    "usage": [
+      "{0}clubinvestlb"
+    ]
   }
 }

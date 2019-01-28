@@ -121,8 +121,7 @@ namespace NadekoBot.Modules.Xp
                 var users = club.Users
                     .OrderByDescending(x =>
                     {
-                        //var l = x.TotalXp - x.ClubXp;
-                        var l = new LevelStats(x.TotalXp).Level;
+                        var l = x.TotalXp - x.ClubXp;
                         if (club.OwnerId == x.Id)
                             return int.MaxValue;
                         else if (x.IsClubAdmin)
@@ -152,8 +151,7 @@ namespace NadekoBot.Modules.Xp
                             .Select(x =>
                             {
                                 var l = new LevelStats(x.TotalXp);
-                                var lvlStr = Format.Bold($" ⟪{l.Level}⟫");
-                                //var lvlStr = Format.Bold($" ⟪{x.TotalXp - x.ClubXp} xp⟫");
+                                var lvlStr = Format.Bold($" ⟪{x.TotalXp - x.ClubXp} xp⟫");
                                 if (club.OwnerId == x.Id)
                                     return x.ToString() + "🌟" + lvlStr;
                                 else if (x.IsClubAdmin)
@@ -576,8 +574,7 @@ namespace NadekoBot.Modules.Xp
                     var users = club.Users
                     .OrderByDescending(x =>
                     {
-                        //var l = x.TotalXp - x.ClubXp;
-                        var l = new LevelStats(x.TotalXp).Level;
+                        var l = x.TotalXp - x.ClubXp;
                         if (club.OwnerId == x.Id)
                             return int.MaxValue;
                         else if (x.IsClubAdmin)
