@@ -589,7 +589,7 @@ namespace NadekoBot.Modules.Xp
                              return x.ToString() + sumStr;
                          }));
 
-                    var result = list.OrderByDescending(x => x.Split().Last().Split(":").First());
+                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split().Last().Split(":").First()));
 
                     var embed = new EmbedBuilder()
                         .WithTitle(GetText("club_top_investers"))

@@ -3455,7 +3455,7 @@
     ]
   },
   "clubinvestlb": {
-    "cmd": "clubinvestlb clubinlb",
+    "cmd": "clubinvestlb clubinlb clubin",
     "desc": "Shows donation statistics on club storage.",
     "usage": [
       "{0}clubinvestlb"

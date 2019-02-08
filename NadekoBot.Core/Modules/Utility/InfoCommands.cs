@@ -103,21 +103,26 @@ namespace NadekoBot.Modules.Utility
                 if (user == null)
                     return;
 
-                var embed = new EmbedBuilder()
-                    .AddField(fb => fb.WithName(GetText("name")).WithValue($"**{user.Username}**#{user.Discriminator}").WithIsInline(true));
+                var embed = new EmbedBuilder();
+                var nick = "";
                 if (!string.IsNullOrWhiteSpace(user.Nickname))
                 {
-                    embed.AddField(fb => fb.WithName(GetText("nickname")).WithValue(user.Nickname).WithIsInline(true));
+                    nick = user.Nickname;
                 }
-                embed.AddField(fb => fb.WithName(GetText("id")).WithValue(user.Id.ToString()).WithIsInline(true))
+                embed.WithTitle($"{nick} ({user.Username}#{user.Discriminator})")
                     .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"} ({time:dd} {GetText("days")})").WithIsInline(true))
                     .AddField(fb => fb.WithName(GetText("joined_discord")).WithValue($"{user.CreatedAt:dd.MM.yyyy HH:mm}").WithIsInline(true))
-                    .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{string.Join("\n", user.GetRoles().Take(10).Where(r => r.Id != r.Guild.EveryoneRole.Id).Select(r => r.Name)).SanitizeMentions()}").WithIsInline(true))
+                    .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{string.Join("\n", user.GetRoles().Take(10).Where(r => r.Id != r.Guild.EveryoneRole.Id).Select(r => { var id = r.Id; return $"<@&{id}>"; })).SanitizeMentions()}").WithIsInline(true))
+                    .WithFooter(user.Id.ToString(), "http://www.picshare.ru/uploads/190208/hngWt9KCQ8.png")
                     .WithColor(NadekoBot.OkColor);
 
                 var av = user.RealAvatarUrl();
                 if (av != null && av.IsAbsoluteUri)
-                    embed.WithThumbnailUrl(av.ToString());
+                {
+                    embed.WithUrl(av.ToString())
+                         .WithThumbnailUrl(av.ToString());
+                }   
+                
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
             }
 
