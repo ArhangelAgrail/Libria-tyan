@@ -576,9 +576,7 @@ namespace NadekoBot.Modules.Xp
 
                     List<string> list = new List<string>();
 
-                    list.AddRange(users.Skip(curPage * 10)
-                         .Take(10)
-                         .Select(x =>
+                    list.AddRange(users.Select(x =>
                          {
                              var sum = Convert.ToInt32(_service.GetAmountByUser(x.UserId, club.Name)) * -1;
                              var sumStr = Format.Bold($" - {sum}:cherry_blossom:");
@@ -595,7 +593,7 @@ namespace NadekoBot.Modules.Xp
                         .WithTitle(GetText("club_top_investers"))
                         .WithFooter(GetText("page", curPage + 1))
                         .WithOkColor()
-                        .AddField(GetText("members"), string.Join("\n", result), false);
+                        .AddField(GetText("members"), string.Join("\n", result.Skip(curPage*10).Take(10)), false);
                     return embed;
                 }, club.Users.Count, 10, addPaginatedFooter: false);
 
