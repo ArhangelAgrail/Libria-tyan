@@ -9,6 +9,7 @@ using NadekoBot.Modules.Xp.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace NadekoBot.Modules.Xp
 {
@@ -571,35 +572,30 @@ namespace NadekoBot.Modules.Xp
 
                 return Context.SendPaginatedConfirmAsync(page, (curPage) =>
                 {
-                    var users = club.Users
-                    .OrderByDescending(x =>
-                    {
-                        var l = x.TotalXp - x.ClubXp;
-                        if (club.OwnerId == x.Id)
-                            return int.MaxValue;
-                        else if (x.IsClubAdmin)
-                            return int.MaxValue / 2 + l;
-                        else
-                            return l;
-                    });
+                    var users = club.Users;
+
+                    List<string> list = new List<string>();
+
+                    list.AddRange(users.Skip(curPage * 10)
+                         .Take(10)
+                         .Select(x =>
+                         {
+                             var sum = Convert.ToInt32(_service.GetAmountByUser(x.UserId, club.Name)) * -1;
+                             var sumStr = Format.Bold($" - {sum}:cherry_blossom:");
+                             if (club.OwnerId == x.Id)
+                                 sumStr = " 🌟" + sumStr;
+                             else if (x.IsClubAdmin)
+                                 sumStr = " ⭐" + sumStr;
+                             return x.ToString() + sumStr;
+                         }));
+
+                    var result = list.OrderByDescending(x => x.Split().Last().Split(":").First());
 
                     var embed = new EmbedBuilder()
                         .WithTitle(GetText("club_top_investers"))
                         .WithFooter(GetText("page", curPage + 1))
                         .WithOkColor()
-                        .AddField(GetText("members"), string.Join("\n", users
-                            .Skip(curPage * 10)
-                            .Take(10)
-                            .Select(x =>
-                            {
-                                var sum = Convert.ToInt32(_service.GetAmountByUser(x.UserId, club.Name)) * -1;
-                                var sumStr = Format.Bold($" - {sum}:cherry_blossom:");
-                                if (club.OwnerId == x.Id)
-                                    return x.ToString() + "🌟" + sumStr;
-                                else if (x.IsClubAdmin)
-                                    return x.ToString() + "⭐" + sumStr;
-                                return x.ToString() + sumStr;
-                            })), false);
+                        .AddField(GetText("members"), string.Join("\n", result), false);
                     return embed;
                 }, club.Users.Count, 10, addPaginatedFooter: false);
 

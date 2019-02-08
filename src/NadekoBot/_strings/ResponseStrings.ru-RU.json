@@ -211,7 +211,7 @@
   "gambling_no_club": "Вы не состоите в клубе",
   "gambling_club_invested": "Вы перевели {0} клубу {1}",
   "gambling_no_more_cards": "В колоде закончились карты.",
-  "gambling_raffled_user": "Победитель лотереи",
+  "gambling_raffled_user": "Победитель лотереи {0}",
   "gambling_raffled_result": "**<@{0}>** получает **{1}** :cherry_blossom:",
   "gambling_roll": "Вам выпало {0}.",
   "gambling_slot_bet": "Ставка",

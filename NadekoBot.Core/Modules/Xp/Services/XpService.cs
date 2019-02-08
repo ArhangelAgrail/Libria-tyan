@@ -674,6 +674,7 @@ namespace NadekoBot.Modules.Xp.Services
                     });
                 }
 
+                var pen = new Pen<Rgba32>(Rgba32.Black, 1);
                 //club name
 
                 if (_template.Club.Name.Show)
@@ -687,12 +688,13 @@ namespace NadekoBot.Modules.Xp.Services
                             : _template.Club.Name.FontSize - (clubName.Length / 2), FontStyle.Bold);
 
                     img.Mutate(x => x.DrawText(clubName, clubFont,
-                        _template.Club.Name.Color,
+                        Brushes.Solid(_template.Club.Name.Color),
+                        pen,
                         new PointF(_template.Club.Name.Pos.X - clubName.Length * 10, _template.Club.Name.Pos.Y)));
                 }
 
 
-                var pen = new Pen<Rgba32>(Rgba32.Black, 1);
+                
 
                 var global = stats.Global;
                 var guild = stats.Guild;
