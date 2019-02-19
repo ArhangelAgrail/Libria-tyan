@@ -48,7 +48,7 @@ namespace NadekoBot.Modules.Administration.Services
                 GuildId = guildId,
                 Type = "Warn",
                 Reason = reason,
-                Moderator = modName,
+                Moderator = mod.Id,
             };
 
             int warnings = 1;
@@ -140,7 +140,7 @@ namespace NadekoBot.Modules.Administration.Services
             }
         }
 
-        public ModLog[] ModeratorStats(ulong gid, string moderator)
+        public ModLog[] ModeratorStats(ulong gid, ulong moderator)
         {
             using (var uow = _db.UnitOfWork)
             {

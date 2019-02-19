@@ -327,7 +327,7 @@ namespace NadekoBot.Modules.Administration
                     GuildId = Context.Guild.Id,
                     Type = "Ban",
                     Reason = msg,
-                    Moderator = Context.User.ToString(),
+                    Moderator = Context.User.Id,
                 };
 
                 await _mute.TimedBan(user, time.Time, Context.User.ToString() + " | " + msg).ConfigureAwait(false);
@@ -392,7 +392,7 @@ namespace NadekoBot.Modules.Administration
                     GuildId = Context.Guild.Id,
                     Type = "Ban",
                     Reason = msg,
-                    Moderator = Context.User.ToString(),
+                    Moderator = Context.User.Id,
                 };
 
                 await Context.Guild.AddBanAsync(user, 7, Context.User.ToString() + " | " + msg).ConfigureAwait(false);
@@ -535,7 +535,7 @@ namespace NadekoBot.Modules.Administration
                     GuildId = Context.Guild.Id,
                     Type = "Kick",
                     Reason = msg,
-                    Moderator = Context.User.ToString(),
+                    Moderator = Context.User.Id,
                 };
 
                 using (var uow = _db.UnitOfWork)
@@ -657,7 +657,7 @@ namespace NadekoBot.Modules.Administration
                         var value = "**" + GetText(w.Type) + ":** " + "[" + w.Reason + "]\nДата: " + w.DateAdded.Value.ToString("dd.MM.yyy");
 
                         embed.AddField(x => x
-                            .WithName($"#`{i}` Модератор: " + w.Moderator)
+                            .WithName($"#`{i}` Модератор: {(Context.Guild as SocketGuild)?.GetUser(w.Moderator)?.ToString() ?? w.Moderator.ToString()}")
                             .WithValue(value));
                     }
                 }
@@ -669,8 +669,11 @@ namespace NadekoBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             [RequireUserPermission(GuildPermission.BanMembers)]
             [Priority(0)]
-            public async Task ModStats([Remainder] IRole role = null)
+            public async Task ModStats(int page = 1, [Remainder] IRole role = null)
             {
+                if (page < 1)
+                    return;
+
                 role = role ?? Context.Guild.EveryoneRole;
 
                 var members = (await role.GetMembersAsync().ConfigureAwait(false));
@@ -679,24 +682,24 @@ namespace NadekoBot.Modules.Administration
                 {
                     return;
                 }
+                membersArray = membersArray.Skip(page - 1 * 7).Take(7).ToArray();
 
                 var embed = new EmbedBuilder().WithTitle(GetText("modstats"))
-                    .WithOkColor();
+                    .WithOkColor()
+                    .WithFooter(GetText("page", page));
 
                 foreach (var moders in membersArray)
                 {
-                    var stats = _service.ModeratorStats(Context.Guild.Id, moders.ToString());
+                    var stats = _service.ModeratorStats(Context.Guild.Id, moders.Id);
                     if (stats.Length > 0)
                     {
-                        embed.AddField(GetText("moderator"), moders.ToString(), true)
+                        embed.AddField(GetText("moderator"), moders.ToString().TrimTo(20), true)
                         .AddField(GetText("full"), $"**{stats.Count(x => x.Type == "Warn")}** - Warn\n**{stats.Count(x => x.Type == "Mute")}** - Mute\n**{stats.Count(x => x.Type == "Ban")}** - Ban\n", true);
 
                         var last = stats.Where(x => x.DateAdded > DateTime.UtcNow.AddDays(-7));
                         embed.AddField(GetText("last"), $"**{last.Count(x => x.Type == "Warn")}** - Warn\n**{last.Count(x => x.Type == "Mute")}** - Mute\n**{last.Count(x => x.Type == "Ban")}** - Ban\n", true);
                     }
                 }
-                    
-
 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
             }

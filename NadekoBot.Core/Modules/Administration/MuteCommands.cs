@@ -87,7 +87,7 @@ namespace NadekoBot.Modules.Administration
                     GuildId = Context.Guild.Id,
                     Type = "Mute",
                     Reason = reason,
-                    Moderator = Context.User.ToString(),
+                    Moderator = Context.User.Id,
                 };
 
                 try
