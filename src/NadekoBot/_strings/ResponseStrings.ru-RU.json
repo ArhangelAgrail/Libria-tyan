@@ -674,7 +674,7 @@
   "administration_warnings_none": "На этой странице нет предупреждений.",
   "administration_warnlog_for": "Регистрация предупреждений для пользователя {0}",
   "administration_warnpl_none": "Наказания не выставлены.",
-  "administration_warn_cleared_by": "очищен пользователем {0}",
+  "administration_warn_cleared_by": "очистил {0}",
   "administration_warn_punish_list": "Список наказаний для предупреждений",
   "administration_warn_punish_rem": "Наказание больше не будет применено после {0} предупреждений.",
   "administration_warn_punish_set": "Для пользователей с {1} предупреждениями будет применено наказание {0}.",

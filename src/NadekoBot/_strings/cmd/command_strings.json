@@ -629,10 +629,10 @@
     ]
   },
   "userinfo": {
-    "Cmd": "userinfo uinfo",
+    "Cmd": "userinfo uinfo user",
     "Desc": "Shows info about the user. If no user is supplied, it defaults a user running the command.",
     "Usage": [
-      "{0}uinfo @SomeUser"
+      "{0}uinfo @SomeUser or {0}user UserName#0000"
     ]
   },
   "whosplaying": {
@@ -2457,10 +2457,10 @@
     ]
   },
   "waifuinfo": {
-    "Cmd": "waifuinfo waifustats",
+    "Cmd": "waifuinfo waifustats waifu",
     "Desc": "Shows waifu stats for a target person. Defaults to you if no user is provided.",
     "Usage": [
-      "{0}waifuinfo @MyCrush",
+      "{0}waifuinfo @MyCrush or {0}waifu UserName#000",
       "{0}waifuinfo"
     ]
   },
@@ -2998,10 +2998,10 @@
     ]
   },
   "clubinformation": {
-    "Cmd": "clubinfo",
+    "Cmd": "clubinfo club",
     "Desc": "Shows information about the club.",
     "Usage": [
-      "{0}clubinfo b1nzy's friends#123"
+      "{0}clubinfo b1nzy's friends#123 or {0}club ClubName"
     ]
   },
   "clubapply": {

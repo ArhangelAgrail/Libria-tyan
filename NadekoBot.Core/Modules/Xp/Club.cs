@@ -579,21 +579,17 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                          {
                              var sum = Convert.ToInt32(_service.GetAmountByUser(x.UserId, club.Name)) * -1;
-                             var sumStr = Format.Bold($" - {sum}:cherry_blossom:");
-                             if (club.OwnerId == x.Id)
-                                 sumStr = " 🌟" + sumStr;
-                             else if (x.IsClubAdmin)
-                                 sumStr = " ⭐" + sumStr;
-                             return x.ToString() + sumStr;
+                             var sumStr = $"{sum}:cherry_blossom: - {x.ToString()}";
+                             return sumStr;
                          }));
 
-                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split().Last().Split(":").First()));
+                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split(":").First()));
 
                     var embed = new EmbedBuilder()
                         .WithTitle(GetText("club_top_investers"))
                         .WithFooter(GetText("page", curPage + 1))
                         .WithOkColor()
-                        .AddField(GetText("members"), string.Join("\n", result.Skip(curPage*10).Take(10)), false);
+                        .AddField(GetText("members"), Format.Bold(string.Join("\n", result.Skip(curPage*10).Take(10))), false);
                     return embed;
                 }, club.Users.Count, 10, addPaginatedFooter: false);
 
