@@ -664,6 +664,42 @@ namespace NadekoBot.Modules.Administration
 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
             }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [RequireContext(ContextType.Guild)]
+            [RequireUserPermission(GuildPermission.BanMembers)]
+            [Priority(0)]
+            public async Task ModStats([Remainder] IRole role = null)
+            {
+                role = role ?? Context.Guild.EveryoneRole;
+
+                var members = (await role.GetMembersAsync().ConfigureAwait(false));
+                var membersArray = members as IUser[] ?? members.ToArray();
+                if (membersArray.Length == 0)
+                {
+                    return;
+                }
+
+                var embed = new EmbedBuilder().WithTitle(GetText("modstats"))
+                    .WithOkColor();
+
+                foreach (var moders in membersArray)
+                {
+                    var stats = _service.ModeratorStats(Context.Guild.Id, moders.ToString());
+                    if (stats.Length > 0)
+                    {
+                        embed.AddField(GetText("moderator"), moders.ToString(), true)
+                        .AddField(GetText("full"), $"**{stats.Count(x => x.Type == "Warn")}** - Warn\n**{stats.Count(x => x.Type == "Mute")}** - Mute\n**{stats.Count(x => x.Type == "Ban")}** - Ban\n", true);
+
+                        var last = stats.Where(x => x.DateAdded > DateTime.UtcNow.AddDays(-7));
+                        embed.AddField(GetText("last"), $"**{last.Count(x => x.Type == "Warn")}** - Warn\n**{last.Count(x => x.Type == "Mute")}** - Mute\n**{last.Count(x => x.Type == "Ban")}** - Ban\n", true);
+                    }
+                }
+                    
+
+
+                await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+            }
         }
     }
 }

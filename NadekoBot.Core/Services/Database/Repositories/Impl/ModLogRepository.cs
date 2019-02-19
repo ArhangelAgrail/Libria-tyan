@@ -19,5 +19,13 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
 
             return query.ToArray();
         }
+
+        public ModLog[] ByDateTime(ulong guildId, string moderator)
+        {
+            var query = _set.Where(x => x.GuildId == guildId && x.Moderator == moderator)
+                .OrderByDescending(x => x.DateAdded);
+
+            return query.ToArray();
+        }
     }
 }

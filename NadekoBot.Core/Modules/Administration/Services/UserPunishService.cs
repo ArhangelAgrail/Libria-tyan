@@ -140,6 +140,14 @@ namespace NadekoBot.Modules.Administration.Services
             }
         }
 
+        public ModLog[] ModeratorStats(ulong gid, string moderator)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.ModLog.ByDateTime(gid, moderator);
+            }
+        }
+
         public async Task<bool> WarnClearAsync(ulong guildId, ulong userId, int index, string moderator)
         {
             bool toReturn = true;
