@@ -200,23 +200,26 @@ namespace NadekoBot.Modules.Gambling
             {
                 return;
             }
-            var usr = membersArray[new NadekoRandom().Next(0, membersArray.Length)];
+            var usr = membersArray[0];
+            reroll:
+                usr = membersArray[new NadekoRandom().Next(0, membersArray.Length)];
 
             var user = usr as SocketGuildUser;
-            var users = user as IGuildUser;
+            if (user.Roles.Count == 1) goto reroll;
+
             var amount = 0;
-            var awardRole1 = users.Guild.Roles.FirstOrDefault(x => x.Id == 461111950458224640);
-            var awardRole2 = users.Guild.Roles.FirstOrDefault(x => x.Id == 405341253807374349);
-            var awardRole3 = users.Guild.Roles.FirstOrDefault(x => x.Id == 405341261277560842);
-            var awardRole4 = users.Guild.Roles.FirstOrDefault(x => x.Id == 475305705230958598);
-            var awardRole5 = users.Guild.Roles.FirstOrDefault(x => x.Id == 425627158581346314);
-            var awardRole6 = users.Guild.Roles.FirstOrDefault(x => x.Id == 475306009011683359);
-            var awardRole7 = users.Guild.Roles.FirstOrDefault(x => x.Id == 405340766240636928);
-            var awardRole8 = users.Guild.Roles.FirstOrDefault(x => x.Id == 475306363673772043);
-            var awardRole9 = users.Guild.Roles.FirstOrDefault(x => x.Id == 405338590290378763);
-            var awardRole10 = users.Guild.Roles.FirstOrDefault(x => x.Id == 425657999105982464);
-            var awardRole11 = users.Guild.Roles.FirstOrDefault(x => x.Id == 408903151568158740);
-            var awardRole12 = users.Guild.Roles.FirstOrDefault(x => x.Id == 408902786294480897);
+            var awardRole1 = user.Guild.Roles.FirstOrDefault(x => x.Id == 461111950458224640);
+            var awardRole2 = user.Guild.Roles.FirstOrDefault(x => x.Id == 405341253807374349);
+            var awardRole3 = user.Guild.Roles.FirstOrDefault(x => x.Id == 405341261277560842);
+            var awardRole4 = user.Guild.Roles.FirstOrDefault(x => x.Id == 475305705230958598);
+            var awardRole5 = user.Guild.Roles.FirstOrDefault(x => x.Id == 425627158581346314);
+            var awardRole6 = user.Guild.Roles.FirstOrDefault(x => x.Id == 475306009011683359);
+            var awardRole7 = user.Guild.Roles.FirstOrDefault(x => x.Id == 405340766240636928);
+            var awardRole8 = user.Guild.Roles.FirstOrDefault(x => x.Id == 475306363673772043);
+            var awardRole9 = user.Guild.Roles.FirstOrDefault(x => x.Id == 405338590290378763);
+            var awardRole10 = user.Guild.Roles.FirstOrDefault(x => x.Id == 425657999105982464);
+            var awardRole11 = user.Guild.Roles.FirstOrDefault(x => x.Id == 408903151568158740);
+            var awardRole12 = user.Guild.Roles.FirstOrDefault(x => x.Id == 408902786294480897);
 
             if (user.Roles.Contains(awardRole1))
                 amount = 500;
@@ -256,11 +259,9 @@ namespace NadekoBot.Modules.Gambling
             else
                 amount = 500;
 
-            await _cs.AddAsync(usr.Id,
-                $"Awarded by raffle. ({Context.User.Username}/{Context.User.Id})",
-                amount,
-                gamble: (Context.Client.CurrentUser.Id != usr.Id)).ConfigureAwait(false);
-            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user", usr), $"{GetText("raffled_result", usr.Id, amount)}", footer: $"{usr.Id}").ConfigureAwait(false);
+            await _cs.AddAsync(usr.Id, $"Awarded by raffle. ({Context.User.Username}/{Context.User.Id})", amount, gamble: true);
+            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user", usr), 
+                $"{GetText("raffled_result", usr.Id, amount)}", footer: $"{usr.Id}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
