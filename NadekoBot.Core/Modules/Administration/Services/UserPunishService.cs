@@ -144,7 +144,23 @@ namespace NadekoBot.Modules.Administration.Services
         {
             using (var uow = _db.UnitOfWork)
             {
-                return uow.ModLog.ByDateTime(gid, moderator);
+                return uow.ModLog.ByModerator(gid, moderator);
+            }
+        }
+
+        public IGrouping<ulong, ModLog>[] AllStats(ulong gid)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.ModLog.ByGuild(gid).GroupBy(x => x.Moderator).ToArray();
+            }
+        }
+
+        public string GetUserById(ulong id)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.DiscordUsers.GetUsernameByUserId(id);
             }
         }
 

@@ -7,6 +7,7 @@ namespace NadekoBot.Core.Services.Database.Repositories
     public interface IModLogRepository : IRepository<ModLog>
     {
         ModLog[] ForId(ulong guildId, ulong userId);
-        ModLog[] ByDateTime(ulong guildId, ulong moderator);
+        ModLog[] ByModerator(ulong guildId, ulong moderator);
+        ModLog[] ByGuild(ulong guildId);
     }
 }

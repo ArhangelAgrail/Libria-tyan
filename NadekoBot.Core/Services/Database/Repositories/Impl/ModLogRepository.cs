@@ -20,10 +20,17 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
             return query.ToArray();
         }
 
-        public ModLog[] ByDateTime(ulong guildId, ulong moderator)
+        public ModLog[] ByModerator(ulong guildId, ulong moderator)
         {
-            var query = _set.Where(x => x.GuildId == guildId && x.Moderator == moderator)
-                .OrderByDescending(x => x.DateAdded);
+            var query = _set.Where(x => x.GuildId == guildId && x.Moderator == moderator);
+
+            return query.ToArray();
+        }
+
+        
+        public ModLog[] ByGuild(ulong guildId)
+        {
+            var query = _set.Where(x => x.GuildId == guildId);
 
             return query.ToArray();
         }

@@ -13,6 +13,11 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
         {
         }
 
+        public string GetUsernameByUserId(ulong userId)
+        {
+            return _set.FirstOrDefault(x => x.UserId == userId)?.Username ?? "invalid-user";
+        }
+
         public void EnsureCreated(ulong userId, string username, string discrim, string avatarId)
         {
             _context.Database.ExecuteSqlCommand($@"

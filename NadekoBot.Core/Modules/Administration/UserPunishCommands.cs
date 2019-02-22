@@ -367,7 +367,7 @@ namespace NadekoBot.Modules.Administration
                     await ReplyErrorLocalized("hierarchy").ConfigureAwait(false);
                     return;
                 }
-                
+
                 if (!string.IsNullOrWhiteSpace(msg))
                 {
                     try
@@ -669,36 +669,52 @@ namespace NadekoBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             [RequireUserPermission(GuildPermission.BanMembers)]
             [Priority(0)]
-            public async Task ModStats(int page = 1, [Remainder] IRole role = null)
+            public async Task ModStats([Remainder] IUser user)
+            {
+                var embed = new EmbedBuilder().WithTitle(GetText("modstats"))
+                    .WithOkColor();
+
+                var stats = _service.ModeratorStats(Context.Guild.Id, user.Id);
+                if (stats.Length > 0)
+                {
+                    embed.AddField(GetText("moderator"), $"__**{user.ToString().TrimTo(20)}**__", true)
+                    .AddField(GetText("full"), $"**{stats.Count(x => x.Type == "Warn")}** - Warn\n**{stats.Count(x => x.Type == "Mute")}** - Mute\n**{stats.Count(x => x.Type == "Ban")}** - Ban\n", true);
+
+                    var last = stats.Where(x => x.DateAdded > DateTime.UtcNow.AddDays(-7));
+                    embed.AddField(GetText("last"), $"**{last.Count(x => x.Type == "Warn")}** - Warn\n**{last.Count(x => x.Type == "Mute")}** - Mute\n**{last.Count(x => x.Type == "Ban")}** - Ban\n", true);
+                }
+                else embed.WithDescription(GetText("user_not_found"));
+
+                await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [RequireContext(ContextType.Guild)]
+            [RequireUserPermission(GuildPermission.BanMembers)]
+            [Priority(1)]
+            public async Task ModStats(int page = 1)
             {
                 if (page < 1)
                     return;
-
-                role = role ?? Context.Guild.EveryoneRole;
-
-                var members = (await role.GetMembersAsync().ConfigureAwait(false));
-                var membersArray = members as IUser[] ?? members.ToArray();
-                if (membersArray.Length == 0)
-                {
-                    return;
-                }
-                membersArray = membersArray.Skip(page - 1 * 7).Take(7).ToArray();
 
                 var embed = new EmbedBuilder().WithTitle(GetText("modstats"))
                     .WithOkColor()
                     .WithFooter(GetText("page", page));
 
-                foreach (var moders in membersArray)
+                var stats = _service.AllStats(Context.Guild.Id);
+                stats = stats.Skip(page - 1 * 7).Take(7).ToArray();
+
+                foreach (var moders in stats)
                 {
-                    var stats = _service.ModeratorStats(Context.Guild.Id, moders.Id);
                     if (stats.Length > 0)
                     {
-                        embed.AddField(GetText("moderator"), moders.ToString().TrimTo(20), true)
-                        .AddField(GetText("full"), $"**{stats.Count(x => x.Type == "Warn")}** - Warn\n**{stats.Count(x => x.Type == "Mute")}** - Mute\n**{stats.Count(x => x.Type == "Ban")}** - Ban\n", true);
+                        embed.AddField(GetText("moderator"), $"__**```{_service.GetUserById(moders.Key).TrimTo(20)}```**__", true)
+                        .AddField(GetText("full"), $"**{moders.Count(x => x.Type == "Warn")}** - Warn\n**{moders.Count(x => x.Type == "Mute")}** - Mute\n**{moders.Count(x => x.Type == "Ban")}** - Ban\n", true);
 
-                        var last = stats.Where(x => x.DateAdded > DateTime.UtcNow.AddDays(-7));
-                        embed.AddField(GetText("last"), $"**{last.Count(x => x.Type == "Warn")}** - Warn\n**{last.Count(x => x.Type == "Mute")}** - Mute\n**{last.Count(x => x.Type == "Ban")}** - Ban\n", true);
+                        var last = moders.Where(x => x.DateAdded > DateTime.UtcNow.AddDays(-7));
+                        embed.AddField(GetText("last"), $"**{moders.Count(x => x.Type == "Warn")}** - Warn\n**{moders.Count(x => x.Type == "Mute")}** - Mute\n**{moders.Count(x => x.Type == "Ban")}** - Ban\n", true);
                     }
+                    else embed.WithDescription(GetText("warnpl_none"));
                 }
 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
