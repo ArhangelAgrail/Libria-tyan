@@ -343,6 +343,25 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
+        public bool Decline(ulong declinerId, DiscordUser usr, out ClubInfo club)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                club = uow.Clubs.GetByOwnerOrAdmin(declinerId);
+                if (club == null)
+                    return false;
+
+                var app = club.Applicants.FirstOrDefault(x => x.UserId == usr.Id);
+                if (app != null)
+                    club.Applicants.Remove(app);
+                else return false;
+
+                uow.Complete();
+            }
+
+            return true;
+        }
+
         public bool UnBan(ulong ownerUserId, string userName, out ClubInfo club)
         {
             using (var uow = _db.UnitOfWork)

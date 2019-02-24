@@ -190,6 +190,9 @@ namespace NadekoBot.Modules.Xp
                             .Take(10)
                             .Select(x => x.ToString()));
 
+                        if (toShow == "")
+                            toShow = GetText("club_bans_null");
+
                         return new EmbedBuilder()
                             .WithTitle(GetText("club_bans_for", club.Name))
                             .WithDescription(toShow)
@@ -221,6 +224,9 @@ namespace NadekoBot.Modules.Xp
                             .Skip(page * 10)
                             .Take(10)
                             .Select(x => x.ToString()));
+
+                        if (toShow == "")
+                            toShow = GetText("club_apps_null");
 
                         return new EmbedBuilder()
                             .WithTitle(GetText("club_apps_for", club.Name))
@@ -374,7 +380,7 @@ namespace NadekoBot.Modules.Xp
             [Priority(0)]
             public async Task ClubBan([Remainder]string userName)
             {
-                var clb = _service.GetClubByMember(Context.User);
+                var clb = _service.GetClubWithBansAndApplications(Context.User.Id);
 
                 if (clb == null)
                 {
@@ -409,6 +415,44 @@ namespace NadekoBot.Modules.Xp
                 }
                 else
                     await ReplyErrorLocalized("club_user_ban_fail");
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [Priority(1)]
+            public Task ClubDecline([Remainder]IUser user)
+                => ClubDecline(user.ToString());
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [Priority(0)]
+            public async Task ClubDecline([Remainder]string userName)
+            {
+                var clb = _service.GetClubWithBansAndApplications(Context.User.Id);
+
+                if (clb == null)
+                {
+                    await ReplyErrorLocalized("club_null");
+                    return;
+                }
+
+                var usr = clb.Applicants.First(x => x.User.ToString().ToUpperInvariant() == userName.ToUpperInvariant())?.User;
+                if (usr == null)
+                {
+                    await ReplyErrorLocalized("club_user_not_found");
+                    return;
+                }
+
+                if (clb.OwnerId == usr.Id || (usr.IsClubAdmin && clb.Owner.UserId != Context.User.Id))
+                {
+                    await ReplyErrorLocalized("club_not_owner");
+                    return;
+                }
+
+                if (_service.Decline(Context.User.Id, usr, out var club))
+                {
+                    await ReplyConfirmLocalized("club_user_declined", Format.Bold(userName), Format.Bold(club.Name));
+                }
+                else
+                    await ReplyErrorLocalized("club_user_decline_fail");
             }
 
             [NadekoCommand, Usage, Description, Aliases]
