@@ -712,7 +712,7 @@ namespace NadekoBot.Modules.Administration
                         .AddField(GetText("full"), $"**{moders.Count(x => x.Type == "Warn")}** - Warn\n**{moders.Count(x => x.Type == "Mute")}** - Mute\n**{moders.Count(x => x.Type == "Ban")}** - Ban\n", true);
 
                         var last = moders.Where(x => x.DateAdded > DateTime.UtcNow.AddDays(-7));
-                        embed.AddField(GetText("last"), $"**{moders.Count(x => x.Type == "Warn")}** - Warn\n**{moders.Count(x => x.Type == "Mute")}** - Mute\n**{moders.Count(x => x.Type == "Ban")}** - Ban\n", true);
+                        embed.AddField(GetText("last"), $"**{last.Count(x => x.Type == "Warn")}** - Warn\n**{last.Count(x => x.Type == "Mute")}** - Mute\n**{last.Count(x => x.Type == "Ban")}** - Ban\n", true);
                     }
                     else embed.WithDescription(GetText("warnpl_none"));
                 }

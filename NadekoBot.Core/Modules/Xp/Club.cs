@@ -279,6 +279,12 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
+                if (clb.Users.Count >= 30)
+                {
+                    await ReplyErrorLocalized("club_limit");
+                    return;
+                }   
+
                 if (_service.AcceptApplication(Context.User.Id, userName, out var discordUser))
                 {
                     if (clb.roleId != 0)
