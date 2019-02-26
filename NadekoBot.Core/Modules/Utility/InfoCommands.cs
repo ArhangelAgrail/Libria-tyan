@@ -120,7 +120,7 @@ namespace NadekoBot.Modules.Utility
                 if (av != null && av.IsAbsoluteUri)
                 {
                     embed.WithUrl(av.ToString())
-                         .WithThumbnailUrl(av.ToString());
+                        .WithThumbnailUrl(av.ToString());
                 }   
                 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);

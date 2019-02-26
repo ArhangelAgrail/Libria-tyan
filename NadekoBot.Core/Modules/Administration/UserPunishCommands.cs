@@ -701,21 +701,19 @@ namespace NadekoBot.Modules.Administration
                     .WithOkColor()
                     .WithFooter(GetText("page", page));
 
-                var stats = _service.AllStats(Context.Guild.Id);
-                stats = stats.Skip(page - 1 * 7).Take(7).ToArray();
+                var stats = _service.AllStats(Context.Guild.Id).Skip((page-1)*7).Take(7);
 
-                foreach (var moders in stats)
-                {
-                    if (stats.Length > 0)
+                if (stats.Count() == 0)
+                    embed.WithDescription(GetText("warnpl_none"));
+                else
+                    foreach (var moders in stats)
                     {
-                        embed.AddField(GetText("moderator"), $"__**```{_service.GetUserById(moders.Key).TrimTo(20)}```**__", true)
-                        .AddField(GetText("full"), $"**{moders.Count(x => x.Type == "Warn")}** - Warn\n**{moders.Count(x => x.Type == "Mute")}** - Mute\n**{moders.Count(x => x.Type == "Ban")}** - Ban\n", true);
+                        embed.AddField(GetText("moderator"), $"__**```{_service.GetUserById(moders.Key).TrimTo(15, true)}```**__", true)
+                            .AddField(GetText("full"), $"**{moders.Count(x => x.Type == "Warn")}** - Warn\n**{moders.Count(x => x.Type == "Mute")}** - Mute\n**{moders.Count(x => x.Type == "Ban")}** - Ban\n", true);
 
                         var last = moders.Where(x => x.DateAdded > DateTime.UtcNow.AddDays(-7));
                         embed.AddField(GetText("last"), $"**{last.Count(x => x.Type == "Warn")}** - Warn\n**{last.Count(x => x.Type == "Mute")}** - Mute\n**{last.Count(x => x.Type == "Ban")}** - Ban\n", true);
                     }
-                    else embed.WithDescription(GetText("warnpl_none"));
-                }
 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
             }
