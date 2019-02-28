@@ -311,8 +311,12 @@ namespace NadekoBot.Modules.Xp.Services
 
                 foreach (var usrs in users)
                 {
-                    var usr = await du.Guild.GetUserAsync(usrs.UserId);
-                    await usr.AddRoleAsync(role).ConfigureAwait(false);
+                    try
+                    {
+                        var usr = await du.Guild.GetUserAsync(usrs.UserId);
+                        await usr.AddRoleAsync(role).ConfigureAwait(false);
+                    }
+                    catch { };
                 }
             }
             return true;
@@ -415,6 +419,19 @@ namespace NadekoBot.Modules.Xp.Services
             using (var uow = _db.UnitOfWork)
             {
                 return uow.CurrencyTransactions.GetInvestedAmount(userId, clubName);
+            }
+        }
+
+        public bool StorageAward(int amount, string clubName)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var club = uow.Clubs.GetByName(clubName);
+
+                club.Currency += amount;
+                uow.Complete();
+
+                return true;
             }
         }
 

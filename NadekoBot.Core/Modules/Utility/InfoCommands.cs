@@ -115,7 +115,7 @@ namespace NadekoBot.Modules.Utility
                     .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{string.Join("\n", user.GetRoles().Take(10).Where(r => r.Id != r.Guild.EveryoneRole.Id).Select(r => { var id = r.Id; return $"<@&{id}>"; })).SanitizeMentions()}").WithIsInline(true))
                     .WithFooter(user.Id.ToString(), "http://www.picshare.ru/uploads/190208/hngWt9KCQ8.png")
                     .WithColor(NadekoBot.OkColor);
-
+                
                 var av = user.RealAvatarUrl();
                 if (av != null && av.IsAbsoluteUri)
                 {
@@ -145,7 +145,7 @@ namespace NadekoBot.Modules.Utility
                     str.AppendLine(GetText("activity_line",
                         ++startCount,
                         Format.Bold(kvp.Key.ToString()),
-                        kvp.Value / _stats.GetUptime().TotalSeconds, kvp.Value));
+                        kvp.Value / _stats.GetUptime().TotalMinutes, kvp.Value));
                 }
 
                 await Context.Channel.EmbedAsync(new EmbedBuilder()

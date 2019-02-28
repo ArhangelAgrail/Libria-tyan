@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace NadekoBot.Modules.Xp
 {
@@ -546,6 +547,20 @@ namespace NadekoBot.Modules.Xp
             }
 
             [NadekoCommand, Usage, Description, Aliases]
+            [OwnerOnly]
+            public async Task ClubStorageAward(int amount, [Remainder]string clubName = null)
+            {
+                if (!_service.GetClubByName(clubName, out ClubInfo club))
+                {
+                    await ReplyErrorLocalized("club_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (_service.StorageAward(amount, clubName))
+                    await ReplyConfirmLocalized("club_storage_awarded", amount, Format.Bold(clubName)).ConfigureAwait(false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
             public Task ClubLeaderboard(int page = 1)
             {
                 if (--page < 0 || page > 100)
@@ -575,7 +590,7 @@ namespace NadekoBot.Modules.Xp
             }
 
             [NadekoCommand, Usage, Description, Aliases]
-            public async Task ClubRoleCreate()
+            public async Task ClubRoleCreate(Rgba32 color = default)
             {
                 var club = _service.GetClubByMember(Context.User);
                 if (club == null)
@@ -602,11 +617,13 @@ namespace NadekoBot.Modules.Xp
                     return;
                 } 
 
-                var role = await Context.Guild.CreateRoleAsync(club.Name + " club").ConfigureAwait(false);
+                var role = await Context.Guild.CreateRoleAsync(club.Name + " club", color: new Color(color.R, color.G, color.B)).ConfigureAwait(false);
 
-                await _service.RoleCreate(Context.User, role);
-                await ReplyConfirmLocalized("club_role_created").ConfigureAwait(false);
+                if (await _service.RoleCreate(Context.User, role))
+                    await ReplyConfirmLocalized("club_role_created").ConfigureAwait(false);
             }
+
+
 
             [NadekoCommand, Usage, Description, Aliases]
             public Task ClubInvestLb(int page = 1)
