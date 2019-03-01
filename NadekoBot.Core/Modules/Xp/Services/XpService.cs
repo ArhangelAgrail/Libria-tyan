@@ -683,9 +683,9 @@ namespace NadekoBot.Modules.Xp.Services
                     if (stats.User.Club != null) clubName = stats.User.Club.Name;
 
                     var clubFont = _fonts.NotoSans
-                        .CreateFont(clubName.Length <= 8
+                        .CreateFont(clubName.Length <= 10
                             ? _template.Club.Name.FontSize
-                            : _template.Club.Name.FontSize - (clubName.Length / 2), FontStyle.Bold);
+                            : _template.Club.Name.FontSize + 2 - (clubName.Length / 2), FontStyle.Bold);
 
                     img.Mutate(x => x.DrawText(clubName, clubFont,
                         Brushes.Solid(_template.Club.Name.Color),

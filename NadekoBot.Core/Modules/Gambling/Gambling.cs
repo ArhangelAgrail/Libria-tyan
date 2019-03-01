@@ -260,6 +260,7 @@ namespace NadekoBot.Modules.Gambling
                 amount = 500;
 
             await _cs.AddAsync(usr.Id, $"Awarded by raffle. ({Context.User.Username}/{Context.User.Id})", amount, gamble: true);
+            await Context.Channel.SendMessageAsync(GetText("raffled_grats", usr.Id));
             await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user", usr), 
                 $"{GetText("raffled_result", usr.Id, amount)}", footer: $"{usr.Id}").ConfigureAwait(false);
         }

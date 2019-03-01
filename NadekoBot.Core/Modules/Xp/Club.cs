@@ -294,10 +294,20 @@ namespace NadekoBot.Modules.Xp
 
                 if (_service.AcceptApplication(Context.User.Id, userName, out var discordUser))
                 {
+                    var du = Context.User as IGuildUser;
+                    var gu = await du.Guild.GetUserAsync(discordUser.UserId);
+
+                    try
+                    {
+                        await (await gu.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithOkColor()
+                                         .WithAuthor(GetText("club_accepted_DM", clb.Name))
+                                         .WithDescription(GetText("club_accepted_DM_desc", clb.Name, Context.User.Username, Context.User.Discriminator, Context.User.Id)))
+                            .ConfigureAwait(false);
+                    }
+                    catch { };
+
                     if (clb.roleId != 0)
                     {
-                        var du = Context.User as IGuildUser;
-                        var gu = await du.Guild.GetUserAsync(discordUser.UserId);
                         var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
                         await gu.AddRoleAsync(role).ConfigureAwait(false);
                     }
@@ -364,7 +374,12 @@ namespace NadekoBot.Modules.Xp
                         var du = Context.User as IGuildUser;
                         var gu = await du.Guild.GetUserAsync(usr.UserId);
                         var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
-                        await gu.RemoveRoleAsync(role).ConfigureAwait(false);
+                        try
+                        {
+                            await gu.RemoveRoleAsync(role).ConfigureAwait(false);
+                        }
+                        catch { };
+                        
                     }
                     await ReplyConfirmLocalized("club_user_kick", Format.Bold(userName), Format.Bold(club.Name));
                 }
@@ -410,7 +425,11 @@ namespace NadekoBot.Modules.Xp
                         var du = Context.User as IGuildUser;
                         var gu = await du.Guild.GetUserAsync(usr.UserId);
                         var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
-                        await gu.RemoveRoleAsync(role).ConfigureAwait(false);
+                        try
+                        {
+                            await gu.RemoveRoleAsync(role).ConfigureAwait(false);
+                        }
+                        catch { };
                     }
                     await ReplyConfirmLocalized("club_user_banned", Format.Bold(userName), Format.Bold(club.Name));
                 }
@@ -501,6 +520,13 @@ namespace NadekoBot.Modules.Xp
             [Priority(1)]
             public async Task ClubDisband()
             {
+                var embed = new EmbedBuilder()
+                       .WithTitle(GetText("club_disband"))
+                       .WithDescription(GetText("club_disband_confirm"));
+
+                if (!await PromptUserConfirmAsync(embed).ConfigureAwait(false))
+                    return;
+
                 if (_service.Disband(Context.User.Id, out ClubInfo club))
                 {
                     if (club.roleId != 0)
@@ -523,6 +549,13 @@ namespace NadekoBot.Modules.Xp
             [Priority(0)]
             public async Task ClubDisband([Remainder]string clubName = null)
             {
+                var embed = new EmbedBuilder()
+                       .WithTitle(GetText("club_disband"))
+                       .WithDescription(GetText("club_disband_confirm"));
+
+                if (!await PromptUserConfirmAsync(embed).ConfigureAwait(false))
+                    return;
+
                 if (!_service.GetClubByName(clubName, out ClubInfo club))
                 {
                     await ReplyErrorLocalized("club_not_exists").ConfigureAwait(false);
@@ -557,7 +590,10 @@ namespace NadekoBot.Modules.Xp
                 }
 
                 if (_service.StorageAward(amount, clubName))
+                {
                     await ReplyConfirmLocalized("club_storage_awarded", amount, Format.Bold(clubName)).ConfigureAwait(false);
+                }
+                    
             }
 
             [NadekoCommand, Usage, Description, Aliases]
