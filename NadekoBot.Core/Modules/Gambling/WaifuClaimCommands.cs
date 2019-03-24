@@ -255,7 +255,7 @@ namespace NadekoBot.Modules.Gambling
                         return embed.WithDescription("-");
                     else
                     {
-                        var i = curPage * 9;
+                        var i = curPage * 10;
                         foreach (var w in users)
                         {
                             embed.AddField(efb => efb.WithName($"#{++i} " + w.Username + "#" + w.Discrim + " - \"" + GetText(_service.GetRepTitle(w.Reputation)) + "\"").WithValue(GetText("reputation") + " ☆ +" + w.Reputation.ToString()).WithIsInline(false));

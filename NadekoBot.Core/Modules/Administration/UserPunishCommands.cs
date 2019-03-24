@@ -48,22 +48,8 @@ namespace NadekoBot.Modules.Administration
                     await ReplyErrorLocalized("hierarchy").ConfigureAwait(false);
                     return;
                 }
-                try
-                {
-                    await (await user.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithErrorColor()
-                                     .WithAuthor(GetText("warned_on", Context.Guild.ToString()))
-                                     .WithThumbnailUrl(imageToSend.ToString())
-                                     .WithFooter("ID: " + user.Id + " → " + $"[{time:dd.MM.yyyy HH:mm:ss}]")
-                                     .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.ToString()))
-                                     .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-")))
-                        .ConfigureAwait(false);
-                }
-                catch
-                {
 
-                }
-
-                PunishmentAction? punishment;
+                WarningPunishment punishment;
                 try
                 {
                     punishment = await _service.Warn(Context.Guild, user.Id, Context.User, reason).ConfigureAwait(false);
@@ -87,19 +73,47 @@ namespace NadekoBot.Modules.Administration
 
                     await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
                     //ReplyConfirmLocalized("user_warned", Format.Bold(user.ToString())).ConfigureAwait(false);
+
+                    try
+                    {
+                        await (await user.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithErrorColor()
+                                     .WithAuthor(GetText("warned_on", Context.Guild.ToString()))
+                                     .WithThumbnailUrl(imageToSend.ToString())
+                                     .WithFooter("ID: " + user.Id + " → " + $"[{time:dd.MM.yyyy HH:mm:ss}]")
+                                     .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.ToString()))
+                                     .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-")))
+                        .ConfigureAwait(false);
+                    }
+                    catch { }
                 }
+
                 else
                 {
                     var embed = new EmbedBuilder().WithErrorColor()
                         .WithFooter("ID: " + user.Id + " → " + $"[{time:dd.MM.yyyy HH:mm:ss}]")
                         .WithThumbnailUrl(imageToSend.ToString())
-                        .WithAuthor(name: user.ToString() + GetText("warn_and_punish") + GetText(punishment.ToString()), iconUrl: user.GetAvatarUrl())
+                        .WithAuthor(name: user.ToString() + GetText("warn_and_punish") + GetText(punishment.Punishment.ToString()), iconUrl: user.GetAvatarUrl())
                         .AddField(efb => efb.WithName(GetText("user")).WithValue(user.Mention).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.Mention).WithIsInline(true))
+                        .AddField(efb => efb.WithName(GetText("p_time")).WithValue(punishment.Time + "m").WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-").WithIsInline(true));
 
                     await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
                     //ReplyConfirmLocalized("user_warned_and_punished", Format.Bold(user.ToString()), Format.Bold(punishment.ToString())).ConfigureAwait(false);
+
+                    try
+                    {
+                        await (await user.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithErrorColor()
+                                     .WithAuthor(GetText("warned_on", Context.Guild.ToString()))
+                                     .WithTitle(GetText("warn_and_punish_DM", GetText(punishment.Punishment.ToString()), punishment.Count))
+                                     .WithThumbnailUrl(imageToSend.ToString())
+                                     .WithFooter("ID: " + user.Id + " → " + $"[{time:dd.MM.yyyy HH:mm:ss}]")
+                                     .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.ToString()).WithIsInline(true))
+                                     .AddField(efb => efb.WithName(GetText("p_time")).WithValue(punishment.Time + "m").WithIsInline(true))
+                                     .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-")))
+                        .ConfigureAwait(false);
+                    }
+                    catch { }
                 }
             }
 

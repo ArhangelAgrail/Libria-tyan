@@ -147,12 +147,13 @@ namespace NadekoBot.Modules.Xp
                         .AddField(GetText("description"), string.IsNullOrWhiteSpace(club.Description) ? "-" : club.Description, false)
                         .AddField(GetText("owner_and_role"), $" ▹<@{club.Owner.UserId}>\n" + (club.roleId != 0 ? $"▹<@&{club.roleId}>" : "У клуба нет роли"), true)
                         .AddField(GetText("storage"), $" **{club.Currency}/{maxAmount}** :cherry_blossom:\n{progress}", true)
-                        .AddField(GetText("members"), string.Join("\n", users
+                        .AddField(GetText("members", club.Users.Count), string.Join("\n", users
                             .Skip(page * 10)
                             .Take(10)
                             .Select(x =>
                             {
                                 var l = new LevelStats(x.TotalXp);
+                                var user = x as IUser;
                                 var lvlStr = Format.Bold($" ⟪{x.TotalXp - x.ClubXp} xp⟫");
                                 if (club.OwnerId == x.Id)
                                     return x.ToString() + "🌟" + lvlStr;

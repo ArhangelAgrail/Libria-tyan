@@ -24,7 +24,7 @@ namespace NadekoBot.Modules.Administration.Services
             _db = db;
         }
 
-        public async Task<PunishmentAction?> Warn(IGuild guild, ulong userId, IUser mod, string reason)
+        public async Task<WarningPunishment> Warn(IGuild guild, ulong userId, IUser mod, string reason)
         {
             var modName = mod.ToString();
 
@@ -110,7 +110,7 @@ namespace NadekoBot.Modules.Administration.Services
                     default:
                         break;
                 }
-                return p.Punishment;
+                return p;
             }
 
             return null;

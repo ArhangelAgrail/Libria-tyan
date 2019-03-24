@@ -104,12 +104,10 @@ namespace NadekoBot.Modules.Utility
                     return;
 
                 var embed = new EmbedBuilder();
-                var nick = "";
                 if (!string.IsNullOrWhiteSpace(user.Nickname))
-                {
-                    nick = user.Nickname;
-                }
-                embed.WithTitle($"{nick} ({user.Username}#{user.Discriminator})")
+                    embed.WithAuthor(user.Nickname);
+
+                embed.WithTitle($"{user.Username}#{user.Discriminator}")
                     .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"} ({time:dd} {GetText("days")})").WithIsInline(true))
                     .AddField(fb => fb.WithName(GetText("joined_discord")).WithValue($"{user.CreatedAt:dd.MM.yyyy HH:mm}").WithIsInline(true))
                     .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{string.Join("\n", user.GetRoles().Take(10).Where(r => r.Id != r.Guild.EveryoneRole.Id).Select(r => { var id = r.Id; return $"<@&{id}>"; })).SanitizeMentions()}").WithIsInline(true))
@@ -144,7 +142,7 @@ namespace NadekoBot.Modules.Utility
                 {
                     str.AppendLine(GetText("activity_line",
                         ++startCount,
-                        Format.Bold(kvp.Key.ToString()),
+                        $"<@{kvp.Key.ToString()}>",
                         kvp.Value / _stats.GetUptime().TotalMinutes, kvp.Value));
                 }
 

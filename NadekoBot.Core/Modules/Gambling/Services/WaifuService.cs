@@ -373,7 +373,7 @@ namespace NadekoBot.Modules.Gambling.Services
         {
             using (var uow = _db.UnitOfWork)
             {
-                return uow.Waifus.GetRepLb(9, page * 9);
+                return uow.Waifus.GetRepLb(10, page * 10);
             }
         }
 
