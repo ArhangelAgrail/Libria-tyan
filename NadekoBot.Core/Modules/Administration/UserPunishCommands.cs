@@ -95,7 +95,7 @@ namespace NadekoBot.Modules.Administration
                         .WithAuthor(name: user.ToString() + GetText("warn_and_punish") + GetText(punishment.Punishment.ToString()), iconUrl: user.GetAvatarUrl())
                         .AddField(efb => efb.WithName(GetText("user")).WithValue(user.Mention).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.Mention).WithIsInline(true))
-                        .AddField(efb => efb.WithName(GetText("p_time")).WithValue(punishment.Time + "m").WithIsInline(true))
+                        .AddField(efb => efb.WithName(GetText("p_time")).WithValue(_service.GetTime(punishment.Time / 60)).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-").WithIsInline(true));
 
                     await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
@@ -109,7 +109,7 @@ namespace NadekoBot.Modules.Administration
                                      .WithThumbnailUrl(imageToSend.ToString())
                                      .WithFooter("ID: " + user.Id + " → " + $"[{time:dd.MM.yyyy HH:mm:ss}]")
                                      .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.ToString()).WithIsInline(true))
-                                     .AddField(efb => efb.WithName(GetText("p_time")).WithValue(punishment.Time + "m").WithIsInline(true))
+                                     .AddField(efb => efb.WithName(GetText("p_time")).WithValue(_service.GetTime(punishment.Time / 60)).WithIsInline(true))
                                      .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-")))
                         .ConfigureAwait(false);
                     }
@@ -301,7 +301,7 @@ namespace NadekoBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             [RequireUserPermission(GuildPermission.BanMembers)]
             [RequireBotPermission(GuildPermission.BanMembers)]
-            [Priority(0)]
+            [Priority(1)]
             public async Task Ban(IGuildUser user, StoopidTime time, [Remainder] string msg = null)
             {
                 var tm = DateTime.UtcNow;
@@ -325,7 +325,7 @@ namespace NadekoBot.Modules.Administration
                                      .WithThumbnailUrl(imageToSend.ToString())
                                      .WithFooter("ID: " + user.Id + " → " + $"[{tm:dd.MM.yyyy HH:mm:ss}]")
                                      .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.ToString()))
-                                     .AddField(efb => efb.WithName(GetText("p_time")).WithValue(time.Time.TotalMinutes.ToString() + "m").WithIsInline(true))
+                                     .AddField(efb => efb.WithName(GetText("p_time")).WithValue(_service.GetTime(time.Time.TotalHours)).WithIsInline(true))
                                      .AddField(efb => efb.WithName(GetText("reason")).WithValue(msg ?? "-")))
                         .ConfigureAwait(false);
                     }
@@ -358,7 +358,7 @@ namespace NadekoBot.Modules.Administration
                         .WithAuthor(name: user.ToString() + GetText("ban"), iconUrl: user.GetAvatarUrl())
                         .AddField(efb => efb.WithName(GetText("user")).WithValue(user.Mention).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.Mention).WithIsInline(true))
-                        .AddField(efb => efb.WithName(GetText("p_time")).WithValue(time.Time.TotalMinutes.ToString() + "m").WithIsInline(true))
+                        .AddField(efb => efb.WithName(GetText("p_time")).WithValue(_service.GetTime(time.Time.TotalHours)).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("reason")).WithValue(msg ?? "-").WithIsInline(true));
 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
@@ -368,7 +368,7 @@ namespace NadekoBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             [RequireUserPermission(GuildPermission.BanMembers)]
             [RequireBotPermission(GuildPermission.BanMembers)]
-            [Priority(1)]
+            [Priority(0)]
             public async Task Ban(IGuildUser user, [Remainder] string msg = null)
             {
                 var tm = DateTime.UtcNow;

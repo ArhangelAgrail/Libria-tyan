@@ -97,7 +97,7 @@ namespace NadekoBot.Modules.Administration
                                      .WithThumbnailUrl(imageToSend.ToString())
                                      .WithFooter("ID: " + user.Id + " → " + $"[{tm:dd.MM.yyyy HH:mm:ss}]")
                                      .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.ToString()))
-                                     .AddField(efb => efb.WithName(GetText("p_time")).WithValue(time.Time.TotalMinutes.ToString() + "m").WithIsInline(true))
+                                     .AddField(efb => efb.WithName(GetText("p_time")).WithValue(_service.GetTime(time.Time)).WithIsInline(true))
                                      .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-")))
                         .ConfigureAwait(false);
                 }
@@ -122,7 +122,7 @@ namespace NadekoBot.Modules.Administration
                         .WithAuthor(name: user.ToString() + GetText("mute"), iconUrl: user.GetAvatarUrl())
                         .AddField(efb => efb.WithName(GetText("user")).WithValue(user.Mention).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.Mention).WithIsInline(true))
-                        .AddField(efb => efb.WithName(GetText("p_time")).WithValue(time.Time.TotalMinutes.ToString() + "m").WithIsInline(true))
+                        .AddField(efb => efb.WithName(GetText("p_time")).WithValue(_service.GetTime(time.Time)).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-").WithIsInline(true));
 
                     await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);

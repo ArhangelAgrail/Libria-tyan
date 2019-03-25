@@ -377,5 +377,33 @@ namespace NadekoBot.Modules.Administration.Services
                 uow.Complete();
             }
         }
+
+        public string GetTime(TimeSpan time)
+        {
+            var t = time.TotalHours;
+            string result = "";
+
+            if (t < 1)
+                result = (t * 60) + " минут";
+            else
+                if (t == 1)
+                result = t + " час";
+            else
+                if (t < 5)
+                result = t + " часа";
+            else
+                if (t < 24)
+                result = t + " часов";
+            else
+                if (t == 24)
+                result = (t / 24) + " день";
+            else
+                if (t < 120)
+                result = (t / 24) + " дня";
+            else
+                result = (t / 24) + " дней";
+
+            return result;
+        }
     }
 }
