@@ -693,7 +693,7 @@ namespace NadekoBot.Modules.Xp
                         .WithTitle(GetText("club_top_investers"))
                         .WithFooter(GetText("page", curPage + 1))
                         .WithOkColor()
-                        .AddField(GetText("members"), Format.Bold(string.Join("\n", result.Skip(curPage*10).Take(10))), false);
+                        .AddField(GetText("members", club.Users.Count), Format.Bold(string.Join("\n", result.Skip(curPage*10).Take(10))), false);
                     return embed;
                 }, club.Users.Count, 10, addPaginatedFooter: false);
 
