@@ -148,7 +148,7 @@ namespace NadekoBot.Modules.Gambling.Services
             using (var img = Image.Load(curImg, out var format))
             {
                 // choose font size based on the image height, so that it's visible
-                var font = _fonts.NotoSans.CreateFont(img.Height / 12, FontStyle.Bold);
+                var font = _fonts.NotoSans.CreateFont(img.Height / 10, FontStyle.Bold);
                 img.Mutate(x =>
                 {
                     // measure the size of the text to be drawing
@@ -160,6 +160,16 @@ namespace NadekoBot.Modules.Gambling.Services
                         new PointF(size.Width + 5, 0),
                         new PointF(size.Width + 5, size.Height + 10),
                         new PointF(0, size.Height + 10));
+
+                    Random random = new Random();
+
+                    x.DrawLines(Brushes.Solid(Rgba32.White), 2, 
+                        new PointF(0, (float)random.NextDouble() * size.Height), 
+                        new PointF(size.Width + 5, (float)random.NextDouble() * size.Height));
+
+                    x.DrawLines(Brushes.Solid(Rgba32.White), 2,
+                        new PointF(0, (float)random.NextDouble() * size.Height),
+                        new PointF(size.Width + 5, (float)random.NextDouble() * size.Height));
 
                     // draw the password over the background
                     x.DrawText(pass,

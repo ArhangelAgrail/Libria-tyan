@@ -85,7 +85,7 @@ namespace NadekoBot.Modules
         public Task<IUserMessage> ReplyConfirmLocalized(string textKey, params object[] replacements)
         {
             var text = GetText(textKey, replacements);
-            return Context.Channel.SendConfirmAsync(Format.Bold(Context.User.ToString()) + " " + text);
+            return Context.Channel.SendConfirmAsync(Format.Bold($"<@{Context.User.Id}>") + " " + text);
         }
 
         public async Task<bool> PromptUserConfirmAsync(EmbedBuilder embed)
