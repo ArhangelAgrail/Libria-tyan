@@ -92,28 +92,28 @@ namespace NadekoBot.Modules.Administration
 
                 try
                 {
-                    await (await user.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithErrorColor()
-                                     .WithAuthor(GetText("muted_on", Context.Guild.ToString()))
-                                     .WithThumbnailUrl(imageToSend.ToString())
-                                     .WithFooter("ID: " + user.Id + " → " + $"[{tm:dd.MM.yyyy HH:mm:ss}]")
-                                     .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.ToString()))
-                                     .AddField(efb => efb.WithName(GetText("p_time")).WithValue(_service.GetTime(time.Time)).WithIsInline(true))
-                                     .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-")))
-                        .ConfigureAwait(false);
-                }
-                catch
-                {
-
-                }
-
-                try
-                {
                     await _service.TimedMute(user, Context.User, time.Time).ConfigureAwait(false);
 
                     using (var uow = _db.UnitOfWork)
                     {
                         uow.ModLog.Add(log);
                         uow.Complete();
+                    }
+
+                    try
+                    {
+                        await (await user.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithErrorColor()
+                                         .WithAuthor(GetText("muted_on", Context.Guild.ToString()))
+                                         .WithThumbnailUrl(imageToSend.ToString())
+                                         .WithFooter("ID: " + user.Id + " → " + $"[{tm:dd.MM.yyyy HH:mm:ss}]")
+                                         .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.ToString()))
+                                         .AddField(efb => efb.WithName(GetText("p_time")).WithValue(_service.GetTime(time.Time)).WithIsInline(true))
+                                         .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-")))
+                            .ConfigureAwait(false);
+                    }
+                    catch
+                    {
+
                     }
 
                     var embed = new EmbedBuilder().WithErrorColor()

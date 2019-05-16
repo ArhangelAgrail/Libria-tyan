@@ -133,7 +133,7 @@ namespace NadekoBot.Modules.Administration.Services
 
                 if (!usr.RoleIds.Contains(muteRole.Id))
                     await usr.AddRoleAsync(muteRole).ConfigureAwait(false);
-                if (usr.Guild.AFKChannelId != null)
+                if (usr.Guild.AFKChannelId != null && usr.VoiceChannel != null)
                     await usr.ModifyAsync(gu => gu.ChannelId = (ulong)usr.Guild.AFKChannelId).ConfigureAwait(false);
 
                 StopTimer(usr.GuildId, usr.Id, TimerType.Mute);
