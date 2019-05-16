@@ -49,7 +49,7 @@ namespace NadekoBot.Modules.Gambling
                 var result = await _service.WheelOfFortuneSpinAsync(Context.User.Id, amount).ConfigureAwait(false);
 
                 await Context.Channel.SendConfirmAsync(
-Format.Bold($@"{Context.User.ToString()} won: {result.Amount + Bc.BotConfig.CurrencySign}
+Format.Bold($@"{Context.User.Mention} won: {result.Amount + Bc.BotConfig.CurrencySign}
 
    『{Wof.Multipliers[1]}』   『{Wof.Multipliers[0]}』   『{Wof.Multipliers[7]}』
 

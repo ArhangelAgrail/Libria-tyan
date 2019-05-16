@@ -270,7 +270,7 @@ namespace NadekoBot.Modules.Gambling
         public async Task Cash([Remainder] IUser user = null)
         {
             user = user ?? Context.User;
-            await ConfirmLocalized("has", Format.Bold(user.ToString()), $"{GetCurrency(user.Id)} {CurrencySign}").ConfigureAwait(false);
+            await ConfirmLocalized("has", user.Mention, $"{GetCurrency(user.Id)} {CurrencySign}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -599,7 +599,7 @@ namespace NadekoBot.Modules.Gambling
             }
 
             var rnd = new NadekoRandom().Next(0, 101);
-            var str = Format.Bold(Context.User.ToString()) + Format.Code(GetText("roll", rnd));
+            var str = Context.User.Mention + Format.Code(GetText("roll", rnd));
             if (rnd < 67)
             {
                 str += GetText("better_luck");

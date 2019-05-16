@@ -12,5 +12,5 @@ namespace NadekoBot.Core.Services.Database.Models
         public DateTime LastLevelUp { get; set; } = DateTime.UtcNow;
     }
 
-    public enum XpNotificationType { None, Dm, Channel }
+    public enum XpNotificationType { None, Dm }
 }

@@ -111,22 +111,25 @@ namespace NadekoBot.Modules.Gambling
                     result = BetFlipGuess.Tails;
                 }
 
-                string str;
+                string str, title;
                 if (guess == result)
                 {
                     var toWin = (long)(amount * Bc.BotConfig.BetflipMultiplier);
-                    str = Format.Bold(Context.User.ToString()) + " " + GetText("flip_guess", toWin + Bc.BotConfig.CurrencySign);
+                    title = GetText("flip_win");
+                    str = Context.User.Mention + ", " + GetText("flip_guess", toWin + Bc.BotConfig.CurrencySign) + "\n" + GetText("flip_dosame");
                     await _cs.AddAsync(Context.User, "Betflip Gamble", toWin, false, gamble: true).ConfigureAwait(false);
                 }
                 else
                 {
-                    str = Context.User.Mention + " " + GetText("better_luck");
+                    title = GetText("flip_lose");
+                    str = Context.User.Mention + ", " + GetText("flip_positive") + "\n" + GetText("better_luck");
                 }
 
                 await Context.Channel.EmbedAsync(new EmbedBuilder()
+                    .WithTitle(title)
                     .WithDescription(str)
                     .WithOkColor()
-                    .WithImageUrl(imageToSend.ToString())).ConfigureAwait(false);
+                    .WithThumbnailUrl(imageToSend.ToString())).ConfigureAwait(false);
             }
         }
     }
