@@ -258,7 +258,7 @@ namespace NadekoBot.Modules.Xp
                         await (await owner.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithOkColor()
                                          .WithAuthor(GetText("club_new_apply", club.Name))
                                          .WithFooter("ID: " + Context.User.Id)
-                                         .WithDescription(GetText("club_new_applycant", Context.User.Username, Context.User.Discriminator, Context.User.Id)))
+                                         .WithDescription(GetText("club_new_applycant", Context.User.Username, Context.User.Discriminator, Context.User.Mention)))
                             .ConfigureAwait(false);
                     }
                     catch { }
@@ -302,7 +302,7 @@ namespace NadekoBot.Modules.Xp
                     {
                         await (await gu.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithOkColor()
                                          .WithAuthor(GetText("club_accepted_DM", clb.Name))
-                                         .WithDescription(GetText("club_accepted_DM_desc", clb.Name, Context.User.Username, Context.User.Discriminator, Context.User.Id)))
+                                         .WithDescription(GetText("club_accepted_DM_desc", clb.Name, Context.User.Username, Context.User.Discriminator, Context.User.Mention)))
                             .ConfigureAwait(false);
                     }
                     catch { };

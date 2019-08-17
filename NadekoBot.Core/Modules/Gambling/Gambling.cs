@@ -91,7 +91,7 @@ namespace NadekoBot.Modules.Gambling
                 }
 
                 await _service.GiveReputation(target, Context.User);
-                await ReplyConfirmLocalized("rep", Format.Bold(target.ToString()), period).ConfigureAwait(false);
+                await ReplyConfirmLocalized("rep", target.Mention, period).ConfigureAwait(false);
             }
             else
                 await ReplyErrorLocalized("self_rep").ConfigureAwait(false);
@@ -260,9 +260,9 @@ namespace NadekoBot.Modules.Gambling
                 amount = 500;
 
             await _cs.AddAsync(usr.Id, $"Awarded by raffle. ({Context.User.Username}/{Context.User.Id})", amount, gamble: true);
-            await Context.Channel.SendMessageAsync(GetText("raffled_grats", usr.Id));
+            await Context.Channel.SendMessageAsync(GetText("raffled_grats", usr.Mention));
             await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user", usr), 
-                $"{GetText("raffled_result", usr.Id, amount)}", footer: $"{usr.Id}").ConfigureAwait(false);
+                $"{GetText("raffled_result", usr.Mention, $"{amount}{_bc.BotConfig.CurrencySign}")}", footer: $"{usr.Id}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -270,7 +270,7 @@ namespace NadekoBot.Modules.Gambling
         public async Task Cash([Remainder] IUser user = null)
         {
             user = user ?? Context.User;
-            await ConfirmLocalized("has", user.Mention, $"{GetCurrency(user.Id)} {CurrencySign}").ConfigureAwait(false);
+            await ConfirmLocalized("has", user.Mention, Format.Bold($"{GetCurrency(user.Id)} {CurrencySign}")).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]

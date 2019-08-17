@@ -380,7 +380,7 @@ namespace NadekoBot.Modules.Gambling
 
                 if (sucess)
                 {
-                    await ReplyConfirmLocalized("waifu_gift", Format.Bold(item.ToString() + " " + itemObj.ItemEmoji), Format.Bold(waifu.ToString()));
+                    await ReplyConfirmLocalized("waifu_gift", Format.Bold(GetText(item.ToString()) + " " + itemObj.ItemEmoji), waifu.Mention);
                 }
                 else
                 {
