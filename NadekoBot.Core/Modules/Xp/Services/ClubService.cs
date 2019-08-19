@@ -322,6 +322,32 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
+        public bool XpImageCreate(IUser user, string url)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var club = uow.Clubs.GetByOwner(user.Id);
+
+                club.XpImageUrl = url;
+                club.Currency -= 1000000;
+                uow.Complete();
+            }
+            return true;
+        }
+
+        public bool XpImageUpdate(IUser user, string url)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var club = uow.Clubs.GetByOwner(user.Id);
+
+                club.XpImageUrl = url;
+                club.Currency -= 10000;
+                uow.Complete();
+            }
+            return true;
+        }
+
         public bool Ban(ulong bannerId, DiscordUser usr, out ClubInfo club)
         {
             using (var uow = _db.UnitOfWork)

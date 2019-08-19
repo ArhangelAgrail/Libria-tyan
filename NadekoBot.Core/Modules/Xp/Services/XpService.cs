@@ -634,7 +634,19 @@ namespace NadekoBot.Modules.Xp.Services
 
         public Task<(Stream Image, IImageFormat Format)> GenerateXpImageAsync(FullUserStats stats) => Task.Run(async () =>
         {
-            using (var img = Image.Load(_images.XpBackground[stats.User.XpCardImage], out var imageFormat))
+            Image<Rgba32> img;
+            IImageFormat imageFormat;
+
+            if (stats.User.XpCardImage == 111)
+                using (var webClient = new System.Net.WebClient())
+                {
+                    byte[] imageBytes = webClient.DownloadData(stats.User.Club.XpImageUrl);
+                    img = Image.Load(imageBytes, out imageFormat);
+                }
+            else
+                img = Image.Load(_images.XpBackground[stats.User.XpCardImage], out imageFormat);
+
+            using (img)
             {
                 if (_template.User.Name.Show)
                 {
@@ -984,6 +996,15 @@ namespace NadekoBot.Modules.Xp.Services
             using (var uow = _db.UnitOfWork)
             {
                 uow.XpCards.SetDefault(userId);
+                uow.Complete();
+            }
+        }
+
+        public void XpCardSetClub(ulong userId, ulong roleId)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                uow.XpCards.SetClubCard(userId, roleId);
                 uow.Complete();
             }
         }

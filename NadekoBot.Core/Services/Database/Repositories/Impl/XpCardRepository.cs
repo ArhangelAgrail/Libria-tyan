@@ -32,6 +32,12 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
             _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET XpCardRole=0 WHERE UserId={userId};");
         }
 
+        public void SetClubCard(ulong userId, ulong roleId)
+        {
+            _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET XpCardImage=111 WHERE UserId={userId};");
+            _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET XpCardRole={roleId} WHERE UserId={userId};");
+        }
+
         public ulong GetXpCardRoleId(string name)
         {
             return _set.Where(x => x.Name == name).Select(y => y.RoleId).FirstOrDefault();

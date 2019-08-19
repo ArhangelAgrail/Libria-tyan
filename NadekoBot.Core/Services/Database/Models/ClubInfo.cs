@@ -10,6 +10,7 @@ namespace NadekoBot.Core.Services.Database.Models
         public int Discrim { get; set; }
 
         public string ImageUrl { get; set; } = "";
+        public string XpImageUrl { get; set; } = "";
         public int MinimumLevelReq { get; set; } = 5;
         public int Xp { get; set; } = 0;
         public int Currency { get; set; } = 0;

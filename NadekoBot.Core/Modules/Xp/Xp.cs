@@ -311,14 +311,34 @@ namespace NadekoBot.Modules.Xp
         [RequireContext(ContextType.Guild)]
         public async Task SetCard([Remainder]string name)
         {
-            var user = Context.User as IGuildUser;
-            if (name == "default")
+            using (var uow = _db.UnitOfWork)
             {
-                _service.XpCardSetDefault(user.Id);
-                await ReplyConfirmLocalized("template_default", name).ConfigureAwait(false);
-            }
-            else
-                using (var uow = _db.UnitOfWork)
+                var user = Context.User as IGuildUser;
+                if (name == "default")
+                {
+                    _service.XpCardSetDefault(user.Id);
+                    await ReplyConfirmLocalized("template_default", name).ConfigureAwait(false);
+                }
+                else
+                    if (name == "Club")
+                    {
+                    ulong roleId = uow.Clubs.GetByMember(user.Id).roleId;
+                    if (roleId == 0)
+                    {
+                        await ReplyErrorLocalized("template_none", roleId).ConfigureAwait(false);
+                    }
+                    else
+                    if (user.RoleIds.Contains(roleId))
+                    {
+                        _service.XpCardSetClub(user.Id, roleId);
+                        await ReplyConfirmLocalized("template_set", name).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyErrorLocalized("template_error", roleId).ConfigureAwait(false);
+                    }
+                }
+                else
                 {
                     ulong roleId = uow.XpCards.GetXpCardRoleId(name);
                     if (roleId == 0)
@@ -336,6 +356,8 @@ namespace NadekoBot.Modules.Xp
                         await ReplyErrorLocalized("template_error", roleId).ConfigureAwait(false);
                     }
                 }
+            }
+                
         }
     }
 }

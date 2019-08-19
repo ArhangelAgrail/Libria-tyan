@@ -133,6 +133,9 @@ namespace NadekoBot.Modules.Xp
                     });
 
                 var maxAmount = 500000;
+                if (club.XpImageUrl != "")
+                    maxAmount = 5000000;
+                else
                 if (club.roleId != 0)
                     maxAmount = 1000000;
 
@@ -698,6 +701,94 @@ namespace NadekoBot.Modules.Xp
                 }, club.Users.Count, 10, addPaginatedFooter: false);
 
 
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            public async Task ClubXpImageCreate([Remainder]string url = null)
+            {
+                if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) && url != null)
+                {
+                    await ReplyErrorLocalized("club_image_error").ConfigureAwait(false);
+                    return;
+                }
+
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    await ReplyErrorLocalized("club_null").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Owner.UserId != Context.User.Id)
+                {
+                    await ReplyErrorLocalized("club_not_owner").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.roleId == 0)
+                {
+                    await ReplyErrorLocalized("club_role_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.XpImageUrl != "")
+                {
+                    await ReplyErrorLocalized("club_xp_image_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Currency < 1000000)
+                {
+                    await ReplyErrorLocalized("club_not_enough").ConfigureAwait(false);
+                    return;
+                }
+
+                if (_service.XpImageCreate(Context.User, url))
+                    await ReplyConfirmLocalized("club_xp_card_created").ConfigureAwait(false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            public async Task ClubXpImageUpdate([Remainder]string url = null)
+            {
+                if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) && url != null)
+                {
+                    await ReplyErrorLocalized("club_image_error").ConfigureAwait(false);
+                    return;
+                }
+
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    await ReplyErrorLocalized("club_null").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Owner.UserId != Context.User.Id)
+                {
+                    await ReplyErrorLocalized("club_not_owner").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.roleId == 0)
+                {
+                    await ReplyErrorLocalized("club_role_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.XpImageUrl == "")
+                {
+                    await ReplyErrorLocalized("club_xp_image_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Currency < 10000)
+                {
+                    await ReplyErrorLocalized("club_not_enough").ConfigureAwait(false);
+                    return;
+                }
+
+                if (_service.XpImageUpdate(Context.User, url))
+                    await ReplyConfirmLocalized("club_xp_card_updated").ConfigureAwait(false);
             }
         }
     }
