@@ -3461,15 +3461,15 @@
       "{0}clubinvestlb"
     ]
   },
-  "ClubXpImageCreate": {
-    "cmd": "clubxpimagecreate cxicreate",
+  "clubxpimagecreate": {
+    "cmd": "clubxpimagecreate clubcardcreate cxicreate",
     "desc": "Creating xp image for club if before created club role.",
     "usage": [
       "{0}clubxpimagecreate http://www.picshare.ru/uploads/181002/fRmgFQ6tWc.png"
     ]
   },
-  "ClubXpImageUpdate": {
-    "cmd": "clubxpimageupdate .clubcardupdate cxiupdate",
+  "clubxpimageupdate": {
+    "cmd": "clubxpimageupdate clubcardupdate cxiupdate",
     "desc": "Updating club xp image for 10 000 currency.",
     "usage": [
       "{0}clubxpimageupdate http://www.picshare.ru/uploads/181002/fRmgFQ6tWc.png"
