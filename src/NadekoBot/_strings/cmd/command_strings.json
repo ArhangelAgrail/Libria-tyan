@@ -1049,10 +1049,17 @@
     ]
   },
   "wheeloffortune": {
-    "Cmd": "wheeloffortune wheel",
+    "Cmd": "wheeloffortune wheelold",
     "Desc": "Bets a certain amount of currency on the wheel of fortune. Wheel can stop on one of many different multipliers. Won amount is rounded down to the nearest whole number.",
     "Usage": [
-      "{0}wheel 10"
+      "{0}wheelold 100"
+    ]
+  },
+  "wheeloffortunevisual": {
+    "Cmd": "wheeloffortunevisual wheel",
+    "Desc": "Bets a certain amount of currency on the wheel of fortune. Wheel can stop on one of many different multipliers. Won amount is rounded down to the nearest whole number.",
+    "Usage": [
+      "{0}wheel 100"
     ]
   },
   "leaderboard": {

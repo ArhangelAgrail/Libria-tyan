@@ -73,5 +73,19 @@
       "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/9.png"
     ],
     "Bg": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/bg.png"
+  },
+  "Wheel": {
+    "Emojis": [
+      "http://www.picshare.ru/uploads/190821/jVZ2vr227z.png",
+      "http://www.picshare.ru/uploads/190821/S8bS88y54i.png",
+      "http://www.picshare.ru/uploads/190821/6G6ex5Mav0.png",
+      "http://www.picshare.ru/uploads/190821/38KHV9gLUw.png",
+      "http://www.picshare.ru/uploads/190821/A6t4h7CU13.png",
+      "http://www.picshare.ru/uploads/190821/4oLO921a8q.png",
+      "http://www.picshare.ru/uploads/190821/NB8375c7U5.png",
+      "http://www.picshare.ru/uploads/190821/Mso9u1uh73.png",
+	  "http://www.picshare.ru/uploads/190821/L4FBakS2r9.png"
+    ],
+    "Bg": "http://www.picshare.ru/uploads/190820/Pe6Xda3zWY.png"
   }
 }

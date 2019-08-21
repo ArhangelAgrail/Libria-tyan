@@ -20,9 +20,11 @@ namespace NadekoBot.Core.Services
 
         IReadOnlyList<byte[]> SlotEmojis { get; }
         IReadOnlyList<byte[]> SlotNumbers { get; }
+        IReadOnlyList<byte[]> WheelEmojis { get; }
         IReadOnlyList<byte[]> Currency { get; }
 
         byte[] SlotBackground { get; }
+        byte[] WheelBackground { get; }
 
         byte[] RategirlMatrix { get; }
         byte[] RategirlDot { get; }

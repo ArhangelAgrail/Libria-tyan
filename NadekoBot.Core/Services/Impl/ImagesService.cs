@@ -47,9 +47,13 @@ namespace NadekoBot.Core.Services.Impl
 
         public IReadOnlyList<byte[]> SlotNumbers => GetByteArrayData(ImageKey.Slots_Numbers);
 
+        public IReadOnlyList<byte[]> WheelEmojis => GetByteArrayData(ImageKey.Wheel_Emojis);
+
         public IReadOnlyList<byte[]> Currency => GetByteArrayData(ImageKey.Currency);
 
         public byte[] SlotBackground => GetByteData(ImageKey.Slots_Bg);
+
+        public byte[] WheelBackground => GetByteData(ImageKey.Wheel_Bg);
 
         public byte[] RategirlMatrix => GetByteData(ImageKey.Rategirl_Matrix);
 
@@ -78,6 +82,8 @@ namespace NadekoBot.Core.Services.Impl
             Slots_Bg,
             Slots_Numbers,
             Slots_Emojis,
+            Wheel_Bg,
+            Wheel_Emojis,
             Rategirl_Matrix,
             Rategirl_Dot,
             XpBg,

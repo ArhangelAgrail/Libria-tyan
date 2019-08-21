@@ -30,6 +30,12 @@ namespace NadekoBot.Core.Common
             public Uri Bg { get; set; }
         }
 
+        public class WheelData
+        {
+            public Uri[] Emojis { get; set; }
+            public Uri Bg { get; set; }
+        }
+
         public class CoinData
         {
             public Uri[] Heads { get; set; }
