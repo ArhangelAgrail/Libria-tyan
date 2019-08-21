@@ -322,20 +322,20 @@ namespace NadekoBot.Modules.Xp
                 else
                     if (name == "Club")
                     {
-                    ulong roleId = uow.Clubs.GetByMember(user.Id).roleId;
-                    if (roleId == 0)
+                    var club = uow.Clubs.GetByMember(user.Id);
+                    if (club.roleId == 0 || club.XpImageUrl == "")
                     {
-                        await ReplyErrorLocalized("template_none", roleId).ConfigureAwait(false);
+                        await ReplyErrorLocalized("template_club_none").ConfigureAwait(false);
                     }
                     else
-                    if (user.RoleIds.Contains(roleId))
+                    if (user.RoleIds.Contains(club.roleId))
                     {
-                        _service.XpCardSetClub(user.Id, roleId);
+                        _service.XpCardSetClub(user.Id, club.roleId);
                         await ReplyConfirmLocalized("template_set", name).ConfigureAwait(false);
                     }
                     else
                     {
-                        await ReplyErrorLocalized("template_error", roleId).ConfigureAwait(false);
+                        await ReplyErrorLocalized("template_error", club.roleId).ConfigureAwait(false);
                     }
                 }
                 else
@@ -343,7 +343,7 @@ namespace NadekoBot.Modules.Xp
                     ulong roleId = uow.XpCards.GetXpCardRoleId(name);
                     if (roleId == 0)
                     {
-                        await ReplyErrorLocalized("template_none", roleId).ConfigureAwait(false);
+                        await ReplyErrorLocalized("template_none").ConfigureAwait(false);
                     }
                     else
                     if (user.RoleIds.Contains(roleId))

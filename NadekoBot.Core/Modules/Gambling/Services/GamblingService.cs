@@ -146,8 +146,9 @@ namespace NadekoBot.Modules.Gambling.Services
             return new WheelOfFortuneGame(userId, bet, _cs).SpinAsync();
         }
 
-        public async Task GiveReputation(IUser target, IUser user)
+        public async Task<int> GiveReputation(IUser target, IUser user)
         {
+            var total = 1;
             using (var uow = _db.UnitOfWork)
             {
                 var du = uow.DiscordUsers.GetOrCreate(user);
@@ -177,6 +178,7 @@ namespace NadekoBot.Modules.Gambling.Services
                     int rep = w.Reputation;
                     rep += 1;
                     w.Reputation = rep;
+                    total = w.Reputation;
 
                     /*uow.RepLog.Add(new RepLog()
                     {
@@ -186,6 +188,7 @@ namespace NadekoBot.Modules.Gambling.Services
                 }
                 await uow.CompleteAsync();
             }
+            return total;
         }
 
         public int GetUserLevel(IUser user)
@@ -196,7 +199,16 @@ namespace NadekoBot.Modules.Gambling.Services
                 var lvl = new LevelStats(du.TotalXp).Level;
                 return lvl;
             }
-            
+        }
+
+        public long GetUserCurrency(IUser user)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var du = uow.DiscordUsers.GetOrCreate(user);
+                var cur = du.CurrencyAmount;
+                return cur;
+            }
         }
     }
 }

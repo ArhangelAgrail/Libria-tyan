@@ -90,8 +90,8 @@ namespace NadekoBot.Modules.Gambling
                     return;
                 }
 
-                await _service.GiveReputation(target, Context.User);
-                await ReplyConfirmLocalized("rep", target.Mention, period).ConfigureAwait(false);
+                var total = await _service.GiveReputation(target, Context.User);
+                await ReplyConfirmLocalized("rep", target.Mention, total, period).ConfigureAwait(false);
             }
             else
                 await ReplyErrorLocalized("self_rep").ConfigureAwait(false);
@@ -124,8 +124,9 @@ namespace NadekoBot.Modules.Gambling
             }
 
             await _cs.AddAsync(Context.User.Id, "Timely claim", val).ConfigureAwait(false);
+            var cur = _service.GetUserCurrency(Context.User);
 
-            await ReplyConfirmLocalized("timely", val + Bc.BotConfig.CurrencySign, period).ConfigureAwait(false);
+            await ReplyConfirmLocalized("timely", val + Bc.BotConfig.CurrencySign, cur + Bc.BotConfig.CurrencySign, period).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]

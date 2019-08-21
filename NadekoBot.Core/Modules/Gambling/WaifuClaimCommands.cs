@@ -333,7 +333,7 @@ namespace NadekoBot.Modules.Gambling
                     .AddField(efb => efb.WithName(GetText("likes")).WithValue(wi.AffinityName ?? nobody).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("changes_of_heart")).WithValue($"{wi.AffinityCount} - \"{GetText(affInfo)}\"").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("club")).WithValue(clubName).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("reputation")).WithValue("**+" + wi.Reputation.ToString() + "**").WithIsInline(true))
+                    .AddField(efb => efb.WithName(GetText("reputation")).WithValue("**+" + wi.Reputation.ToString() + "☆**").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("gifts")).WithValue(itemsStr).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("Waifus", wi.ClaimCount)).WithValue(wi.ClaimCount == 0 ? nobody + "\n_______" : string.Join("\n", wi.Claims30) + "\n_______").WithIsInline(false))
                     .WithFooter(text: GetText("info") + " " + info, iconUrl: "http://www.picshare.ru/uploads/181213/sK6tzE73ub.png");
