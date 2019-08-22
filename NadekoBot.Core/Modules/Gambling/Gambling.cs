@@ -126,7 +126,7 @@ namespace NadekoBot.Modules.Gambling
             await _cs.AddAsync(Context.User.Id, "Timely claim", val).ConfigureAwait(false);
             var cur = _service.GetUserCurrency(Context.User);
 
-            await ReplyConfirmLocalized("timely", val + Bc.BotConfig.CurrencySign, cur + Bc.BotConfig.CurrencySign, period).ConfigureAwait(false);
+            await ReplyConfirmLocalized("timely", String.Format("{0:#,0}", val) + Bc.BotConfig.CurrencySign, String.Format("{0:#,0}", cur) + Bc.BotConfig.CurrencySign, period).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -271,7 +271,7 @@ namespace NadekoBot.Modules.Gambling
         public async Task Cash([Remainder] IUser user = null)
         {
             user = user ?? Context.User;
-            await ConfirmLocalized("has", user.Mention, Format.Bold($"{GetCurrency(user.Id)} {CurrencySign}")).ConfigureAwait(false);
+            await ConfirmLocalized("has", user.Mention, Format.Bold($"{String.Format("{0:#,0}", GetCurrency(user.Id))} {CurrencySign}")).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -666,7 +666,7 @@ namespace NadekoBot.Modules.Gambling
                         var usrStr = x.ToString().TrimTo(20, true);
 
                         embed.AddField(efb => efb.WithName("#" + (i + 1 + curPage * 9) + " " + usrStr)
-                                                 .WithValue(x.CurrencyAmount.ToString() + " " + CurrencySign)
+                                                 .WithValue(String.Format("{0:#,0}", x.CurrencyAmount) + " " + CurrencySign)
                                                  .WithIsInline(true));
                     }
                     return embed;

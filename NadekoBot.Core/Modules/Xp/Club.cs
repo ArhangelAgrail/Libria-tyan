@@ -146,10 +146,10 @@ namespace NadekoBot.Modules.Xp
                     var embed = new EmbedBuilder()
                         .WithOkColor()
                         .WithTitle($"{club.Name}")
-                        .WithDescription(GetText("level_x", lvl.Level) + $" ({club.Xp} xp)")
+                        .WithDescription(GetText("level_x", lvl.Level) + $" ({String.Format("{0:#,0}", club.Xp)} xp)")
                         .AddField(GetText("description"), string.IsNullOrWhiteSpace(club.Description) ? "-" : club.Description, false)
                         .AddField(GetText("owner_and_role"), $" ▹<@{club.Owner.UserId}>\n" + (club.roleId != 0 ? $"▹<@&{club.roleId}>" : "У клуба нет роли"), true)
-                        .AddField(GetText("storage"), $" **{String.Format("{0,15:N0}", club.Currency)}/{String.Format("{0,15:N0}",maxAmount)}** :cherry_blossom:\n{progress}", true)
+                        .AddField(GetText("storage"), $" **{String.Format("{0:#,0}", club.Currency)}/{String.Format("{0:#,0}", maxAmount)}** :cherry_blossom:\n{progress}", true)
                         .AddField(GetText("members", club.Users.Count), string.Join("\n", users
                             .Skip(page * 10)
                             .Take(10)
@@ -157,7 +157,7 @@ namespace NadekoBot.Modules.Xp
                             {
                                 var l = new LevelStats(x.TotalXp);
                                 var user = x as IUser;
-                                var lvlStr = Format.Bold($" ⟪{x.TotalXp - x.ClubXp} xp⟫");
+                                var lvlStr = Format.Bold($" ⟪{String.Format("{0:#,0}", x.TotalXp - x.ClubXp)} xp⟫");
                                 if (club.OwnerId == x.Id)
                                     return x.ToString() + "🌟" + lvlStr;
                                 else if (x.IsClubAdmin)
