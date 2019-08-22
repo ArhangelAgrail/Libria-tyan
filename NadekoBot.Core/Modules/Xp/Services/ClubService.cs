@@ -41,6 +41,7 @@ namespace NadekoBot.Modules.Xp.Services
                         Discrim = uow.Clubs.GetNextDiscrim(clubName),
                         Owner = du,
                     };
+                    du.ClubXp = du.TotalXp;
                     uow.Clubs.Add(du.Club);
                     uow._context.SaveChanges();
                 }
