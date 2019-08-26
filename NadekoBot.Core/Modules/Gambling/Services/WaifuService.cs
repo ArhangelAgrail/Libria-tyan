@@ -526,6 +526,10 @@ namespace NadekoBot.Modules.Gambling.Services
             {
                 var du = uow.DiscordUsers.GetOrCreate(target);
                 var wi = uow.Waifus.GetWaifuInfo(target.Id);
+                var name = target.Username;
+                if (!string.IsNullOrWhiteSpace(target.Nickname))
+                    name = target.Nickname;
+
                 if (wi == null)
                 {
                     wi = new WaifuInfoStats
@@ -536,7 +540,7 @@ namespace NadekoBot.Modules.Gambling.Services
                         ClaimerName = null,
                         Claims30 = new List<string>(),
                         DivorceCount = 0,
-                        FullName = target.ToString(),
+                        FullName = name,
                         Items = new List<WaifuItem>(),
                         Immune = false,
                         Reputation = 0,

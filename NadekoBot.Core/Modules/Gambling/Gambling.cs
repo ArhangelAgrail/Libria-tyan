@@ -360,7 +360,7 @@ namespace NadekoBot.Modules.Gambling
                 return;
             }
             await _cs.AddAsync(receiver, $"Gift from {Context.User.Username} ({Context.User.Id}) - {msg}.", amount, true).ConfigureAwait(false);
-            await ReplyConfirmLocalized("gifted", amount + CurrencySign, Format.Bold(receiver.ToString()), msg)
+            await ReplyConfirmLocalized("gifted", amount + CurrencySign, Format.Bold(receiver.Mention), msg)
                 .ConfigureAwait(false);
         }
 
