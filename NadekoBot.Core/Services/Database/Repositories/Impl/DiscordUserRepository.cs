@@ -41,6 +41,13 @@ VALUES ({userId}, {username}, {discrim}, {avatarId});
                 .First(u => u.UserId == userId);
         }
 
+        public DiscordUser Get(ulong userId)
+        {
+            return _set
+                .Include(x => x.Club)
+                .First(u => u.UserId == userId);
+        }
+
         public DiscordUser GetOrCreate(IUser original)
             => GetOrCreate(original.Id, original.Username, original.Discriminator, original.AvatarId);
 
@@ -80,6 +87,9 @@ VALUES ({userId}, {username}, {discrim}, {avatarId});
 
         public long GetUserCurrency(ulong userId) =>
             _set.FirstOrDefault(x => x.UserId == userId)?.CurrencyAmount ?? 0;
+
+        public int GetUserInvests(ulong userId, int sum) =>
+            _set.FirstOrDefault(x => x.UserId == userId)?.ClubInvetsAmount ?? 0;
 
         public void RemoveFromMany(List<ulong> ids)
         {

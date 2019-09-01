@@ -9,11 +9,13 @@ namespace NadekoBot.Core.Services.Database.Repositories
         void EnsureCreated(ulong userId, string username, string discrim, string avatarId);
         DiscordUser GetOrCreate(ulong userId, string username, string discrim, string avatarId);
         DiscordUser GetOrCreate(IUser original);
+        DiscordUser Get(ulong userId);
         string GetUsernameByUserId(ulong userId);
         int GetUserGlobalRank(ulong id);
         DiscordUser[] GetUsersXpLeaderboardFor(int page);
 
         long GetUserCurrency(ulong userId);
+        int GetUserInvests(ulong userId, int sum);
         bool TryUpdateCurrencyState(ulong userId, string name, string discrim, string avatar, long change, bool allowNegative = false);
         IEnumerable<DiscordUser> GetTopRichest(ulong botId, int count, int skip);
         void RemoveFromMany(List<ulong> ids);

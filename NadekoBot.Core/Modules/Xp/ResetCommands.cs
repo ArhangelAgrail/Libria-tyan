@@ -55,18 +55,18 @@ namespace NadekoBot.Modules.Xp
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             [OwnerOnly]
-            public async Task ClubsXpReset()
+            public async Task ClubsXpReset(int multiplier)
             {
                 var embed = new EmbedBuilder()
                        .WithTitle(GetText("reset"))
-                       .WithDescription(GetText("reset_server_confirm"));
+                       .WithDescription(GetText("reset_clubs_confirm"));
 
                 if (!await PromptUserConfirmAsync(embed).ConfigureAwait(false))
                     return;
 
-                _service.ClubsXpReset(Context.Guild.Id);
+                var lisa = _service.ClubsXpReset(Context.Guild.Id, multiplier);
 
-                await ReplyConfirmLocalized("reset_server").ConfigureAwait(false);
+                await ReplyConfirmLocalized("reset_clubs", lisa).ConfigureAwait(false);
             }
         }
     }
