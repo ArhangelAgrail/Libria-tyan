@@ -88,8 +88,8 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
             return _set
                 .OrderByDescending(x => x.Xp)
                 .Include(x => x.Users)
-                .Skip(page * 9)
-                .Take(9)
+                .Skip(page * 10)
+                .Take(10)
                 .ToArray();
         }
     }

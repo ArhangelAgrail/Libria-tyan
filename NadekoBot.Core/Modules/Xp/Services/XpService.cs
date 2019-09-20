@@ -652,15 +652,17 @@ namespace NadekoBot.Modules.Xp.Services
                 {
                     var username = stats.User.ToString();
                     var usernameFont = _fonts.NotoSans
-                        .CreateFont(username.Length <= 6
-                            ? _template.User.Name.FontSize
-                            : _template.User.Name.FontSize - username.Length, FontStyle.Bold);
+                        .CreateFont(username.Length <= 15
+                            ? _template.User.Name.FontSize - 10
+                            : _template.User.Name.FontSize - username.Length + (username.Length / 3), FontStyle.Bold);
+
+                    var align = username.Length <= 15 ? 0 : username.Length / 7;
 
                     img.Mutate(x =>
                     {
                         x.DrawText("@" + username, usernameFont,
                             _template.User.Name.Color,
-                            new PointF(_template.User.Name.Pos.X, _template.User.Name.Pos.Y));
+                            new PointF(_template.User.Name.Pos.X, _template.User.Name.Pos.Y + align));
                     });
                 }
 
@@ -695,14 +697,15 @@ namespace NadekoBot.Modules.Xp.Services
                     if (stats.User.Club != null) clubName = stats.User.Club.Name;
 
                     var clubFont = _fonts.NotoSans
-                        .CreateFont(clubName.Length <= 10
-                            ? _template.Club.Name.FontSize
-                            : _template.Club.Name.FontSize + 2 - (clubName.Length / 2), FontStyle.Bold);
+                        .CreateFont(_template.Club.Name.FontSize, FontStyle.Bold);
+
+                    var alignx = clubName.Length <= 15 ? clubName.Length * clubName.Length - 10 : clubName.Length * 13;
+                    var aligny = clubName.Length <= 10 ? 0 : clubName.Length / 2;
 
                     img.Mutate(x => x.DrawText(clubName, clubFont,
                         Brushes.Solid(_template.Club.Name.Color),
                         pen,
-                        new PointF(_template.Club.Name.Pos.X - clubName.Length * 10, _template.Club.Name.Pos.Y)));
+                        new PointF(_template.Club.Name.Pos.X - alignx, _template.Club.Name.Pos.Y)));
                 }
 
 

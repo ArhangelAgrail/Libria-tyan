@@ -622,7 +622,7 @@ namespace NadekoBot.Modules.Xp
                         return embed.WithDescription("-");
                     else
                     {
-                        var i = curPage * 9;
+                        var i = curPage * 10;
                         foreach (var club in clubs)
                         {
                             embed.AddField($"#{++i} " + club.Name + $" - [{GetText("club_users", club.Users.Count)}]", GetText("club_leaderboard_xp", new LevelStats(club.Xp).Level, club.Xp.ToString()), false);

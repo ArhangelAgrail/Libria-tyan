@@ -101,7 +101,7 @@ Format.Bold($@"{Context.User.Mention} won: {result.Amount + Bc.BotConfig.Currenc
 
                         using (var imgStream = bgImage.ToStream())
                         {
-                            await Context.Channel.SendFileAsync(imgStream, "result.png", Context.User.Mention + $" {GetText("wheel_bet", amount, Bc.BotConfig.CurrencySign)}\n{GetText("wheel_won", result.Amount, Wof.Multipliers[result.Index], Bc.BotConfig.CurrencySign)}").ConfigureAwait(false);
+                            await Context.Channel.SendFileAsync(imgStream, "result.png", Context.User.Mention + $" {GetText("wheel_bet", result.Amount, Bc.BotConfig.CurrencySign)}\n{GetText("wheel_won", amount, Wof.Multipliers[result.Index], Bc.BotConfig.CurrencySign)}").ConfigureAwait(false);
                         }
                     }
                 }
