@@ -44,6 +44,7 @@ namespace NadekoBot.Modules.Xp.Services
                     du.ClubXp = du.TotalXp;
                     uow.Clubs.Add(du.Club);
                     uow._context.SaveChanges();
+                    du.ClubInvetsAmount = 0;
                 }
                 else
                     return false;
@@ -200,12 +201,12 @@ namespace NadekoBot.Modules.Xp.Services
                 applicant.User.Club = club;
                 applicant.User.IsClubAdmin = false;
                 applicant.User.ClubXp = applicant.User.TotalXp;
+                applicant.User.ClubInvetsAmount = Convert.ToInt32(GetAmountByUserOld(applicant.User.UserId, club.Name)) * -1;
                 club.Applicants.Remove(applicant);
 
                 //remove that user's all other applications
                 uow._context.Set<ClubApplicants>()
                     .RemoveRange(uow._context.Set<ClubApplicants>().Where(x => x.UserId == applicant.User.Id));
-
                 discordUser = applicant.User;
                 uow.Complete();
             }
@@ -441,11 +442,31 @@ namespace NadekoBot.Modules.Xp.Services
             }
         }
 
-        public string GetAmountByUser(ulong userId, string clubName)
+        public int GetAmountByUser(ulong userId)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var user = uow.DiscordUsers.Get(userId);
+                return user.ClubInvetsAmount;
+            }
+        }
+
+        public string GetAmountByUserOld(ulong userId, string clubName)
         {
             using (var uow = _db.UnitOfWork)
             {
                 return uow.CurrencyTransactions.GetInvestedAmount(userId, clubName);
+            }
+        }
+
+        public int SetAmountByUser(ulong userId, int sum)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var user = uow.DiscordUsers.Get(userId);
+                user.ClubInvetsAmount = sum;
+                uow.Complete();
+                return user.ClubInvetsAmount;
             }
         }
 

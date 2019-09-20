@@ -967,13 +967,31 @@ namespace NadekoBot.Modules.Xp.Services
             }
         }
 
-        public void ClubsXpReset(ulong guildId)
+        public string ClubsXpReset(ulong guildId, int mult)
         {
+            string lisa = "";
             using (var uow = _db.UnitOfWork)
             {
+                var clubs = uow.Clubs.GetAll();
+                
+                foreach (var clb in clubs)
+                {
+                    var club = uow.Clubs.GetByName(clb.Name);
+                    var lvl = new LevelStats(club.Xp);
+                    club.Currency += lvl.Level * mult * 100;
+                    lisa += club.Name + " - " + (lvl.Level * mult * 100) + _bc.BotConfig.CurrencySign + "\n";
+
+                    foreach (var user in clb.Users)
+                    {
+                        var amount = (int)((user.TotalXp - user.ClubXp) * 0.00001 * user.ClubInvetsAmount);
+                        _cs.AddAsync(user.UserId, $"Awarded for Club XP - {user.TotalXp - user.ClubXp} by {user.ClubInvetsAmount}", amount, gamble: true);
+                    }
+                }
+                
                 uow.Xp.ResetClubsXp();
                 uow.Complete();
             }
+            return lisa;
         }
 
         public void XpCardAdd(string name, ulong roleId, int image)

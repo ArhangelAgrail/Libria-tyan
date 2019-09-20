@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 
 namespace NadekoBot.Core.Services.Database.Repositories.Impl
 {
@@ -90,6 +91,13 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
                 .Include(x => x.Users)
                 .Skip(page * 10)
                 .Take(10)
+                .ToArray();
+        }
+
+        public new IEnumerable<ClubInfo> GetAll()
+        {
+            return _set.OrderByDescending(x => x.Xp)
+                .Include(x => x.Users)
                 .ToArray();
         }
     }

@@ -387,6 +387,8 @@ namespace NadekoBot.Modules.Gambling
                     return;
                 }
 
+                var user = uow.DiscordUsers.GetOrCreate(Context.User);
+                user.ClubInvetsAmount += (int)amount;
                 club.Currency += (int)amount;
                 await uow.CompleteAsync();
                 await ReplyConfirmLocalized("club_invested", amount + CurrencySign, Format.Bold(club.Name)).ConfigureAwait(false);

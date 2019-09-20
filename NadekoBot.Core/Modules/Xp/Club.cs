@@ -318,6 +318,7 @@ namespace NadekoBot.Modules.Xp
                         var role = du.Guild.Roles.FirstOrDefault(x => x.Id == clb.roleId);
                         await gu.AddRoleAsync(role).ConfigureAwait(false);
                     }
+                    
                     await ReplyConfirmLocalized("club_accepted", Format.Bold(discordUser.ToString())).ConfigureAwait(false);
                 }
                 else
@@ -578,6 +579,7 @@ namespace NadekoBot.Modules.Xp
 
                         await role.DeleteAsync().ConfigureAwait(false);
                     }
+
                     await ReplyConfirmLocalized("club_disbanded", Format.Bold(club.ToString())).ConfigureAwait(false);
                 }
                 else
@@ -688,22 +690,53 @@ namespace NadekoBot.Modules.Xp
 
                     list.AddRange(users.Select(x =>
                          {
-                             var sum = Convert.ToInt32(_service.GetAmountByUser(x.UserId, club.Name)) * -1;
-                             var sumStr = $"{sum}:cherry_blossom: - {x.ToString()}";
+                             var sum = _service.GetAmountByUser(x.UserId);
+                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {x.ToString()}";
                              return sumStr;
                          }));
 
-                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split(":").First()));
+                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split(Bc.BotConfig.CurrencySign).First()));
 
                     var embed = new EmbedBuilder()
-                        .WithTitle(GetText("club_top_investers"))
+                        .WithTitle(GetText("club_top_investers", club.Name))
                         .WithFooter(GetText("page", curPage + 1))
                         .WithOkColor()
                         .AddField(GetText("members", club.Users.Count), Format.Bold(string.Join("\n", result.Skip(curPage*10).Take(10))), false);
                     return embed;
                 }, club.Users.Count, 10, addPaginatedFooter: false);
+            }
 
+            [NadekoCommand, Usage, Description, Aliases]
+            [OwnerOnly]
+            public Task ClubInvestRestore([Remainder]string clubName = null)
+            {
+                if (!_service.GetClubByName(clubName, out ClubInfo club))
+                {
+                    return Task.CompletedTask;
+                }
 
+                return Context.SendPaginatedConfirmAsync(1, (curPage) =>
+                {
+                    var users = club.Users;
+
+                    List<string> list = new List<string>();
+
+                    list.AddRange(users.Select(x =>
+                    {
+                        var sum = Convert.ToInt32(_service.GetAmountByUserOld(x.UserId, club.Name)) * -1;
+                        var sumin = _service.SetAmountByUser(x.UserId, sum);
+                        return Convert.ToString(sumin);
+                    }));
+
+                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split(":").First()));
+
+                    var embed = new EmbedBuilder()
+                            .WithTitle(GetText("club_top_investers"))
+                            .WithFooter(GetText("page", 1))
+                            .WithOkColor()
+                            .AddField(GetText("members", club.Users.Count), Format.Bold(string.Join("\n", result.Skip(0).Take(10))), false);
+                    return embed;
+                }, club.Users.Count, 10, addPaginatedFooter: false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]
