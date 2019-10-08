@@ -656,7 +656,7 @@ namespace NadekoBot.Modules.Xp.Services
                             ? _template.User.Name.FontSize - 10
                             : _template.User.Name.FontSize - username.Length + (username.Length / 3), FontStyle.Bold);
 
-                    var align = username.Length <= 15 ? 0 : username.Length / 7;
+                    var align = username.Length <= 15 ? 0 : username.Length / 10;
 
                     img.Mutate(x =>
                     {

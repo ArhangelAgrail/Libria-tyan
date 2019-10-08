@@ -65,9 +65,9 @@ namespace NadekoBot.Modules.Xp
                     .Select(x => (x.Level, Format.Bold(x.Amount + Bc.BotConfig.CurrencySign))))
                     .GroupBy(x => x.Level)
                     .OrderBy(x => x.Key)
-                    .Skip(page * 9)
-                    .Take(9)
-                    .ForEach(x => embed.AddField(GetText("level_x", x.Key), string.Join("\n", x.Select(y => y.Item2))));
+                    .Skip(page * 15)
+                    .Take(15)
+                    .ForEach(x => embed.AddField(GetText("level_x", x.Key), string.Join("\n", x.Select(y => y.Item2)), true));
 
             if (!rewards.Any())
                 return Context.Channel.EmbedAsync(embed.WithDescription(GetText("no_level_up_rewards")));
