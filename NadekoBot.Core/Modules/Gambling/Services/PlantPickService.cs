@@ -151,31 +151,45 @@ namespace NadekoBot.Modules.Gambling.Services
                 var font = _fonts.NotoSans.CreateFont(img.Height / 10, FontStyle.Bold);
                 img.Mutate(x =>
                 {
+                    var max = img.Width;
+                    var rand = new Random();
+                    
+                    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                    var fakepass = new string(Enumerable.Repeat(chars, 4).Select(s => s[rand.Next(s.Length)]).ToArray()).TrimTo(10, true).ToLowerInvariant();
+                    string password;
+
+                    if (rand.Next(2) == 0)
+                        password = pass + "/" + fakepass;
+                    else
+                        password = fakepass + "/" + pass;
+
                     // measure the size of the text to be drawing
-                    var size = TextMeasurer.Measure(pass, new RendererOptions(font, new PointF(0, 0)));
+                    var size = TextMeasurer.Measure(password, new RendererOptions(font, new PointF(0, 0)));
+
+                    var plus = rand.Next(max - (int)size.Width);
 
                     // fill the background with black, add 5 pixels on each side to make it look better
                     x.FillPolygon(Rgba32.FromHex("00000080"),
-                        new PointF(0, 0),
-                        new PointF(size.Width + 5, 0),
-                        new PointF(size.Width + 5, size.Height + 10),
-                        new PointF(0, size.Height + 10));
+                        new PointF(0 + plus, 0),
+                        new PointF(size.Width + plus, 0),
+                        new PointF(size.Width + plus, size.Height),
+                        new PointF(0 + plus, size.Height));
 
-                    Random random = new Random();
+                    /*Random random = new Random();
 
                     x.DrawLines(Brushes.Solid(Rgba32.White), 2, 
-                        new PointF(0, (float)random.NextDouble() * size.Height), 
-                        new PointF(size.Width + 5, (float)random.NextDouble() * size.Height));
+                        new PointF(0 + plus, (float)random.NextDouble() * size.Height), 
+                        new PointF(size.Width + 5 + plus, (float)random.NextDouble() * size.Height));
 
                     x.DrawLines(Brushes.Solid(Rgba32.White), 2,
-                        new PointF(0, (float)random.NextDouble() * size.Height),
-                        new PointF(size.Width + 5, (float)random.NextDouble() * size.Height));
+                        new PointF(0 + plus, (float)random.NextDouble() * size.Height),
+                        new PointF(size.Width + 5 + plus, (float)random.NextDouble() * size.Height));*/
 
                     // draw the password over the background
-                    x.DrawText(pass,
+                    x.DrawText(password,
                         font,
                         Brushes.Solid(Rgba32.White),
-                        new PointF(0, 0));
+                        new PointF(0 + plus, 0));
                 });
                 // return image as a stream for easy sending
                 return (img.ToStream(format), format.FileExtensions.FirstOrDefault() ?? "png");
