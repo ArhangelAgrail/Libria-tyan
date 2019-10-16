@@ -154,8 +154,8 @@ namespace NadekoBot.Modules.Gambling.Services
                     var max = img.Width;
                     var rand = new Random();
                     
-                    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                    var fakepass = new string(Enumerable.Repeat(chars, 4).Select(s => s[rand.Next(s.Length)]).ToArray()).TrimTo(10, true).ToLowerInvariant();
+                    //const string chars = "ABCDEF0123456789";
+                    var fakepass = _rng.Next(4096, 65536).ToString("X").ToLowerInvariant();/*new string(Enumerable.Repeat(chars, 4).Select(s => s[rand.Next(s.Length)]).ToArray()).TrimTo(10, true).ToLowerInvariant()*/;
                     string password;
 
                     if (rand.Next(2) == 0)
