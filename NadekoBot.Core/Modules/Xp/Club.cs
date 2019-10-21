@@ -707,6 +707,42 @@ namespace NadekoBot.Modules.Xp
             }
 
             [NadekoCommand, Usage, Description, Aliases]
+            public Task ClubInTest(int page = 1)
+            {
+                if (--page < 0 || page > 20)
+                    return Task.CompletedTask;
+
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    return Task.CompletedTask;
+                }
+
+                return Context.SendPaginatedConfirmAsync(page, (curPage) =>
+                {
+                    var users = club.Users;
+
+                    List<string> list = new List<string>();
+
+                    list.AddRange(users.Select(x =>
+                    {
+                        var sum = _service.GetAmountByUser(x.UserId);
+                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} +{String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
+                        return sumStr;
+                    }));
+
+                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split(Bc.BotConfig.CurrencySign).First()));
+
+                    var embed = new EmbedBuilder()
+                        .WithTitle(GetText("club_top_investers", club.Name))
+                        .WithFooter(GetText("page", curPage + 1))
+                        .WithOkColor()
+                        .AddField(GetText("members", club.Users.Count), Format.Bold(string.Join("\n", result.Skip(curPage * 10).Take(10))), false);
+                    return embed;
+                }, club.Users.Count, 10, addPaginatedFooter: false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
             [OwnerOnly]
             public Task ClubInvestRestore([Remainder]string clubName = null)
             {
