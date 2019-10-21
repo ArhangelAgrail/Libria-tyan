@@ -745,6 +745,7 @@
   "gambling_shop_item_add": "Предмет для покупки был добавлен",
   "gambling_shop_none": "На этой странице нет предметов для покупки.",
   "gambling_shop_role": "Вы получите роль {0}",
+  "gambling_shop_discount": "ваша скидка за репутацию -{0}%",
   "gambling_type": "Вид",
   "utility_clpa_next_update": "Следующее обновление в {0}",
   "administration_gvc_disabled": "Функция Игрового Голосового Канала отключена на этом сервере.",
