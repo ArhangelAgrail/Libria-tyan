@@ -176,6 +176,19 @@ namespace NadekoBot.Modules.Gambling.Services
                 }
                 else
                 {
+                    if (u == null)
+                    {
+                        uow.Waifus.Add(new WaifuInfo()
+                        {
+                            Waifu = thisUser,
+                            Price = 1,
+                            Claimer = null,
+                            Immune = false,
+                            Reputation = 1,
+                            LastReputation = 0
+                        });
+                    }
+
                     int rep = w.Reputation;
                     rep += 1;
                     w.Reputation = rep;
