@@ -16,6 +16,7 @@ namespace NadekoBot.Core.Services.Database.Models
 
         public bool Immune { get; set; }
         public int Reputation { get; set; }
+        public ulong LastReputation { get; set; }
         public string Info { get; set; }
 
         public int Price { get; set; }

@@ -28,6 +28,7 @@ namespace NadekoBot.Core.Services.Database.Repositories
         public int ClaimCount { get; set; }
         public bool Immune { get; set; }
         public int Reputation { get; set; }
+        public ulong LastReputation { get; set; }
         public string Info { get; set; }
         public List<WaifuItem> Items { get; set; }
         public List<string> Claims30 { get; set; }

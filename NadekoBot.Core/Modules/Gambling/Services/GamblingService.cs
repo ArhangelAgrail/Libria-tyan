@@ -154,6 +154,7 @@ namespace NadekoBot.Modules.Gambling.Services
                 var du = uow.DiscordUsers.GetOrCreate(user);
 
                 var w = uow.Waifus.ByWaifuUserId(target.Id);
+                var u = uow.Waifus.ByWaifuUserId(user.Id);
                 var thisUser = uow.DiscordUsers.GetOrCreate(target);
 
                 if (w == null)
@@ -178,6 +179,7 @@ namespace NadekoBot.Modules.Gambling.Services
                     int rep = w.Reputation;
                     rep += 1;
                     w.Reputation = rep;
+                    u.LastReputation = target.Id;
                     total = w.Reputation;
 
                     /*uow.RepLog.Add(new RepLog()
@@ -208,6 +210,15 @@ namespace NadekoBot.Modules.Gambling.Services
                 var du = uow.DiscordUsers.GetOrCreate(user);
                 var cur = du.CurrencyAmount;
                 return cur;
+            }
+        }
+
+        public ulong GetLastReputation(IUser user)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var lastrep = uow.Waifus.GetWaifuInfo(user.Id).LastReputation;
+                return lastrep;
             }
         }
     }

@@ -167,6 +167,8 @@ VALUES ({null}, {null}, {1}, (SELECT Id FROM DiscordUser WHERE UserId={userId}),
 
                     Reputation = w.Reputation,
 
+                    LastReputation = w.LastReputation,
+
                     Info = w.Info,
 
                     Claims30 = _set

@@ -77,21 +77,26 @@ namespace NadekoBot.Modules.Gambling
 
             if (Context.User.Id != target.Id)
             {
-                if (_service.GetUserLevel(Context.User) < Bc.BotConfig.MinimumLevel)
+                if (_service.GetLastReputation(Context.User) != target.Id)
                 {
-                    await ReplyErrorLocalized("lvl_rep", Bc.BotConfig.MinimumLevel).ConfigureAwait(false);
-                    return;
-                }
+                    if (_service.GetUserLevel(Context.User) < Bc.BotConfig.MinimumLevel)
+                    {
+                        await ReplyErrorLocalized("lvl_rep", Bc.BotConfig.MinimumLevel).ConfigureAwait(false);
+                        return;
+                    }
 
-                TimeSpan? rem;
-                if ((rem = _cache.AddRepGive(Context.User.Id, period)) != null)
-                {
-                    await ReplyErrorLocalized("rep_already_gived", rem?.ToString(@"dd\d\ hh\h\ mm\m\ ss\s")).ConfigureAwait(false);
-                    return;
-                }
+                    TimeSpan? rem;
+                    if ((rem = _cache.AddRepGive(Context.User.Id, period)) != null)
+                    {
+                        await ReplyErrorLocalized("rep_already_gived", rem?.ToString(@"dd\d\ hh\h\ mm\m\ ss\s")).ConfigureAwait(false);
+                        return;
+                    }
 
-                var total = await _service.GiveReputation(target, Context.User);
-                await ReplyConfirmLocalized("rep", target.Mention, total, period).ConfigureAwait(false);
+                    var total = await _service.GiveReputation(target, Context.User);
+                    await ReplyConfirmLocalized("rep", target.Mention, total, period).ConfigureAwait(false);
+                }
+                else
+                await ReplyErrorLocalized("last_rep", target.Mention).ConfigureAwait(false);
             }
             else
                 await ReplyErrorLocalized("self_rep").ConfigureAwait(false);
