@@ -36,7 +36,7 @@ namespace NadekoBot.Modules.Gambling.Services
             _log = LogManager.GetCurrentClassLogger();
         }
 
-        public async Task<bool> SetImmune(IGuildUser target)
+        public async Task<bool> SetImmune(IUser target)
         {
             var success = false;
             using (var uow = _db.UnitOfWork)
@@ -45,6 +45,9 @@ namespace NadekoBot.Modules.Gambling.Services
 
                 if (w == null)
                 {
+                    if (!await _cs.RemoveAsync(target.Id, "Immune set", 10000, gamble: true))
+                        return false;
+
                     var thisUser = uow.DiscordUsers.GetOrCreate(target);
                     uow.Waifus.Add(new WaifuInfo()
                     {
@@ -59,10 +62,19 @@ namespace NadekoBot.Modules.Gambling.Services
                 else
                     if (w.Immune != true)
                     {
+                    if (!await _cs.RemoveAsync(target.Id, "Immune set", 10000, gamble: true))
+                        return false;
 
                         w.Immune = true;
                         success = true;
                     }
+                else
+                {
+                    if (!await _cs.RemoveAsync(target.Id, "Immune set", 10000, gamble: true))
+                        return false;
+                    w.Immune = false;
+                    success = true;
+                }
 
                await uow.CompleteAsync();
             }

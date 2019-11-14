@@ -20,11 +20,28 @@ namespace NadekoBot.Modules.Gambling
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             [OwnerOnly]
+            [Priority(0)]
             public async Task Immune([Remainder]IGuildUser u = null)
             {
                 var success = await _service.SetImmune(u);
                 if (success)
                 {
+                    await ReplyConfirmLocalized("waifu_success");
+                    return;
+                }
+                else
+                    await ReplyConfirmLocalized("waifu_not_success");
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [RequireContext(ContextType.Guild)]
+            [Priority(1)]
+            public async Task Immune()
+            {
+                var success = await _service.SetImmune(Context.User);
+                if (success)
+                {
+                    
                     await ReplyConfirmLocalized("waifu_success");
                     return;
                 }
