@@ -48,7 +48,7 @@ namespace NadekoBot.Modules.Gambling
                 if (--page < 0)
                     return;
                 List<ShopEntry> entries;
-                int reputation;
+                int reputation, price;
 
                 using (var uow = _db.UnitOfWork)
                 {
@@ -57,24 +57,26 @@ namespace NadekoBot.Modules.Gambling
                                   .ThenInclude(x => x.Items)).ShopEntries);
 
                     reputation = uow.Waifus.GetWaifuInfo(Context.User.Id).Reputation;
+                    price = uow.Waifus.GetWaifuInfo(Context.User.Id).Price;
                 }
 
                 await Context.SendPaginatedConfirmAsync(page, (curPage) =>
                 {
                     var theseEntries = entries.Skip(curPage * 9).Take(9).ToArray();
 
+                    if (reputation > 2500) reputation = 2500;
+                    if (price > 500000) price = 500000;
+
                     if (!theseEntries.Any())
                         return new EmbedBuilder().WithErrorColor()
                             .WithDescription(GetText("shop_none"));
                     var embed = new EmbedBuilder().WithOkColor()
-                        .WithTitle(GetText("shop", Bc.BotConfig.CurrencySign) + " - " + GetText("shop_discount", reputation * 0.02));
-
-                    if (reputation > 2500) reputation = 2500;
+                        .WithTitle(GetText("shop", Bc.BotConfig.CurrencySign) + " - " + GetText("shop_discount", String.Format("{0:0.##}", reputation * 0.01 + price * 0.00005)));
 
                     for (int i = 0; i < theseEntries.Length; i++)
                     {
                         var entry = theseEntries[i];
-                        embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - {entry.Price - entry.Price * (reputation * 0.0002)}{Bc.BotConfig.CurrencySign} (-{entry.Price * (reputation * 0.0002)})").WithValue(EntryToString(entry)).WithIsInline(true));
+                        embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - {(int)(entry.Price - entry.Price * (reputation * 0.0001 + price * 0.0000005))}{Bc.BotConfig.CurrencySign} (-{(int)(entry.Price * (reputation * 0.0001 + price * 0.0000005))})").WithValue(EntryToString(entry)).WithIsInline(true));
                     }
                     return embed;
                 }, entries.Count, 9, true).ConfigureAwait(false);
@@ -88,7 +90,7 @@ namespace NadekoBot.Modules.Gambling
                 if (index < 0)
                     return;
                 ShopEntry entry;
-                int reputation;
+                int reputation, price;
 
                 using (var uow = _db.UnitOfWork)
                 {
@@ -99,6 +101,8 @@ namespace NadekoBot.Modules.Gambling
                     entry = entries.ElementAtOrDefault(index);
 
                     reputation = uow.Waifus.GetWaifuInfo(Context.User.Id).Reputation;
+                    price = uow.Waifus.GetWaifuInfo(Context.User.Id).Price;
+
                     uow.Complete();
                 }
 
@@ -119,7 +123,7 @@ namespace NadekoBot.Modules.Gambling
                         return;
                     }
 
-                    if (await _cs.RemoveAsync(Context.User.Id, $"Shop purchase - {entry.Type}", (int)(entry.Price - entry.Price * (reputation * 0.0002))).ConfigureAwait(false))
+                    if (await _cs.RemoveAsync(Context.User.Id, $"Shop purchase - {entry.Type}", (int)(entry.Price - entry.Price * (reputation * 0.0001 + price * 0.0000005))).ConfigureAwait(false))
                     {
                         try
                         {
@@ -128,7 +132,7 @@ namespace NadekoBot.Modules.Gambling
                         catch (Exception ex)
                         {
                             _log.Warn(ex);
-                            await _cs.AddAsync(Context.User.Id, $"Shop error refund", (int)(entry.Price - entry.Price * (reputation * 0.0002))).ConfigureAwait(false);
+                            await _cs.AddAsync(Context.User.Id, $"Shop error refund", (int)(entry.Price - entry.Price * (reputation * 0.0001 + price * 0.0000005))).ConfigureAwait(false);
                             await ReplyErrorLocalized("shop_role_purchase_error").ConfigureAwait(false);
                             return;
                         }
@@ -154,7 +158,7 @@ namespace NadekoBot.Modules.Gambling
 
                     var item = entry.Items.ToArray()[new NadekoRandom().Next(0, entry.Items.Count)];
 
-                    if (await _cs.RemoveAsync(Context.User.Id, $"Shop purchase - {entry.Type}", (int)(entry.Price - entry.Price * (reputation * 0.0002))).ConfigureAwait(false))
+                    if (await _cs.RemoveAsync(Context.User.Id, $"Shop purchase - {entry.Type}", (int)(entry.Price - entry.Price * (reputation * 0.0001 + price * 0.0000005))).ConfigureAwait(false))
                     {
                         using (var uow = _db.UnitOfWork)
                         {
@@ -167,19 +171,19 @@ namespace NadekoBot.Modules.Gambling
                                 .EmbedAsync(new EmbedBuilder().WithOkColor()
                                 .WithTitle(GetText("shop_purchase", Context.Guild.Name))
                                 .AddField(efb => efb.WithName(GetText("item")).WithValue(item.Text).WithIsInline(false))
-                                .AddField(efb => efb.WithName(GetText("price")).WithValue((entry.Price - entry.Price * (reputation * 0.0002)).ToString()).WithIsInline(true))
+                                .AddField(efb => efb.WithName(GetText("price")).WithValue(((int)(entry.Price - entry.Price * (reputation * 0.0001 + price * 0.0000005))).ToString()).WithIsInline(true))
                                 .AddField(efb => efb.WithName(GetText("name")).WithValue(entry.Name).WithIsInline(true)))
                                 .ConfigureAwait(false);
 
                             //await _cs.AddAsync(entry.AuthorId,
-                                    //$"Shop sell item - {entry.Name}",
-                                    //GetProfitAmount((int)(entry.Price - entry.Price * (reputation * 0.0002)))).ConfigureAwait(false);
+                            //$"Shop sell item - {entry.Name}",
+                            //GetProfitAmount((int)(entry.Price - entry.Price * (reputation * 0.0002 + price * 0.0000005)))).ConfigureAwait(false);
                         }
                         catch
                         {
                             await _cs.AddAsync(Context.User.Id,
                                 $"Shop error refund - {entry.Name}",
-                                (int)(entry.Price - entry.Price * (reputation * 0.0002))).ConfigureAwait(false);
+                                (int)(entry.Price - entry.Price * (reputation * 0.0001 + price * 0.0000005))).ConfigureAwait(false);
                             using (var uow = _db.UnitOfWork)
                             {
                                 var entries = new IndexedCollection<ShopEntry>(uow.GuildConfigs.ForId(Context.Guild.Id,
