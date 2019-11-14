@@ -106,6 +106,9 @@ namespace NadekoBot.Modules.Gambling
                     uow.Complete();
                 }
 
+                if (reputation > 2500) reputation = 2500;
+                if (price > 500000) price = 500000;
+
                 if (entry == null)
                 {
                     await ReplyErrorLocalized("shop_item_not_found").ConfigureAwait(false);
