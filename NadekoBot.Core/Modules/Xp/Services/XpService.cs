@@ -650,7 +650,7 @@ namespace NadekoBot.Modules.Xp.Services
             {
                 if (_template.User.Name.Show)
                 {
-                    var username = stats.User.ToString();
+                    var username = stats.User.Username;
                     var usernameFont = _fonts.NotoSans
                         .CreateFont(username.Length <= 15
                             ? _template.User.Name.FontSize - 10
@@ -660,7 +660,7 @@ namespace NadekoBot.Modules.Xp.Services
 
                     img.Mutate(x =>
                     {
-                        x.DrawText("@" + username, usernameFont,
+                        x.DrawText(username, usernameFont,
                             _template.User.Name.Color,
                             new PointF(_template.User.Name.Pos.X, _template.User.Name.Pos.Y + align));
                     });
