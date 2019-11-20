@@ -205,11 +205,13 @@ namespace NadekoBot.Modules.Gambling.Services
         public async Task<(WaifuInfo, bool, WaifuClaimResult)> ClaimWaifuAsync(IUser user, IUser target, int amount, int count)
         {
             WaifuClaimResult result;
-            WaifuInfo w;
+            WaifuInfo w, u;
             bool isAffinity;
             using (var uow = _db.UnitOfWork)
             {
                 w = uow.Waifus.ByWaifuUserId(target.Id);
+                u = uow.Waifus.ByWaifuUserId(user.Id);
+
                 isAffinity = (w?.Affinity?.UserId == user.Id);
                 if (w == null)
                 {
@@ -224,7 +226,7 @@ namespace NadekoBot.Modules.Gambling.Services
                         Reputation = 0
                     });
                 }
-                if (w.Immune == false)
+                if (w.Immune == false && u.Immune == false)
                 {
                     if (count < 7)
                     {
