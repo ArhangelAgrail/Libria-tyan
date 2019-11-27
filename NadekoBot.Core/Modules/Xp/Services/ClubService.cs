@@ -324,6 +324,19 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
+        public async Task<bool> PlaceAdd(IUser user)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var club = uow.Clubs.GetByOwner(user.Id);
+
+                club.Members += 1;
+                club.Currency -= 50000;
+                uow.Complete();
+            }
+            return true;
+        }
+
         public bool XpImageCreate(IUser user, string url)
         {
             using (var uow = _db.UnitOfWork)
