@@ -57,7 +57,7 @@
       "FontSize": 42,
       "Pos": {
         "X": 305,
-        "Y": 147
+        "Y": 133
       }
     },
     "TimeOnLevel": {
@@ -125,7 +125,7 @@
         "Show": true,
         "FontSize": 52,
         "Pos": {
-          "X": 345,
+          "X": 450,
           "Y": 205
         }
       },
