@@ -153,7 +153,7 @@ namespace NadekoBot.Modules.Xp
                         .AddField(GetText("description"), string.IsNullOrWhiteSpace(club.Description) ? "-" : club.Description, false)
                         .AddField(GetText("owner_and_role"), $" ▹<@{club.Owner.UserId}>\n" + (club.roleId != 0 ? $"▹<@&{club.roleId}>" : GetText("club_no_role")), true)
                         .AddField(GetText("storage") + GetText(target), $" **{String.Format("{0:#,0}", club.Currency)}/{String.Format("{0:#,0}", maxAmount)}** {Bc.BotConfig.CurrencySign}\n{progress}", true)
-                        .AddField(GetText("members", club.Users.Count, club.Members), string.Join("\n", users
+                        .AddField(GetText("members_all", club.Users.Count, club.Members), string.Join("\n", users
                             .Skip(page * 10)
                             .Take(10)
                             .Select(x =>
@@ -762,7 +762,7 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                          {
                              var sum = _service.GetAmountByUser(x.UserId);
-                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {x.ToString()}";
+                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
                              return sumStr;
                          }));
 
@@ -798,7 +798,7 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                     {
                         var sum = _service.GetAmountByUser(x.UserId);
-                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} +{String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
+                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} + {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
                         return sumStr;
                     }));
 
