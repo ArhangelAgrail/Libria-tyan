@@ -669,6 +669,52 @@ namespace NadekoBot.Modules.Xp
             }
 
             [NadekoCommand, Usage, Description, Aliases]
+            public async Task ClubTextCreate(Rgba32 color = default)
+            {
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    await ReplyErrorLocalized("club_null").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Owner.UserId != Context.User.Id)
+                {
+                    await ReplyErrorLocalized("club_not_owner").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.roleId == 0)
+                {
+                    await ReplyErrorLocalized("club_role_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.XpImageUrl == "")
+                {
+                    await ReplyErrorLocalized("club_xp_image_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.textId != 0)
+                {
+                    await ReplyErrorLocalized("club_text_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Currency < 5000000)
+                {
+                    await ReplyErrorLocalized("club_not_enough").ConfigureAwait(false);
+                    return;
+                }
+
+                var text = await Context.Guild.CreateTextChannelAsync(club.Name + "club");
+
+                //if (await _service.RoleCreate(Context.User, role))
+                    await ReplyConfirmLocalized("club_text_created").ConfigureAwait(false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
             public async Task ClubPlaceAdd(Rgba32 color = default)
             {
                 var club = _service.GetClubByMember(Context.User);
