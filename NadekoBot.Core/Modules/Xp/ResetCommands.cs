@@ -68,6 +68,23 @@ namespace NadekoBot.Modules.Xp
 
                 await ReplyConfirmLocalized("reset_clubs", lisa).ConfigureAwait(false);
             }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [RequireContext(ContextType.Guild)]
+            [OwnerOnly]
+            public async Task UsersRepReset()
+            {
+                var embed = new EmbedBuilder()
+                       .WithTitle(GetText("reset_rep"))
+                       .WithDescription(GetText("reset_rep_confirm"));
+
+                if (!await PromptUserConfirmAsync(embed).ConfigureAwait(false))
+                    return;
+
+                _service.UsersRepReset();
+
+                await ReplyConfirmLocalized("reset_users_rep").ConfigureAwait(false);
+            }
         }
     }
 }

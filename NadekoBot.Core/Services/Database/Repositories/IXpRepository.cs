@@ -11,5 +11,6 @@ namespace NadekoBot.Core.Services.Database.Repositories
         void ResetGuildUserXp(ulong userId, ulong guildId);
         void ResetGuildXp(ulong guildId);
         void ResetClubsXp();
+        void ResetUsersRep();
     }
 }

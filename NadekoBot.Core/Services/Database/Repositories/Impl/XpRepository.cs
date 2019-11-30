@@ -72,5 +72,11 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
             _context.Database.ExecuteSqlCommand($"UPDATE Clubs SET Xp=0");
             _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET ClubXp=TotalXp");
         }
+
+        public void ResetUsersRep()
+        {
+            _context.Database.ExecuteSqlCommand($"UPDATE WaifuInfo SET Reputation=0");
+            _context.Database.ExecuteSqlCommand($"DELETE FROM RepLog");
+        }
     }
 }

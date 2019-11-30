@@ -968,6 +968,15 @@ namespace NadekoBot.Modules.Xp.Services
             }
         }
 
+        public void UsersRepReset()
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                uow.Xp.ResetUsersRep();
+                uow.Complete();
+            }
+        }
+
         public string ClubsXpReset(ulong guildId, int mult)
         {
             string lisa = "";

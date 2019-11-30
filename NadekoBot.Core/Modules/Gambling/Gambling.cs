@@ -130,7 +130,6 @@ namespace NadekoBot.Modules.Gambling
                         .Select(x =>
                         {
                             return $"<@{x.UserId}> - **+{x.Count}**";
-
                         })));
 
                     return embed;
@@ -150,8 +149,7 @@ namespace NadekoBot.Modules.Gambling
                         .Take(20)
                         .Select(x =>
                         {
-                            return $"<@{x.UserId}> - {x.Count}";
-
+                            return $"<@{x.UserId}> - **+{x.Count}**";
                         })));
 
                     return embed;
