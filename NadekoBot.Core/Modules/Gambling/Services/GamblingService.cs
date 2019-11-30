@@ -167,12 +167,6 @@ namespace NadekoBot.Modules.Gambling.Services
                         Immune = false,
                         Reputation = 1
                     });
-
-                    /*uow.RepLog.Add(new RepLog()
-                    {
-                        UserId = thisUser.UserId,
-                        FromId = user.Id
-                    });*/
                 }
                 else
                 {
@@ -194,16 +188,31 @@ namespace NadekoBot.Modules.Gambling.Services
                     w.Reputation = rep;
                     u.LastReputation = target.Id;
                     total = w.Reputation;
-
-                    /*uow.RepLog.Add(new RepLog()
-                    {
-                        UserId = thisUser.UserId,
-                        FromId = user.Id
-                    });*/
                 }
+
                 await uow.CompleteAsync();
             }
+
             return total;
+        }
+
+        public async Task<bool> LogReputation(IUser target, IUser user)
+        {
+            var result = false;
+            using (var uow = _db.UnitOfWork)
+            {
+                var thisUser = uow.DiscordUsers.GetOrCreate(target);
+                uow.RepLog.Add(new RepLog()
+                {
+                    UserId = thisUser.UserId,
+                    FromId = user.Id
+                });
+
+                await uow.CompleteAsync();
+                result = true;
+            }
+
+            return result;
         }
 
         public int GetUserLevel(IUser user)

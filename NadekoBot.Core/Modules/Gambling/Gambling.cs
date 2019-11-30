@@ -93,6 +93,7 @@ namespace NadekoBot.Modules.Gambling
                     }
 
                     var total = await _service.GiveReputation(target, Context.User);
+                    await _service.LogReputation(target, Context.User);
                     await ReplyConfirmLocalized("rep", target.Mention, total, period).ConfigureAwait(false);
                 }
                 else

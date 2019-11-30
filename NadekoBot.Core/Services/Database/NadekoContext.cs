@@ -39,6 +39,7 @@ namespace NadekoBot.Core.Services.Database
         public DbSet<WaifuUpdate> WaifuUpdates { get; set; }
         public DbSet<Warning> Warnings { get; set; }
         public DbSet<ModLog> ModLog { get; set; }
+        public DbSet<RepLog> RepLog { get; set; }
         public DbSet<UserXpStats> UserXpStats { get; set; }
         public DbSet<ClubInfo> Clubs { get; set; }
         public DbSet<XpCard> XpCards { get; set; }
@@ -253,6 +254,12 @@ namespace NadekoBot.Core.Services.Database
             moglog.HasIndex(x => x.GuildId);
             moglog.HasIndex(x => x.UserId);
             moglog.HasIndex(x => x.DateAdded);
+            #endregion
+
+            #region RepLog
+            var replog = modelBuilder.Entity<RepLog>();
+            replog.HasIndex(x => x.UserId);
+            replog.HasIndex(x => x.FromId);
             #endregion
 
             #region PatreonRewards
