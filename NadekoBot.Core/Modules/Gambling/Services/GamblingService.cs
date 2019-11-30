@@ -157,6 +157,19 @@ namespace NadekoBot.Modules.Gambling.Services
                 var u = uow.Waifus.ByWaifuUserId(user.Id);
                 var thisUser = uow.DiscordUsers.GetOrCreate(target);
 
+                if (u == null)
+                {
+                    uow.Waifus.Add(new WaifuInfo()
+                    {
+                        Waifu = thisUser,
+                        Price = 1,
+                        Claimer = null,
+                        Immune = false,
+                        Reputation = 1,
+                        LastReputation = 0
+                    });
+                }
+
                 if (w == null)
                 {
                     uow.Waifus.Add(new WaifuInfo()
@@ -170,25 +183,13 @@ namespace NadekoBot.Modules.Gambling.Services
                 }
                 else
                 {
-                    if (u == null)
-                    {
-                        uow.Waifus.Add(new WaifuInfo()
-                        {
-                            Waifu = thisUser,
-                            Price = 1,
-                            Claimer = null,
-                            Immune = false,
-                            Reputation = 1,
-                            LastReputation = 0
-                        });
-                    }
-
                     int rep = w.Reputation;
                     rep += 1;
                     w.Reputation = rep;
-                    u.LastReputation = target.Id;
                     total = w.Reputation;
                 }
+
+                u.LastReputation = target.Id;
 
                 await uow.CompleteAsync();
             }

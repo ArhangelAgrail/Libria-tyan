@@ -353,7 +353,7 @@ namespace NadekoBot.Modules.Gambling
                     .AddField(efb => efb.WithName(GetText("reputation")).WithValue("**+" + wi.Reputation.ToString() + "☆**").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("gifts")).WithValue(itemsStr).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("Waifus", wi.ClaimCount)).WithValue(wi.ClaimCount == 0 ? nobody + "\n_______" : string.Join("\n", wi.Claims30) + "\n_______").WithIsInline(false))
-                    .WithFooter(text: GetText("info") + " " + info, iconUrl: "http://www.picshare.ru/uploads/181213/sK6tzE73ub.png");
+                    .WithFooter(text: GetText("info") + " " + info, iconUrl: "https://cdn.discordapp.com/attachments/404549045168766986/650350116221353995/sK6tzE73ub.png");
 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
             }
