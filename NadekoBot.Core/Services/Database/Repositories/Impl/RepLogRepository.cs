@@ -29,5 +29,31 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
                 .Take(count)
                 .ToList();
         }
+
+        public RepLogResult[] GetForUser(ulong userId)
+        {
+            return _set
+                .Where(x => x.UserId == userId)
+                .GroupBy(x => x.FromId)
+                .Select(x => new RepLogResult
+                {
+                    UserId = x.Key,
+                    Count = x.Count()
+                }).ToArray();
+
+        }
+
+        public RepLogResult[] GetByUser(ulong userId)
+        {
+            return _set
+                .Where(x => x.FromId == userId)
+                .GroupBy(x => x.UserId)
+                .Select(x => new RepLogResult
+                {
+                    UserId = x.Key,
+                    Count = x.Count()
+                }).ToArray();
+
+        }
     }
 }

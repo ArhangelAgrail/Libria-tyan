@@ -216,6 +216,22 @@ namespace NadekoBot.Modules.Gambling.Services
             return result;
         }
 
+        public RepLogResult[] GetRepLogForUser(IUser user)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.RepLog.GetForUser(user.Id);
+            }
+        }
+
+        public RepLogResult[] GetRepLogByUser(IUser user)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.RepLog.GetByUser(user.Id);
+            }
+        }
+
         public int GetUserLevel(IUser user)
         {
             using (var uow = _db.UnitOfWork)

@@ -112,6 +112,54 @@ namespace NadekoBot.Modules.Gambling
         }
 
         [NadekoCommand, Usage, Description, Aliases]
+        [OwnerOnly]
+        public async Task ReputationLog(int type, [Remainder]IUser user)
+        {
+            if (type == 0)
+            {
+                var replog = _service.GetRepLogForUser(user);
+
+                await Context.SendPaginatedConfirmAsync(0, (page) =>
+                {
+                    var embed = new EmbedBuilder()
+                        .WithOkColor()
+                        .WithAuthor(name: GetText("rep_for_user", user.ToString()), iconUrl: user.GetAvatarUrl())
+                        .WithDescription(string.Join("\n", replog
+                        .Skip(page * 20)
+                        .Take(20)
+                        .Select(x =>
+                        {
+                            return $"<@{x.UserId}> - **+{x.Count}**";
+
+                        })));
+
+                    return embed;
+                }, 100, 20, false).ConfigureAwait(false);
+            }
+            else
+            {
+                var replog = _service.GetRepLogByUser(user);
+
+                await Context.SendPaginatedConfirmAsync(0, (page) =>
+                {
+                    var embed = new EmbedBuilder()
+                        .WithOkColor()
+                        .WithAuthor(name: GetText("rep_by_user", user.ToString()), iconUrl: user.GetAvatarUrl())
+                        .WithDescription(string.Join("\n", replog
+                        .Skip(page * 20)
+                        .Take(20)
+                        .Select(x =>
+                        {
+                            return $"<@{x.UserId}> - {x.Count}";
+
+                        })));
+
+                    return embed;
+                }, 100, 20, false).ConfigureAwait(false);
+            }
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
         public async Task Timely()
         {
             var val = Bc.BotConfig.TimelyCurrency;
