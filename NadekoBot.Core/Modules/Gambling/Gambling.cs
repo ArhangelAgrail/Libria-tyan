@@ -108,7 +108,7 @@ namespace NadekoBot.Modules.Gambling
         public async Task RepReset()
         {
             _cache.RemoveAllRepGives();
-            await ReplyConfirmLocalized("timely_reset").ConfigureAwait(false);
+            await ReplyConfirmLocalized("rep_reset").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
