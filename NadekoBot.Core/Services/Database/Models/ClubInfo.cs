@@ -15,6 +15,8 @@ namespace NadekoBot.Core.Services.Database.Models
         public int Xp { get; set; } = 0;
         public int Currency { get; set; } = 0;
         public ulong roleId { get; set; } = 0;
+        public ulong textId { get; set; } = 0;
+        public int Members { get; set; } = 30;
 
         public int OwnerId { get; set; }
         public DiscordUser Owner { get; set; }

@@ -153,7 +153,7 @@ namespace NadekoBot.Modules.Xp
                         .AddField(GetText("description"), string.IsNullOrWhiteSpace(club.Description) ? "-" : club.Description, false)
                         .AddField(GetText("owner_and_role"), $" ▹<@{club.Owner.UserId}>\n" + (club.roleId != 0 ? $"▹<@&{club.roleId}>" : GetText("club_no_role")), true)
                         .AddField(GetText("storage") + GetText(target), $" **{String.Format("{0:#,0}", club.Currency)}/{String.Format("{0:#,0}", maxAmount)}** {Bc.BotConfig.CurrencySign}\n{progress}", true)
-                        .AddField(GetText("members", club.Users.Count), string.Join("\n", users
+                        .AddField(GetText("members_all", club.Users.Count, club.Members), string.Join("\n", users
                             .Skip(page * 10)
                             .Take(10)
                             .Select(x =>
@@ -293,7 +293,7 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
-                if (clb.Users.Count >= 30)
+                if (clb.Users.Count >= clb.Members)
                 {
                     await ReplyErrorLocalized("club_limit");
                     return;
@@ -668,6 +668,77 @@ namespace NadekoBot.Modules.Xp
                     await ReplyConfirmLocalized("club_role_created").ConfigureAwait(false);
             }
 
+            [NadekoCommand, Usage, Description, Aliases]
+            public async Task ClubTextCreate(Rgba32 color = default)
+            {
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    await ReplyErrorLocalized("club_null").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Owner.UserId != Context.User.Id)
+                {
+                    await ReplyErrorLocalized("club_not_owner").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.roleId == 0)
+                {
+                    await ReplyErrorLocalized("club_role_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.XpImageUrl == "")
+                {
+                    await ReplyErrorLocalized("club_xp_image_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.textId != 0)
+                {
+                    await ReplyErrorLocalized("club_text_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Currency < 5000000)
+                {
+                    await ReplyErrorLocalized("club_not_enough").ConfigureAwait(false);
+                    return;
+                }
+
+                var text = await Context.Guild.CreateTextChannelAsync(club.Name + "club");
+
+                //if (await _service.RoleCreate(Context.User, role))
+                    await ReplyConfirmLocalized("club_text_created").ConfigureAwait(false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            public async Task ClubPlaceAdd(Rgba32 color = default)
+            {
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    await ReplyErrorLocalized("club_null").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Owner.UserId != Context.User.Id)
+                {
+                    await ReplyErrorLocalized("club_not_owner").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Currency < 50000)
+                {
+                    await ReplyErrorLocalized("club_not_enough").ConfigureAwait(false);
+                    return;
+                }
+
+                if (await _service.PlaceAdd(Context.User))
+                    await ReplyConfirmLocalized("club_place_added", club.Members + 1).ConfigureAwait(false);
+            }
 
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -691,7 +762,7 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                          {
                              var sum = _service.GetAmountByUser(x.UserId);
-                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {x.ToString()}";
+                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
                              return sumStr;
                          }));
 
@@ -727,7 +798,7 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                     {
                         var sum = _service.GetAmountByUser(x.UserId);
-                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} +{String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
+                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} + {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
                         return sumStr;
                     }));
 

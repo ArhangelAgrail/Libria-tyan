@@ -733,11 +733,12 @@ namespace NadekoBot.Modules.Xp.Services
                 }
                 if (_template.User.Xp.Guild.Show)
                 {
+                    var text = $"{guild.LevelXp}/{guild.RequiredXp}";
                     img.Mutate(x => x.DrawText($"{guild.LevelXp}/{guild.RequiredXp}",
                         _fonts.NotoSans.CreateFont(_template.User.Xp.Guild.FontSize, FontStyle.Bold),
                         Brushes.Solid(_template.User.Xp.Guild.Color),
                         pen,
-                        new PointF(_template.User.Xp.Guild.Pos.X, _template.User.Xp.Guild.Pos.Y)));
+                        new PointF(_template.User.Xp.Guild.Pos.X - (text.Length * 14), _template.User.Xp.Guild.Pos.Y)));
                 }
                 if (stats.FullGuildStats.AwardedXp != 0 && _template.User.Xp.Awarded.Show)
                 {
@@ -765,7 +766,7 @@ namespace NadekoBot.Modules.Xp.Services
                 if (_template.User.GuildRank.Show)
                 {
                     img.Mutate(x => x.DrawText(stats.GuildRanking.ToString(),
-                        _fonts.RankFontFamily.CreateFont(_template.User.GuildRank.FontSize, FontStyle.Bold),
+                        _fonts.NotoSans.CreateFont(_template.User.GuildRank.FontSize, FontStyle.Bold),
                         _template.User.GuildRank.Color,
                         new PointF(_template.User.GuildRank.Pos.X, _template.User.GuildRank.Pos.Y)));
                 }

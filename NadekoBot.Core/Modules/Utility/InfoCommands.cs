@@ -111,7 +111,7 @@ namespace NadekoBot.Modules.Utility
                     .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"} ({time:dd} {GetText("days")})").WithIsInline(true))
                     .AddField(fb => fb.WithName(GetText("joined_discord")).WithValue($"{user.CreatedAt:dd.MM.yyyy HH:mm}").WithIsInline(true))
                     .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{string.Join("\n", user.GetRoles().Take(10).Where(r => r.Id != r.Guild.EveryoneRole.Id).Select(r => { var id = r.Id; return $"<@&{id}>"; })).SanitizeMentions()}").WithIsInline(true))
-                    .WithFooter(user.Id.ToString(), "http://www.picshare.ru/uploads/190208/hngWt9KCQ8.png")
+                    .WithFooter(user.Id.ToString(), "https://cdn.discordapp.com/attachments/404549045168766986/649672628298055695/icon-45.png")
                     .WithColor(NadekoBot.OkColor);
                 
                 var av = user.RealAvatarUrl();
