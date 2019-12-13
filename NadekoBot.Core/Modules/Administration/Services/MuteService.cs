@@ -25,6 +25,7 @@ namespace NadekoBot.Modules.Administration.Services
     {
         public ConcurrentDictionary<ulong, string> GuildMuteRoles { get; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> MutedUsers { get; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> UnmuteAt { get; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<(ulong, TimerType), Timer>> Un_Timers { get; }
             = new ConcurrentDictionary<ulong, ConcurrentDictionary<(ulong, TimerType), Timer>>();
 
@@ -65,6 +66,13 @@ namespace NadekoBot.Modules.Administration.Services
                 .ToDictionary(
                     k => k.GuildId,
                     v => new ConcurrentHashSet<ulong>(v.MutedUsers.Select(m => m.UserId))
+            ));
+
+            UnmuteAt = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>(bot
+                .AllGuildConfigs
+                .ToDictionary(
+                    k => k.GuildId,
+                    v => new ConcurrentHashSet<ulong>(v.UnmuteTimers.Select(m => m.UserId))
             ));
 
             var max = TimeSpan.FromDays(49);
@@ -112,8 +120,9 @@ namespace NadekoBot.Modules.Administration.Services
             try
             {
                 MutedUsers.TryGetValue(usr.Guild.Id, out ConcurrentHashSet<ulong> muted);
+                UnmuteAt.TryGetValue(usr.Guild.Id, out ConcurrentHashSet<ulong> unmute);
 
-                if (muted == null || !muted.Contains(usr.Id))
+                if (muted == null || !muted.Contains(usr.Id) && !unmute.Contains(usr.Id))
                     return Task.CompletedTask;
                 var _ = Task.Run(() => MuteUser(usr, _client.CurrentUser).ConfigureAwait(false));
             }
