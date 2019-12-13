@@ -991,10 +991,12 @@ namespace NadekoBot.Modules.Xp.Services
                     club.Currency += lvl.Level * mult * 100;
                     lisa += club.Name + " - " + (lvl.Level * mult * 100) + _bc.BotConfig.CurrencySign + "\n";
 
+                    var total = clb.Users.Select(x => x.ClubInvetsAmount).Sum();
+
                     foreach (var user in clb.Users)
                     {
-                        var amount = (int)((user.TotalXp - user.ClubXp) * 0.00001 * user.ClubInvetsAmount);
-                        _cs.AddAsync(user.UserId, $"Awarded for Club XP - {user.TotalXp - user.ClubXp} by {user.ClubInvetsAmount}", amount, gamble: true);
+                        var amount = (int)((user.TotalXp - user.ClubXp) * 0.000005 * total);
+                        _cs.AddAsync(user.UserId, $"Awarded for Club XP - {user.TotalXp - user.ClubXp} by {total}", amount, gamble: true);
                     }
                 }
                 

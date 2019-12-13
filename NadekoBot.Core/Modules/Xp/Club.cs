@@ -762,15 +762,17 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                          {
                              var sum = _service.GetAmountByUser(x.UserId);
-                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
+                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.0005)}% - <@{x.UserId}>";
                              return sumStr;
                          }));
 
                     var result = list.OrderByDescending(x => Convert.ToInt32(x.Split(Bc.BotConfig.CurrencySign).First()));
+                    var total = club.Users.Select(x => x.ClubInvetsAmount).Sum();
 
                     var embed = new EmbedBuilder()
-                        .WithTitle(GetText("club_top_investers", club.Name))
-                        .WithFooter(GetText("page", curPage + 1))
+                        .WithAuthor(GetText("club_top_investers", club.Name))
+                        .WithTitle(GetText("club_total_invests", total, Bc.BotConfig.CurrencySign))
+                        .WithFooter(GetText("page", curPage + 1))s
                         .WithOkColor()
                         .AddField(GetText("members", club.Users.Count), Format.Bold(string.Join("\n", result.Skip(curPage*10).Take(10))), false);
                     return embed;
