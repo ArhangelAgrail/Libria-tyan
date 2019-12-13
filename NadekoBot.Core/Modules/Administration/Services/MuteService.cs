@@ -25,7 +25,6 @@ namespace NadekoBot.Modules.Administration.Services
     {
         public ConcurrentDictionary<ulong, string> GuildMuteRoles { get; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> MutedUsers { get; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> UnmuteAt { get; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<(ulong, TimerType), Timer>> Un_Timers { get; }
             = new ConcurrentDictionary<ulong, ConcurrentDictionary<(ulong, TimerType), Timer>>();
 
@@ -68,12 +67,6 @@ namespace NadekoBot.Modules.Administration.Services
                     v => new ConcurrentHashSet<ulong>(v.MutedUsers.Select(m => m.UserId))
             ));
 
-            UnmuteAt = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>(bot
-                .AllGuildConfigs
-                .ToDictionary(
-                    k => k.GuildId,
-                    v => new ConcurrentHashSet<ulong>(v.UnmuteTimers.Select(m => m.UserId))
-            ));
 
             var max = TimeSpan.FromDays(49);
 
@@ -117,12 +110,41 @@ namespace NadekoBot.Modules.Administration.Services
 
         private Task Client_UserJoined(IGuildUser usr)
         {
+            var guildId = usr.GuildId;
+
+            using (var uow = _db.UnitOfWork)
+            {
+                var config = uow.GuildConfigs.ForId(guildId, set => set.Include(gc => gc.MutedUsers)
+                        .Include(gc => gc.UnmuteTimers));
+
+                var Unmute = config.UnmuteTimers.Where(x => x.UserId == usr.Id).LastOrDefault();
+                if (Unmute != null && Unmute.UnmuteAt <= DateTime.UtcNow)
+                {
+                    var match = new MutedUserId()
+                    {
+                        UserId = usr.Id
+                    };
+
+                    var toRemove = config.MutedUsers.FirstOrDefault(x => x.Equals(match));
+                    if (toRemove != null)
+                    {
+                        uow._context.Remove(toRemove);
+                    }
+
+                    if (MutedUsers.TryGetValue(guildId, out ConcurrentHashSet<ulong> muted))
+                        muted.TryRemove(usr.Id);
+
+                    config.UnmuteTimers.RemoveWhere(x => x.UserId == usr.Id);
+                }
+
+                uow.CompleteAsync();
+            }
+
             try
             {
                 MutedUsers.TryGetValue(usr.Guild.Id, out ConcurrentHashSet<ulong> muted);
-                UnmuteAt.TryGetValue(usr.Guild.Id, out ConcurrentHashSet<ulong> unmute);
 
-                if (muted == null || !muted.Contains(usr.Id) && !unmute.Contains(usr.Id))
+                if (muted == null || !muted.Contains(usr.Id))
                     return Task.CompletedTask;
                 var _ = Task.Run(() => MuteUser(usr, _client.CurrentUser).ConfigureAwait(false));
             }
