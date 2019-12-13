@@ -112,6 +112,12 @@ namespace NadekoBot.Modules.Gambling
         }
 
         [NadekoCommand, Usage, Description, Aliases]
+        [Priority(0)]
+        public Task ReputationLog(int type)
+            => ReputationLog(type, Context.User);
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [Priority(1)]
         [OwnerOnly]
         public async Task ReputationLog(int type, [Remainder]IUser user)
         {

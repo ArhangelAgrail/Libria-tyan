@@ -3440,6 +3440,13 @@
       "{0}rep @user"
     ]
   },
+  "reputationlog": {
+    "cmd": "reputationlog replog",
+    "desc": "Get information about used/received reputation. 0 - using/1 - receiving.",
+    "usage": [
+      "{0}replog 0 or {0}replog 1"
+    ]
+  },
   "setcard": {
     "cmd": "setcard",
     "desc": "Sets background for `.xp` if u have role for this background. For reset this use CardName - `default`.",
