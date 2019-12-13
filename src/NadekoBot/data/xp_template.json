@@ -38,7 +38,7 @@
       "Show": true,
       "FontSize": 42,
       "Pos": {
-        "X": 525,
+        "X": 555,
         "Y": 133
       }
     },
@@ -56,7 +56,7 @@
       "Show": true,
       "FontSize": 42,
       "Pos": {
-        "X": 305,
+        "X": 345,
         "Y": 133
       }
     },
@@ -155,10 +155,10 @@
     "Name": {
       "Color": "ffffffff",
       "Show": true,
-      "FontSize": 35,
+      "FontSize": 42,
       "Pos": {
-        "X": 600,
-        "Y": 295
+        "X": 700,
+        "Y": 305
       }
     }
   }

@@ -16,11 +16,13 @@ namespace NadekoBot.Core.Services.Impl
                     _fonts.Install(file);
                 }
 
+            Cousine = _fonts.Find("Cousine");
             NotoSans = _fonts.Find("Noto Sans");
             RankFontFamily = _fonts.Find("Uni Sans Thin CAPS");
         }
 
         public FontFamily RankFontFamily { get; }
         public FontFamily NotoSans { get; }
+        public FontFamily Cousine { get; }
     }
 }
