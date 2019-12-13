@@ -62,7 +62,7 @@ namespace NadekoBot.Modules.Gambling
 
                 await Context.SendPaginatedConfirmAsync(page, (curPage) =>
                 {
-                    var theseEntries = entries.Skip(curPage * 9).Take(9).ToArray();
+                    var theseEntries = entries.Skip(curPage * 12).Take(12).ToArray();
 
                     if (reputation > 2500) reputation = 2500;
                     if (price > 500000) price = 500000;
@@ -70,16 +70,19 @@ namespace NadekoBot.Modules.Gambling
                     if (!theseEntries.Any())
                         return new EmbedBuilder().WithErrorColor()
                             .WithDescription(GetText("shop_none"));
+
+                    var discount = reputation * 0.01 + price * 0.00005;
+
                     var embed = new EmbedBuilder().WithOkColor()
-                        .WithTitle(GetText("shop", Bc.BotConfig.CurrencySign) + " - " + GetText("shop_discount", String.Format("{0:0.##}", reputation * 0.01 + price * 0.00005)));
+                        .WithTitle(GetText("shop", Bc.BotConfig.CurrencySign) + " - " + GetText("shop_discount", String.Format("{0:0.##}", discount)));
 
                     for (int i = 0; i < theseEntries.Length; i++)
                     {
                         var entry = theseEntries[i];
-                        embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - {(int)(entry.Price - entry.Price * (reputation * 0.0001 + price * 0.0000005))}{Bc.BotConfig.CurrencySign} (-{(int)(entry.Price * (reputation * 0.0001 + price * 0.0000005))})").WithValue(EntryToString(entry)).WithIsInline(true));
+                        embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - {(int)(entry.Price - entry.Price * (discount * 0.01))}{Bc.BotConfig.CurrencySign} (-{(int)(entry.Price * (discount * 0.01))})").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
                     }
                     return embed;
-                }, entries.Count, 9, true).ConfigureAwait(false);
+                }, entries.Count, 12, true).ConfigureAwait(false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -115,6 +118,8 @@ namespace NadekoBot.Modules.Gambling
                     return;
                 }
 
+                var discount = reputation * 0.01 + price * 0.00005;
+
                 if (entry.Type == ShopEntryType.Role)
                 {
                     var guser = (IGuildUser)Context.User;
@@ -126,7 +131,7 @@ namespace NadekoBot.Modules.Gambling
                         return;
                     }
 
-                    if (await _cs.RemoveAsync(Context.User.Id, $"Shop purchase - {entry.Type}", (int)(entry.Price - entry.Price * (reputation * 0.0001 + price * 0.0000005))).ConfigureAwait(false))
+                    if (await _cs.RemoveAsync(Context.User.Id, $"Shop purchase - {entry.Type}", (int)(entry.Price - entry.Price * (discount * 0.01))).ConfigureAwait(false))
                     {
                         try
                         {
@@ -135,14 +140,14 @@ namespace NadekoBot.Modules.Gambling
                         catch (Exception ex)
                         {
                             _log.Warn(ex);
-                            await _cs.AddAsync(Context.User.Id, $"Shop error refund", (int)(entry.Price - entry.Price * (reputation * 0.0001 + price * 0.0000005))).ConfigureAwait(false);
+                            await _cs.AddAsync(Context.User.Id, $"Shop error refund", (int)(entry.Price - entry.Price * (discount * 0.01))).ConfigureAwait(false);
                             await ReplyErrorLocalized("shop_role_purchase_error").ConfigureAwait(false);
                             return;
                         }
                         //var profit = GetProfitAmount(entry.Price);
                         //await _cs.AddAsync(entry.AuthorId, $"Shop sell item - {entry.Type}", profit).ConfigureAwait(false);
                         //await _cs.AddAsync(Context.Client.CurrentUser.Id, $"Shop sell item - cut", entry.Price - profit).ConfigureAwait(false);
-                        await ReplyConfirmLocalized("shop_role_purchase", Format.Bold(role.Name)).ConfigureAwait(false);
+                        await ReplyConfirmLocalized("shop_role_purchase", $"<@&{role.Id}>").ConfigureAwait(false);
                         return;
                     }
                     else

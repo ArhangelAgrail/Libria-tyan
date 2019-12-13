@@ -772,7 +772,7 @@ namespace NadekoBot.Modules.Xp
                     var embed = new EmbedBuilder()
                         .WithAuthor(GetText("club_top_investers", club.Name))
                         .WithTitle(GetText("club_total_invests", total, Bc.BotConfig.CurrencySign))
-                        .WithFooter(GetText("page", curPage + 1))s
+                        .WithFooter(GetText("page", curPage + 1))
                         .WithOkColor()
                         .AddField(GetText("members", club.Users.Count), Format.Bold(string.Join("\n", result.Skip(curPage*10).Take(10))), false);
                     return embed;
