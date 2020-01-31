@@ -14,6 +14,7 @@ namespace NadekoBot.Core.Services.Database.Models
         public int MinimumLevelReq { get; set; } = 5;
         public int Xp { get; set; } = 0;
         public int Currency { get; set; } = 0;
+        public int TotalCurrency { get; set; } = 0;
         public ulong roleId { get; set; } = 0;
         public ulong textId { get; set; } = 0;
         public int Members { get; set; } = 30;

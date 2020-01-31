@@ -324,7 +324,7 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
-        public async Task<bool> PlaceAdd(IUser user)
+        public bool PlaceAdd(IUser user)
         {
             using (var uow = _db.UnitOfWork)
             {
