@@ -3488,5 +3488,12 @@
     "usage": [
       "{0}clubxpimageupdate http://www.picshare.ru/uploads/181002/fRmgFQ6tWc.png"
     ]
+  },
+  "gamechannelsize": {
+    "cmd": "gamechannelsize gcs",
+    "desc": "Updating the user limit in voice channel",
+    "usage": [
+      "{0}gcs 5"
+    ]
   }
 }

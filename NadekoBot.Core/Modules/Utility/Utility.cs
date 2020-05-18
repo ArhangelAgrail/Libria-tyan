@@ -39,6 +39,45 @@ namespace NadekoBot.Modules.Utility
         }
 
         [NadekoCommand, Usage, Description, Aliases]
+        public async Task GameChannelSize(int size)
+        {
+            if (size < 3 || size > 99)
+                await ReplyErrorLocalized("small_size").ConfigureAwait(false);
+            else
+            {
+                var user = Context.User as IGuildUser;
+                var channel = user.VoiceChannel;
+                if (channel == null)
+                    await ReplyErrorLocalized("must_be_in_voice").ConfigureAwait(false);
+                else
+                {
+                    List<ulong> voice = new List<ulong>()
+                    {
+                        406862499812474882,
+                        431486290857558018,
+                        419097123150364672,
+                        443046461060677644,
+                        509041941799763980,
+                        614483768840814602
+                    };
+
+                    int confirm = 0;
+                    foreach (ulong v in voice)
+                        if (v == channel.Id)
+                            confirm = 1;
+
+                    if (confirm == 1)
+                    {
+                        await channel.ModifyAsync(x => { x.UserLimit = size; });
+                        await ReplyConfirmLocalized("size_changed", size).ConfigureAwait(false);
+                    }
+                    else
+                        await ReplyErrorLocalized("not_correct_voice").ConfigureAwait(false);
+                }
+            }
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
         public async Task TogetherTube()
         {
             Uri target;
