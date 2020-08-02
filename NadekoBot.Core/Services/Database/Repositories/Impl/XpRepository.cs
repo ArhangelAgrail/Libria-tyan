@@ -70,6 +70,7 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
         public void ResetClubsXp()
         {
             _context.Database.ExecuteSqlCommand($"UPDATE Clubs SET Xp=0");
+            _context.Database.ExecuteSqlCommand($"UPDATE Clubs SET TotalCurrency=0");
             _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET ClubXp=TotalXp");
         }
 

@@ -993,7 +993,7 @@ namespace NadekoBot.Modules.Xp.Services
                     club.Currency += lvl.Level * mult * 100;
                     lisa += club.Name + " - " + (lvl.Level * mult * 100) + _bc.BotConfig.CurrencySign + "\n";
 
-                    var total = clb.Users.Select(x => x.ClubInvetsAmount).Sum();
+                    var total = clb.TotalCurrency;
 
                     foreach (var user in clb.Users)
                     {

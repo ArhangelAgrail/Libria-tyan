@@ -455,6 +455,7 @@ namespace NadekoBot.Modules.Gambling
                 var user = uow.DiscordUsers.GetOrCreate(Context.User);
                 user.ClubInvetsAmount += (int)amount;
                 club.Currency += (int)amount;
+                club.TotalCurrency += (int)amount;
                 await uow.CompleteAsync();
                 await ReplyConfirmLocalized("club_invested", amount + CurrencySign, Format.Bold(club.Name)).ConfigureAwait(false);
             }
