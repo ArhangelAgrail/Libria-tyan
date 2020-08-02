@@ -134,6 +134,7 @@ namespace NadekoBot.Modules.Gambling
                 {
                     var embed = new EmbedBuilder()
                         .WithOkColor()
+                        .WithFooter(GetText("page", page + 1))
                         .WithAuthor(name: GetText("rep_for_user", user.ToString()), iconUrl: user.GetAvatarUrl())
                         .WithDescription(string.Join("\n", replog
                         .OrderByDescending(x => x.Count)
@@ -155,6 +156,7 @@ namespace NadekoBot.Modules.Gambling
                 {
                     var embed = new EmbedBuilder()
                         .WithOkColor()
+                        .WithFooter(GetText("page", page + 1))
                         .WithAuthor(name: GetText("rep_by_user", user.ToString()), iconUrl: user.GetAvatarUrl())
                         .WithDescription(string.Join("\n", replog
                         .OrderByDescending(x => x.Count)
