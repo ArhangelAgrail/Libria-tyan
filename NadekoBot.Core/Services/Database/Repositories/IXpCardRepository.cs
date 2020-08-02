@@ -10,5 +10,6 @@ namespace NadekoBot.Core.Services.Database.Repositories
         void SetClubCard(ulong userId, ulong roleId);
         void SetXpCard(ulong userId, string name);
         ulong GetXpCardRoleId(string name);
+        XpCardResult[] GetAllXpCards();
     }
 }

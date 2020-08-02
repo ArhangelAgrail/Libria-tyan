@@ -309,6 +309,28 @@ namespace NadekoBot.Modules.Xp
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
+        public async Task AllCards()
+        {
+            var xpCards = _service.AllXpCard();
+            await Context.SendPaginatedConfirmAsync(0, (page) =>
+            {
+                var embed = new EmbedBuilder()
+                    .WithOkColor()
+                    .WithAuthor(name: GetText("all_templates"))
+                    .WithDescription(string.Join("\n", xpCards
+                    .Skip(page * 20)
+                    .Take(20)
+                    .Select(x =>
+                    {
+                        return $"**{x.Name}**";
+                    })));
+
+                return embed;
+            }, 100, 20, false).ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
         public async Task SetCard([Remainder]string name)
         {
             using (var uow = _db.UnitOfWork)

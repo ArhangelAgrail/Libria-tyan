@@ -135,12 +135,15 @@ namespace NadekoBot.Modules.Xp
                 var maxAmount = 500000;
                 var target = "storage_role";
 
+                if (club.textId != 0)
+                { maxAmount = 9999999; target = "storage_next"; }
+                else
                 if (club.XpImageUrl != "")
                 { maxAmount = 5000000; target = "storage_channel"; }
                 else
                 if (club.roleId != 0)
                 { maxAmount = 1000000; target = "storage_card"; }
-
+                
                 var progress = _service.GetStorageProgress(club.Currency, maxAmount);
 
                 await Context.SendPaginatedConfirmAsync(0, (page) =>
@@ -708,10 +711,24 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
-                var text = await Context.Guild.CreateTextChannelAsync(club.Name + "club");
+                var overwriteAllow = new OverwritePermissions(PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Allow, 
+                    PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, 
+                    PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, 
+                    PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit);
+                var overwriteDeny = new OverwritePermissions(PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Deny,
+                    PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit,
+                    PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit,
+                    PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit);
 
-                //if (await _service.RoleCreate(Context.User, role))
-                    await ReplyConfirmLocalized("club_text_created").ConfigureAwait(false);
+                var everyoneRole = Context.Guild.EveryoneRole;
+                var clubRole = Context.Guild.GetRole(club.roleId);
+
+                var text = await Context.Guild.CreateTextChannelAsync(club.Name + "_club", prop => prop.CategoryId = 436911139436232705);
+                await text.AddPermissionOverwriteAsync(clubRole, overwriteAllow);
+                await text.AddPermissionOverwriteAsync(everyoneRole, overwriteDeny);
+
+                if (_service.TextCreate(Context.User, text))
+                await ReplyConfirmLocalized("club_text_created").ConfigureAwait(false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -736,7 +753,7 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
-                if (await _service.PlaceAdd(Context.User))
+                if (_service.PlaceAdd(Context.User))
                     await ReplyConfirmLocalized("club_place_added", club.Members + 1).ConfigureAwait(false);
             }
 
@@ -775,6 +792,44 @@ namespace NadekoBot.Modules.Xp
                         .WithFooter(GetText("page", curPage + 1))
                         .WithOkColor()
                         .AddField(GetText("members", club.Users.Count), Format.Bold(string.Join("\n", result.Skip(curPage*10).Take(10))), false);
+                    return embed;
+                }, club.Users.Count, 10, addPaginatedFooter: false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            public Task ClubInvestLbReserve(int page = 1)
+            {
+                if (--page < 0 || page > 20)
+                    return Task.CompletedTask;
+
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    return Task.CompletedTask;
+                }
+
+                return Context.SendPaginatedConfirmAsync(page, (curPage) =>
+                {
+                    var users = club.Users;
+
+                    List<string> list = new List<string>();
+
+                    list.AddRange(users.Select(x =>
+                    {
+                        var sum = _service.GetAmountByUser(x.UserId);
+                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.0005)}% - {x.Username}";
+                        return sumStr;
+                    }));
+
+                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split(Bc.BotConfig.CurrencySign).First()));
+                    var total = club.Users.Select(x => x.ClubInvetsAmount).Sum();
+
+                    var embed = new EmbedBuilder()
+                        .WithAuthor(GetText("club_top_investers", club.Name))
+                        .WithTitle(GetText("club_total_invests", total, Bc.BotConfig.CurrencySign))
+                        .WithFooter(GetText("page", curPage + 1))
+                        .WithOkColor()
+                        .AddField(GetText("members", club.Users.Count), Format.Bold(string.Join("\n", result.Skip(curPage * 10).Take(10))), false);
                     return embed;
                 }, club.Users.Count, 10, addPaginatedFooter: false);
             }

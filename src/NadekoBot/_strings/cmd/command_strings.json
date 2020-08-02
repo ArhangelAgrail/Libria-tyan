@@ -3495,5 +3495,26 @@
     "usage": [
       "{0}gcs 5"
     ]
+  },
+  "clubtextcreate": {
+    "cmd": "clubtextcreate ctcreate",
+    "desc": "Club owner can create text channel for club, if club have enough currency (5 000 000), text channel will be visilbe only for club members.",
+    "usage": [
+      "{0}clubtextcreate"
+    ]
+  },
+  "allcards": {
+    "cmd": "allcards",
+    "desc": "Returns list of all created xp templates on server.",
+    "usage": [
+      "{0}allcards"
+    ]
+  },
+  "clubinvestlbreserve": {
+    "cmd": "clubinvestlbreserver clubinlbr clubinr",
+    "desc": "Shows donation statistics on club storage.",
+    "usage": [
+      "{0}clubinr"
+    ]
   }
 }

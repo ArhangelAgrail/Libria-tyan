@@ -113,11 +113,16 @@ namespace NadekoBot.Modules.Gambling
 
         [NadekoCommand, Usage, Description, Aliases]
         [Priority(0)]
+        public Task ReputationLog()
+            => ReputationLog(0, Context.User);
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [Priority(1)]
         public Task ReputationLog(int type)
             => ReputationLog(type, Context.User);
 
         [NadekoCommand, Usage, Description, Aliases]
-        [Priority(1)]
+        [Priority(2)]
         [OwnerOnly]
         public async Task ReputationLog(int type, [Remainder]IUser user)
         {
@@ -131,6 +136,7 @@ namespace NadekoBot.Modules.Gambling
                         .WithOkColor()
                         .WithAuthor(name: GetText("rep_for_user", user.ToString()), iconUrl: user.GetAvatarUrl())
                         .WithDescription(string.Join("\n", replog
+                        .OrderByDescending(x => x.Count)
                         .Skip(page * 20)
                         .Take(20)
                         .Select(x =>
@@ -151,6 +157,7 @@ namespace NadekoBot.Modules.Gambling
                         .WithOkColor()
                         .WithAuthor(name: GetText("rep_by_user", user.ToString()), iconUrl: user.GetAvatarUrl())
                         .WithDescription(string.Join("\n", replog
+                        .OrderByDescending(x => x.Count)
                         .Skip(page * 20)
                         .Take(20)
                         .Select(x =>

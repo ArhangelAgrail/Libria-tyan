@@ -324,7 +324,23 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
-        public async Task<bool> PlaceAdd(IUser user)
+        public bool TextCreate(IUser user, ITextChannel text)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var club = uow.Clubs.GetByOwner(user.Id);
+
+                var users = club.Users;
+                var du = user as IGuildUser;
+
+                club.textId = text.Id;
+                club.Currency -= 5000000;
+                uow.Complete();
+            }
+            return true;
+        }
+
+        public bool PlaceAdd(IUser user)
         {
             using (var uow = _db.UnitOfWork)
             {

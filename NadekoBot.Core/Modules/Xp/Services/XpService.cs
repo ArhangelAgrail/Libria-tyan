@@ -1026,6 +1026,17 @@ namespace NadekoBot.Modules.Xp.Services
             }
         }
 
+        public XpCardResult[] AllXpCard()
+        {
+            XpCardResult[] allCards;
+            using (var uow = _db.UnitOfWork)
+            {
+                allCards = uow.XpCards.GetAllXpCards();
+                uow.Complete();
+            }
+            return allCards;
+        }
+
         public void XpCardSetDefault(ulong userId)
         {
             using (var uow = _db.UnitOfWork)

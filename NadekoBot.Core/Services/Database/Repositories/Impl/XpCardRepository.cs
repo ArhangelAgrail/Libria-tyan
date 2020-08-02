@@ -42,5 +42,13 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
         {
             return _set.Where(x => x.Name == name).Select(y => y.RoleId).FirstOrDefault();
         }
+
+        public XpCardResult[] GetAllXpCards()
+        {
+            return _set.Select(x => new XpCardResult
+            {
+                Name = x.Name
+            }).ToArray();
+        }
     }
 }
