@@ -53,12 +53,12 @@
   },
   "Slots": {
     "Emojis": [
-      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/0.png",
-      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/1.png",
-      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/2.png",
-      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/3.png",
-      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/4.png",
-      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/emojis/5.png"
+      "https://cdn.discordapp.com/attachments/404549045168766986/739901009735712898/bamboo.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/739901011040141392/fan.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/739901011900104704/koi.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/739901014110634005/philosophy.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/739901016367038474/architecture-and-city.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/739901026433499266/cherry-blossom.png"
     ],
     "Numbers": [
       "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/0.png",
@@ -72,7 +72,7 @@
       "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/8.png",
       "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/numbers/9.png"
     ],
-    "Bg": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/slots/bg.png"
+    "Bg": "https://media.discordapp.net/attachments/404549045168766986/739900954765164646/slot-bg_2.png?width=475&height=475"
   },
   "Wheel": {
     "Emojis": [
