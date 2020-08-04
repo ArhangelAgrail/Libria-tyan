@@ -339,8 +339,10 @@ namespace NadekoBot.Modules.Gambling
                         .OrderBy(x => x.Price)
                         .GroupBy(x => x.ItemEmoji)
                         .Select(x => $"{x.Key} x{x.Count(),-3}")
-                        .GroupBy(x => i++ / 2)
+                        .GroupBy(x => i++ / 4)
                         .Select(x => string.Join(" ", x)));
+
+                var count = wi.Items.Count();
 
                 var embed = new EmbedBuilder()
                     .WithColor(16738816)
@@ -351,8 +353,8 @@ namespace NadekoBot.Modules.Gambling
                     .AddField(efb => efb.WithName(GetText("changes_of_heart")).WithValue($"{wi.AffinityCount} - \"{GetText(affInfo)}\"").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("club")).WithValue(clubName).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("reputation")).WithValue("**+" + wi.Reputation.ToString() + "☆**").WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("gifts")).WithValue(itemsStr).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("Waifus", wi.ClaimCount)).WithValue(wi.ClaimCount == 0 ? nobody + "\n_______" : string.Join("\n", wi.Claims30) + "\n_______").WithIsInline(false))
+                    .AddField(efb => efb.WithName(GetText("gifts", count)).WithValue(itemsStr).WithIsInline(true))
+                    .AddField(efb => efb.WithName(GetText("Waifus", wi.ClaimCount)).WithValue(wi.ClaimCount == 0 ? nobody + "\n_______" : string.Join("\n", wi.Claims30) + "\n_______").WithIsInline(true))
                     .WithFooter(text: GetText("info") + " " + info, iconUrl: "https://cdn.discordapp.com/attachments/404549045168766986/650350116221353995/sK6tzE73ub.png");
 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
