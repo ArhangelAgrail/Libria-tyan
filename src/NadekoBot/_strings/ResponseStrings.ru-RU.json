@@ -195,7 +195,7 @@
   "administration_sb_user": "Пользователя выгнали",
   "gambling_awarded": "наградил {0} пользователю {1}",
   "gambling_better_luck": "В следующий раз повезёт ^-^",
-  "gambling_br_win": "Поздравляем! Вы выиграли {0}, так как выбросили больше {1}",
+  "gambling_br_win": "Поздравляем! Вы выиграли **{0}**, так как выбросили больше **{1}**",
   "gambling_deck_reshuffled": "Колода перетасована.",
   "gambling_flipped": "подброшено {0}",
   "gambling_flip_guess": "выиграл {0}",

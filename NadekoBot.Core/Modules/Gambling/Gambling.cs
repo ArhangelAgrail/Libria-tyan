@@ -673,7 +673,7 @@ namespace NadekoBot.Modules.Gambling
             var str = Context.User.Mention + Format.Code(GetText("roll", rnd));
             if (rnd < 67)
             {
-                str += GetText("better_luck");
+                str += "\n" + GetText("better_luck");
             }
             else
             {
@@ -681,21 +681,21 @@ namespace NadekoBot.Modules.Gambling
                 if (rnd < 91)
                 {
                     win = (long)(amount * Bc.BotConfig.Betroll67Multiplier);
-                    str += GetText("br_win", win + CurrencySign, 66);
+                    str += "\n" + GetText("br_win", win + CurrencySign, 66);
                     await _cs.AddAsync(Context.User, "Betroll Gamble",
                         win, false, gamble: true).ConfigureAwait(false);
                 }
                 else if (rnd < 100)
                 {
                     win = (long)(amount * Bc.BotConfig.Betroll91Multiplier);
-                    str += GetText("br_win", win + CurrencySign, 90);
+                    str += "\n" + GetText("br_win", win + CurrencySign, 90);
                     await _cs.AddAsync(Context.User, "Betroll Gamble",
                         win, false, gamble: true).ConfigureAwait(false);
                 }
                 else
                 {
                     win = (long)(amount * Bc.BotConfig.Betroll100Multiplier);
-                    str += GetText("br_win", win + CurrencySign, 99) + " 👑";
+                    str += "\n" + GetText("br_win", win + CurrencySign, 99) + " 👑";
                     await _cs.AddAsync(Context.User, "Betroll Gamble",
                         win, false, gamble: true).ConfigureAwait(false);
                 }
