@@ -1,51 +1,70 @@
 {
   "Version": 3,
   "Moderation": {
+
     "Warn": [
-      "http://www.picshare.ru/uploads/180924/e39rQvmJ8F.png"
+
+      "https://cdn.discordapp.com/attachments/404549045168766986/647521108614053929/e39rQvmJ8F.png"
+
     ],
+
     "Mute": [
-      "https://i.imgur.com/WwSs9Sb.png"
+
+      "https://cdn.discordapp.com/attachments/404549045168766986/647522560610926653/WwSs9Sb.png"
+
     ],
+
     "Ban": [
-      "https://i.imgur.com/xOPg9fg.png"
+
+      "https://cdn.discordapp.com/attachments/404549045168766986/647522562913599498/xOPg9fg.png"
+
     ],
+
     "Kick": [
-      "https://i.imgur.com/blfT0QY.png"
+
+      "https://cdn.discordapp.com/attachments/404549045168766986/647522565337907221/blfT0QY.png"
+
     ]
+
   },
   "Coins": {
     "Heads": [
-      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/coins/heads.png"
+      "https://cdn.discordapp.com/attachments/404549045168766986/647520807576403969/25741_coin_reverse-910x91090x9109110.png"
     ],
     "Tails": [
-      "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/coins/tails.png"
+      "https://cdn.discordapp.com/attachments/404549045168766986/647520813561544724/25741_coin_reverse-910x910.png"
     ]
   },
   "Currency": [
-    "http://www.picshare.ru/uploads/181002/Q49Xwi9mgb.png",
-	"http://www.picshare.ru/uploads/181002/WZ38DK86Cg.png",
-	"http://www.picshare.ru/uploads/181002/r41hoRn199.png"
+    "https://cdn.discordapp.com/attachments/404549045168766986/689410423996284949/PicsArt_03-17-12.27.34.png",
+    "https://cdn.discordapp.com/attachments/404549045168766986/689410424483217416/PicsArt_03-17-12.27.52.png",
+    "https://cdn.discordapp.com/attachments/404549045168766986/689410425061900397/PicsArt_03-17-12.28.08.png",
+    "https://cdn.discordapp.com/attachments/404549045168766986/689410425447514138/PicsArt_03-17-12.28.26.png",
+    "https://cdn.discordapp.com/attachments/404549045168766986/689410425863143441/PicsArt_03-17-12.28.53.png",
+    "https://cdn.discordapp.com/attachments/404549045168766986/689410426307739654/PicsArt_03-17-12.29.14.png"
   ],
   "Dice": [
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/0.png",
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/1.png",
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/2.png",
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/3.png",
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/4.png",
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/5.png",
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/6.png",
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/7.png",
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/8.png",
-    "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/dice/9.png"
+    "https://i.imgur.com/KyOfDw1.png",
+    "https://i.imgur.com/IX8xjZ3.png",
+    "https://i.imgur.com/k9GqKp5.png",
+    "https://i.imgur.com/rmhTSnp.png",
+    "https://i.imgur.com/93PUmFr.png",
+    "https://i.imgur.com/CMBCJRC.png",
+    "https://i.imgur.com/VqhUpsV.png",
+    "https://i.imgur.com/r6rFCuT.png",
+    "https://i.imgur.com/eIxuOpg.png",
+    "https://i.imgur.com/At9YgRO.png"
   ],
   "Rategirl": {
-    "Matrix": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rategirl/matrix.png",
-    "Dot": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rategirl/dot.png"
+    "Matrix": "https://i.imgur.com/z7yySqA.png",
+    "Dot": "https://i.imgur.com/TpubajW.png"
   },
   "XpBg": [
-    "https://cdn.discordapp.com/attachments/416378842358349824/655149762709946369/xp_template_moders.png",
-	"https://media.discordapp.net/attachments/404641721562169346/750307796746108988/PicsArt_09-01-12.16.30.jpg?width=800&height=450"
+    	"https://media.discordapp.net/attachments/404549045168766986/750459796846543051/PicsArt_09-01-05.08.34.png?width=800&height=450", 
+	"https://media.discordapp.net/attachments/404549045168766986/696683152978214922/xp_template_donaters2.png",
+	"https://cdn.discordapp.com/attachments/404549045168766986/647525350120751134/xp_template_moders.png",
+	"https://cdn.discordapp.com/attachments/404549045168766986/647525381045485598/xp_template_anilibria_2.png",
+	"https://media.discordapp.net/attachments/404549045168766986/751443124085194892/xp_template_oathum.png"
   ],
   "Rip": {
     "Bg": "https://nadeko-pictures.nyc3.digitaloceanspaces.com/other/rip/rip.png",
@@ -76,16 +95,16 @@
   },
   "Wheel": {
     "Emojis": [
-      "http://www.picshare.ru/uploads/190821/jVZ2vr227z.png",
-      "http://www.picshare.ru/uploads/190821/S8bS88y54i.png",
-      "http://www.picshare.ru/uploads/190821/6G6ex5Mav0.png",
-      "http://www.picshare.ru/uploads/190821/38KHV9gLUw.png",
-      "http://www.picshare.ru/uploads/190821/A6t4h7CU13.png",
-      "http://www.picshare.ru/uploads/190821/4oLO921a8q.png",
-      "http://www.picshare.ru/uploads/190821/NB8375c7U5.png",
-      "http://www.picshare.ru/uploads/190821/Mso9u1uh73.png",
-	  "http://www.picshare.ru/uploads/190821/L4FBakS2r9.png"
+      "https://cdn.discordapp.com/attachments/404549045168766986/760926219247288340/full_arrow_top.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/760926261891170374/full_arrow_left_top.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/760926327254810684/full_arrow_left.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/760926346636427305/full_arrow_left_bot.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/760926364734980116/full_arrow_bot.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/760926407021821982/full_arrow_right_bot.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/760926416341827684/full_arrow_right.png",
+      "https://cdn.discordapp.com/attachments/404549045168766986/760926426508689458/full_arrow_right_top.png",
+	  "https://cdn.discordapp.com/attachments/404549045168766986/760926811231617034/wheel_center_emoji_126x124.png"
     ],
-    "Bg": "http://www.picshare.ru/uploads/190820/Pe6Xda3zWY.png"
+    "Bg": "https://media.discordapp.net/attachments/404549045168766986/762413472914866206/wheel_null_3.png"
   }
 }

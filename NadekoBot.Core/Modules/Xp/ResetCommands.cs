@@ -64,7 +64,7 @@ namespace NadekoBot.Modules.Xp
                 if (!await PromptUserConfirmAsync(embed).ConfigureAwait(false))
                     return;
 
-                var lisa = _service.ClubsXpReset(Context.Guild.Id, multiplier);
+                var lisa = _service.ClubsXpReset(multiplier);
 
                 await ReplyConfirmLocalized("reset_clubs", lisa).ConfigureAwait(false);
             }

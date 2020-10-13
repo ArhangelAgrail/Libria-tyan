@@ -84,6 +84,7 @@ Nadeko Support Server: https://discord.gg/nadekobot";
         public UpdateCheckType CheckForUpdates { get; set; } = UpdateCheckType.Release;
         public DateTime LastUpdate { get; set; } = new DateTime(2018, 5, 5, 0, 0, 0, DateTimeKind.Utc);
         public bool CurrencyGenerationPassword { get; set; }
+        public DateTime ClubsReset { get; set; } = new DateTime(2018, 5, 5, 0, 0, 0, DateTimeKind.Utc);
     }
 
     public enum UpdateCheckType

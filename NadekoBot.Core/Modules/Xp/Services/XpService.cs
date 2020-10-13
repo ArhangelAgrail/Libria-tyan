@@ -979,7 +979,7 @@ namespace NadekoBot.Modules.Xp.Services
             }
         }
 
-        public string ClubsXpReset(ulong guildId, int mult)
+        public string ClubsXpReset(int mult)
         {
             string lisa = "";
             using (var uow = _db.UnitOfWork)
@@ -997,7 +997,7 @@ namespace NadekoBot.Modules.Xp.Services
 
                     foreach (var user in clb.Users)
                     {
-                        var amount = (int)((user.TotalXp - user.ClubXp) * 0.000005 * total);
+                        var amount = (int)((user.TotalXp - user.ClubXp) * 0.00001 * total);
                         _cs.AddAsync(user.UserId, $"Awarded for Club XP - {user.TotalXp - user.ClubXp} by {total}", amount, gamble: true);
                     }
                 }

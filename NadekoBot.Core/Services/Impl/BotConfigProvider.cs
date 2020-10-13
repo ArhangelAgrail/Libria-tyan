@@ -220,6 +220,11 @@ namespace NadekoBot.Core.Services.Impl
                             return false;
                         bc.CurrencyGenerationPassword = pw;
                         break;
+                    case BotConfigEditType.ClubsReset:
+                        if (!DateTime.TryParse(newValue, out var cr))
+                            return false;
+                        bc.ClubsReset = cr;
+                        break;
                     default:
                         return false;
                 }

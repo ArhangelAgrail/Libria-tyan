@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System;
 
 namespace NadekoBot.Core.Services.Database.Repositories.Impl
 {
@@ -72,6 +73,7 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
             _context.Database.ExecuteSqlCommand($"UPDATE Clubs SET Xp=0");
             _context.Database.ExecuteSqlCommand($"UPDATE Clubs SET TotalCurrency=0");
             _context.Database.ExecuteSqlCommand($"UPDATE DiscordUser SET ClubXp=TotalXp");
+            _context.Database.ExecuteSqlCommand($"UPDATE BotConfig SET ClubsReset={DateTime.Now}");
         }
 
         public void ResetUsersRep()

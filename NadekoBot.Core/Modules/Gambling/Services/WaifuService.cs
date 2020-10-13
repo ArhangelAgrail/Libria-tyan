@@ -655,7 +655,7 @@ namespace NadekoBot.Modules.Gambling.Services
                 title = ClaimTitle.Status28;
             else if (count < 2000)
                 title = ClaimTitle.Status29;
-            else if (count < 2500)
+            else if (count < 2050)
                 title = ClaimTitle.Status30;
             else if (count < 2100)
                 title = ClaimTitle.Status31;

@@ -258,7 +258,7 @@ namespace NadekoBot.Core.Services.Impl
             {
                 var obj = await factory(param).ConfigureAwait(false);
 
-                if (obj == default)
+                if (obj == null)
                     return default;
 
                 await _db.StringSetAsync(key, JsonConvert.SerializeObject(obj),
