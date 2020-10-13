@@ -791,7 +791,7 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                          {
                              var sum = _service.GetAmountByUser(x.UserId);
-                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
+                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% ({(int)((x.TotalXp - x.ClubXp) * 0.00001 * club.TotalCurrency)}{Bc.BotConfig.CurrencySign}) - <@{x.UserId}>";
                              return sumStr;
                          }));
 
@@ -829,7 +829,7 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                     {
                         var sum = _service.GetAmountByUser(x.UserId);
-                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.0005)}% - {x.Username}";
+                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% ({(int)((x.TotalXp - x.ClubXp) * 0.00001 * club.TotalCurrency)}{Bc.BotConfig.CurrencySign}) - {x.Username}";
                         return sumStr;
                     }));
 
