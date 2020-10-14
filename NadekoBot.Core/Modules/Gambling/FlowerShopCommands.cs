@@ -79,7 +79,7 @@ namespace NadekoBot.Modules.Gambling
                     for (int i = 0; i < theseEntries.Length; i++)
                     {
                         var entry = theseEntries[i];
-                        embed.AddField(efb => efb.WithName($"#{curPage * 12 + i + 1} - {(int)(entry.Price - entry.Price * (discount * 0.01))}{Bc.BotConfig.CurrencySign} (-{(int)(entry.Price * (discount * 0.01))})").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
+                        embed.AddField(efb => efb.WithName($"#{curPage * 12 + i + 1} - ~~{entry.Price}~~{Bc.BotConfig.CurrencySign}\nЦена: {(int)(entry.Price - entry.Price * (discount * 0.01))}{Bc.BotConfig.CurrencySign}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
                     }
                     return embed;
                 }, entries.Count, 12, true).ConfigureAwait(false);

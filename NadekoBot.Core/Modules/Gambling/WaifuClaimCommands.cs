@@ -322,6 +322,7 @@ namespace NadekoBot.Modules.Gambling
                 var wi = _service.GetFullWaifuInfoAsync(target);
                 var affInfo = _service.GetAffinityTitle(wi.AffinityCount);
                 var club = _service.GetClubName(target);
+                var immune = GetText("price");
 
                 string clubName = "-";
                 if (club != null)
@@ -330,6 +331,9 @@ namespace NadekoBot.Modules.Gambling
                 string info = wi.Info;
                 if (info == null)
                     info = GetText("about_me");
+
+                if (wi.Immune)
+                    immune = GetText("immune_info");
 
                 var nobody = GetText("nobody");
                 var i = 0;
@@ -347,7 +351,7 @@ namespace NadekoBot.Modules.Gambling
                 var embed = new EmbedBuilder()
                     .WithColor(16738816)
                     .WithAuthor(name: GetText("waifu") + " " + wi.FullName + " - \"" + GetText(_service.GetRepTitle(wi.Reputation)) + "\"", iconUrl: target.GetAvatarUrl())
-                    .AddField(efb => efb.WithName(GetText("price")).WithValue(wi.Price.ToString() + " :cherry_blossom:").WithIsInline(true))
+                    .AddField(efb => efb.WithName(immune).WithValue(wi.Price.ToString() + Bc.BotConfig.CurrencySign).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("claimed_by")).WithValue(wi.ClaimerName ?? nobody).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("likes")).WithValue(wi.AffinityName ?? nobody).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("changes_of_heart")).WithValue($"{wi.AffinityCount} - \"{GetText(affInfo)}\"").WithIsInline(true))

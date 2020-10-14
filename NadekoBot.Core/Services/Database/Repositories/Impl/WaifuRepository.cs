@@ -164,6 +164,8 @@ VALUES ({null}, {null}, {1}, (SELECT Id FROM DiscordUser WHERE UserId={userId}),
                             .Count(),
 
                     Price = w.Price,
+                    
+                    Immune = w.Immune,
 
                     Reputation = w.Reputation,
 
