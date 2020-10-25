@@ -756,6 +756,7 @@ namespace NadekoBot.Modules.Gambling
                 .WithColor(3553599)
                 .WithTitle(GetText("events_schedule"))
                 .WithDescription(GetText("events_desc"))
+                .WithImageUrl("https://media.discordapp.net/attachments/404934630148407297/765968161107214376/PicsArt_10-14-06.56.33.jpg")
                 .WithFooter(GetText("events_footer"));
 
             for (var i = 0; i < 7; i++)
