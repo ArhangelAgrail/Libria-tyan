@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SixLabors.ImageSharp.PixelFormats;
+using Octokit;
 
 namespace NadekoBot.Modules.Xp
 {
@@ -269,12 +270,16 @@ namespace NadekoBot.Modules.Xp
                 {
                     try
                     {
-                        var owner = (Context.Guild as SocketGuild)?.GetUser(club.Owner.UserId);
-                        await (await owner.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithOkColor()
-                                         .WithAuthor(GetText("club_new_apply", club.Name))
-                                         .WithFooter("ID: " + Context.User.Id)
-                                         .WithDescription(GetText("club_new_applycant", Context.User.Username, Context.User.Discriminator, Context.User.Mention)))
-                            .ConfigureAwait(false);
+                        var clubAdmins = club.Users.Select(x => x).Where(x => x.IsClubAdmin == true);
+                        foreach (var admin in clubAdmins)
+                        {
+                            var target = (Context.Guild as SocketGuild)?.GetUser(admin.UserId);
+                            await (await target.GetOrCreateDMChannelAsync().ConfigureAwait(false)).EmbedAsync(new EmbedBuilder().WithOkColor()
+                                                                     .WithAuthor(GetText("club_new_apply", club.Name))
+                                                                     .WithFooter("ID: " + Context.User.Id)
+                                                                     .WithDescription(GetText("club_new_applycant", Context.User.Username, Context.User.Discriminator, Context.User.Mention)))
+                                                        .ConfigureAwait(false);
+                        }
                     }
                     catch { }
                     await ReplyConfirmLocalized("club_applied", Format.Bold(club.Name)).ConfigureAwait(false);
