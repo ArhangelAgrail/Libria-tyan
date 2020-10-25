@@ -232,6 +232,37 @@ namespace NadekoBot.Modules.Gambling.Services
             }
         }
 
+        public EventSchedule[] EventsList(ulong gid, DateTime date)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.EventSchedule.ByDate(gid, date);
+            }
+        }
+
+        public async Task<bool> AddEvent(IGuild guild, IUser user, string desc, DateTime date)
+        {
+            var result = false;
+            using (var uow = _db.UnitOfWork)
+            {
+                var thisUser = uow.DiscordUsers.GetOrCreate(user);
+                uow.EventSchedule.Add(new EventSchedule()
+                {
+                    GuildId = guild.Id,
+                    UserId = thisUser.UserId,
+                    Date = date,
+                    Type = "0",
+                    Description = desc
+                }) ;
+
+                await uow.CompleteAsync();
+                result = true;
+            }
+
+            return result;
+        }
+
+
         public int GetUserLevel(IUser user)
         {
             using (var uow = _db.UnitOfWork)

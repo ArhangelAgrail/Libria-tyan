@@ -10,6 +10,7 @@ using NadekoBot.Core.Services.Database.Models;
 using NadekoBot.Extensions;
 using NadekoBot.Modules.Gambling.Services;
 using NadekoBot.Modules.Xp.Common;
+using Remotion.Linq.Clauses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -744,6 +745,51 @@ namespace NadekoBot.Modules.Gambling
             }, 1000, 10, addPaginatedFooter: false);
         }
 
+        [NadekoCommand, Usage, Description, Aliases]
+        public async Task Events()
+        {
+            var Date = DateTime.UtcNow;
+            EventSchedule[] Events;
+            string Description = "-", today = " (" + GetText("today") + ")";
+
+            var embed = new EmbedBuilder()
+                .WithColor(3553599)
+                .WithTitle(GetText("events_schedule"))
+                .WithDescription(GetText("events_desc"))
+                .WithFooter(GetText("events_footer"));
+
+            for (var i = 0; i < 7; i++)
+            {
+                Events = _service.EventsList(Context.Guild.Id, Date);
+                Description = "";
+                if (!Events.Any())
+                    Description = GetText("no_events");
+                else
+                    foreach (var n in Events)
+                    {
+                        Description += n.Description + "\n";
+                    }
+                if (Date.Day != DateTime.UtcNow.Day)
+                    today = "";
+
+                embed.AddField(efb => efb.WithName(":scroll: " + Date.Day + "." + Date.Month + " - " + GetText(Date.DayOfWeek.ToString()) + today)
+                                         .WithValue(Description)
+                                         .WithIsInline(false));
+                Date = Date.AddDays(1);
+            }
+
+            await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task AddEvent(string date, [Remainder] string desc)
+        {
+            DateTime Date = Convert.ToDateTime(date);
+
+            await _service.AddEvent(Context.Guild, Context.User, desc, Date);
+            await ReplyConfirmLocalized("event_added").ConfigureAwait(false);
+        }
 
         public enum RpsPick
         {
