@@ -39,8 +39,8 @@ namespace NadekoBot.Extensions
             return ch.SendMessageAsync("", embed: eb.Build());
         }
 
-        public static Task<IUserMessage> SendConfirmAsync(this IMessageChannel ch, string text)
-             => ch.SendMessageAsync("", embed: new EmbedBuilder().WithOkColor().WithDescription(text).Build());
+        public static Task<IUserMessage> SendConfirmAsync(this IMessageChannel ch, string text, string footer = "")
+             => ch.SendMessageAsync("", embed: new EmbedBuilder().WithOkColor().WithDescription(text).WithFooter(footer).Build());
 
         public static Task<IUserMessage> SendTableAsync<T>(this IMessageChannel ch, string seed, IEnumerable<T> items, Func<T, string> howToPrint, int columns = 3)
         {

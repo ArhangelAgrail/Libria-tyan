@@ -460,7 +460,9 @@ namespace NadekoBot.Modules.Gambling
                 club.Currency += (int)amount;
                 club.TotalCurrency += (int)amount;
                 await uow.CompleteAsync();
-                await ReplyConfirmLocalized("club_invested", amount + CurrencySign, Format.Bold(club.Name)).ConfigureAwait(false);
+
+                string cur = GetText("currency_left", _service.GetUserCurrency(Context.User).ToString(), Bc.BotConfig.CurrencySign);
+                await Context.Channel.SendConfirmAsync(GetText("club_invested", amount + CurrencySign, Format.Bold(club.Name)), cur).ConfigureAwait(false);
             }
         }
 
@@ -701,7 +703,9 @@ namespace NadekoBot.Modules.Gambling
                         win, false, gamble: true).ConfigureAwait(false);
                 }
             }
-            await Context.Channel.SendConfirmAsync(str).ConfigureAwait(false);
+
+            string cur = GetText("currency_left", _service.GetUserCurrency(Context.User).ToString(), Bc.BotConfig.CurrencySign);
+            await Context.Channel.SendConfirmAsync(str, cur).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]

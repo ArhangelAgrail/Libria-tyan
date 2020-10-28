@@ -193,6 +193,7 @@
   "administration_migration_done": "Перемещение закончено!",
   "administration_presence_updates": "История присутвия пользователей",
   "administration_sb_user": "Пользователя выгнали",
+  "gambling_currency_left": "Ваш баланс: {0}{1}",
   "gambling_awarded": "наградил {0} пользователю {1}",
   "gambling_better_luck": "В следующий раз повезёт ^-^",
   "gambling_br_win": "Поздравляем! Вы выиграли **{0}**, так как выбросили больше **{1}**",
