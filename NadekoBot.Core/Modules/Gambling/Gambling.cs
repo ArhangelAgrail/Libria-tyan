@@ -768,7 +768,7 @@ namespace NadekoBot.Modules.Gambling
                 else
                     foreach (var n in Events)
                     {
-                        Description += n.Description + "\n";
+                        Description += GetText("time", n.Date.ToString("HH:mm")) + " - " + n.Description + "\n";
                     }
                 if (Date.Day != DateTime.UtcNow.Day)
                     today = "";
