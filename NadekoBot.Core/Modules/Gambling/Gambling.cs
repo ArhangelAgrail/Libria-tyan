@@ -752,7 +752,7 @@ namespace NadekoBot.Modules.Gambling
         [NadekoCommand, Usage, Description, Aliases]
         public async Task Events()
         {
-            var Date = DateTime.UtcNow;
+            var Date = DateTime.Now;
             EventSchedule[] Events;
             string Description = "-", today = " (" + GetText("today") + ")";
 
@@ -774,7 +774,7 @@ namespace NadekoBot.Modules.Gambling
                     {
                         Description += GetText("time", n.Date.ToString("HH:mm")) + " - " + n.Description + "\n";
                     }
-                if (Date.Day != DateTime.UtcNow.Day)
+                if (Date.Day != DateTime.Now.Day)
                     today = "";
 
                 embed.AddField(efb => efb.WithName(":scroll: " + Date.Day + "." + Date.Month + " - " + GetText(Date.DayOfWeek.ToString()) + today)
