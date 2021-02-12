@@ -449,42 +449,10 @@ namespace NadekoBot.Modules.Gambling.Services
             return (w, result, amount, remaining);
         }
 
-        public async Task<bool> GiftWaifuAsync(ulong from, IUser giftedWaifu, WaifuItem itemObj)
+        public async Task<bool> GiftWaifuAsync(ulong from, int count, IUser giftedWaifu, WaifuItem itemObj)
         {
-            if (!await _cs.RemoveAsync(from, "Bought waifu item", itemObj.Price, gamble: true))
-            {
-                return false;
-            }
+            itemObj.Count = count;
 
-            using (var uow = _db.UnitOfWork)
-            {
-                var w = uow.Waifus.ByWaifuUserId(giftedWaifu.Id, set => set.Include(x => x.Items)
-                    .Include(x => x.Claimer));
-                if (w == null)
-                {
-                    uow.Waifus.Add(w = new WaifuInfo()
-                    {
-                        Affinity = null,
-                        Claimer = null,
-                        Price = 1,
-                        Waifu = uow.DiscordUsers.GetOrCreate(giftedWaifu),
-                    });
-                }
-                w.Items.Add(itemObj);
-                if (w.Claimer?.UserId == from)
-                {
-                    w.Price += (int)(itemObj.Price * 0.95);
-                }
-                else
-                    w.Price += itemObj.Price / 2;
-
-                await uow.CompleteAsync();
-            }
-            return true;
-        }
-
-        /*public async Task<bool> GiftWaifuAsync(ulong from, int count, IUser giftedWaifu, WaifuItem itemObj)
-        {
             if (!await _cs.RemoveAsync(from, "Bought waifu item", itemObj.Price*count, gamble: true))
             {
                 return false;
@@ -492,6 +460,8 @@ namespace NadekoBot.Modules.Gambling.Services
 
             using (var uow = _db.UnitOfWork)
             {
+                itemObj.GifterWaifuInfoId = uow.Waifus.ByWaifuUserId(from).Id;
+
                 var w = uow.Waifus.ByWaifuUserId(giftedWaifu.Id, set => set.Include(x => x.Items)
                     .Include(x => x.Claimer));
                 if (w == null)
@@ -505,34 +475,19 @@ namespace NadekoBot.Modules.Gambling.Services
                     });
                 }
 
-                for (int i = 0; i < count; i++)
-                {
-                    AddItems(giftedWaifu, itemObj);
-                }
+                w.Items.Add(itemObj);
 
                 if (w.Claimer?.UserId == from)
                 {
-                    w.Price += (int)(itemObj.Price * count * 0.95);
+                    w.Price += (int)(itemObj.Price * 0.95) * count;
                 }
                 else
-                    w.Price += (itemObj.Price * count) / 2;
+                    w.Price += (itemObj.Price / 2) * count;
 
                 await uow.CompleteAsync();
             }
-
             return true;
-        }*/
-
-        /*public void AddItems(IUser giftedWaifu, WaifuItem itemObj)
-        {
-            using (var uow = _db.UnitOfWork)
-            {
-                var w = uow.Waifus.ByWaifuUserId(giftedWaifu.Id, set => set.Include(x => x.Items)
-                    .Include(x => x.Claimer));
-                w.Items.Add(itemObj);
-                uow.Complete();
-            }
-        }*/
+        }
 
         public WaifuInfoStats GetFullWaifuInfoAsync(IGuildUser target)
         {

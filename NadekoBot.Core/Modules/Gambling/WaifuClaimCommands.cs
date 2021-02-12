@@ -342,11 +342,11 @@ namespace NadekoBot.Modules.Gambling
                     : string.Join("\n", wi.Items
                         .OrderBy(x => x.Price)
                         .GroupBy(x => x.ItemEmoji)
-                        .Select(x => $"{x.Key} x{x.Count(),-3}")
+                        .Select(x => $"{x.Key} x{x.Select(y => y.Count).Sum()}")
                         .GroupBy(x => i++ / 4)
                         .Select(x => string.Join(" ", x)));
 
-                var count = wi.Items.Count();
+                var count = wi.Items.Select(x => x.Count).Sum();
 
                 var embed = new EmbedBuilder()
                     .WithColor(16738816)
@@ -372,19 +372,20 @@ namespace NadekoBot.Modules.Gambling
                 if (--page < 0 || page > 3)
                     return;
 
-                await Context.SendPaginatedConfirmAsync(page, (cur) =>
+                await Context.SendPaginatedConfirmAsync(page, (curentPage) =>
                 {
                     var embed = new EmbedBuilder()
                         .WithTitle(GetText("waifu_gift_shop"))
                         .WithOkColor();
 
+                    var i = curentPage * 9;
                     Enum.GetValues(typeof(WaifuItem.ItemName))
                                         .Cast<WaifuItem.ItemName>()
                                         .Select(x => WaifuItem.GetItemObject(x, Bc.BotConfig.WaifuGiftMultiplier))
                                         .OrderBy(x => x.Price)
-                                        .Skip(9 * cur)
+                                        .Skip(9 * curentPage)
                                         .Take(9)
-                                        .ForEach(x => embed.AddField(f => f.WithName(x.ItemEmoji + " " + x.Item.ToString()).WithValue(x.Price).WithIsInline(true)));
+                                        .ForEach(x => embed.AddField(f => f.WithName("#" + i++ + " " + x.ItemEmoji + " " + x.Item.ToString()).WithValue(GetText("waifu_gift_price", x.Price, Bc.BotConfig.CurrencySign)).WithIsInline(true)));
 
                     return embed;
                 }, Enum.GetValues(typeof(WaifuItem.ItemName)).Length, 9);
@@ -399,7 +400,7 @@ namespace NadekoBot.Modules.Gambling
                     return;
 
                 var itemObj = WaifuItem.GetItemObject(item, Bc.BotConfig.WaifuGiftMultiplier);
-                bool sucess = await _service.GiftWaifuAsync(Context.User.Id, waifu, itemObj);
+                bool sucess = await _service.GiftWaifuAsync(Context.User.Id, 1, waifu, itemObj);
 
                 if (sucess)
                 {
@@ -411,11 +412,14 @@ namespace NadekoBot.Modules.Gambling
                 }
             }
 
-            /*[NadekoCommand, Usage, Description, Aliases]
+            [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             [Priority(2)]
             public async Task WaifuGift(int count, WaifuItem.ItemName item, [Remainder] IUser waifu)
             {
+                if (count <= 0)
+                    return;
+
                 if (waifu.Id == Context.User.Id)
                     return;
 
@@ -424,13 +428,13 @@ namespace NadekoBot.Modules.Gambling
 
                 if (sucess)
                 {
-                    await ReplyConfirmLocalized("waifu_gift_count", Format.Bold(count.ToString()), Format.Bold(item.ToString() + " " + itemObj.ItemEmoji), Format.Bold(waifu.ToString()));
+                    await ReplyConfirmLocalized("waifu_gift_count", Format.Bold(count.ToString()), Format.Bold(GetText(item.ToString()) + " " + itemObj.ItemEmoji), waifu.Mention);
                 }
                 else
                 {
                     await ReplyErrorLocalized("not_enough", Bc.BotConfig.CurrencySign);
                 }
-            }*/
+            }
         }
     }
 }

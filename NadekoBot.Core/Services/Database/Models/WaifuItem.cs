@@ -5,8 +5,10 @@ namespace NadekoBot.Core.Services.Database.Models
     public class WaifuItem : DbEntity
     {
         public int? WaifuInfoId { get; set; }
+        public int? GifterWaifuInfoId { get; set; }
         public string ItemEmoji { get; set; }
         public int Price { get; set; }
+        public int Count { get; set; }
         public ItemName Item { get; set; }
 
         public enum ItemName
