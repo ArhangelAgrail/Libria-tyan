@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20210223204122_DiscordUserUpdate.cs" />
+    <Compile Remove="Migrations\20210223204122_DiscordUserUpdate.Designer.cs" />
     <Compile Remove="Modules\Administration\ModuleCommands.cs" />
   </ItemGroup>
 
@@ -16,6 +18,7 @@
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
     <PackageReference Include="Discord.Net" Version="2.1.0" />
     <PackageReference Include="CoreCLR-NCalc" Version="2.2.34" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Google.Apis.Urlshortener.v1" Version="1.35.1.138" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.35.1.1226" />
     <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.35.1.1301" />
@@ -23,6 +26,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
