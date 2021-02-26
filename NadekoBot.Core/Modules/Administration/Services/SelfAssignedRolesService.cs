@@ -27,6 +27,7 @@ namespace NadekoBot.Core.Modules.Administration.Services
             Assigned, // successfully removed
             Err_Not_Assignable, // not assignable (error)
             Err_Already_Have, // you already have that role (error)
+            Err_Already_Have_Category, // you already have role from that category (error)
             Err_Not_Perms, // bot doesn't have perms (error)
             Err_Lvl_Req, // you are not required level (error)
         }
@@ -99,8 +100,10 @@ namespace NadekoBot.Core.Modules.Administration.Services
                 .Select(x => x.RoleId).ToArray();
             if (exclusive)
             {
+                //return (AssignResult.Err_Already_Have_Category, autoDelete, null);
                 var sameRoles = guildUser.RoleIds
                     .Where(r => roleIds.Contains(r));
+                    
 
                 foreach (var roleId in sameRoles)
                 {
@@ -129,6 +132,8 @@ namespace NadekoBot.Core.Modules.Administration.Services
             }
 
             return (AssignResult.Assigned, autoDelete, null);
+
+            
         }
 
         public async Task<bool> SetNameAsync(ulong guildId, int group, string name)

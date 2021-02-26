@@ -113,54 +113,53 @@ namespace NadekoBot.Modules.Administration
 
                 var (exclusive, roles, groups) = _service.GetRoles(Context.Guild);
 
-                await Context.SendPaginatedConfirmAsync(page, (cur) =>
-                {
-                    var rolesStr = new StringBuilder();
-                    var roleGroups = roles
-                        .OrderBy(x => x.Model.Group)
-                        .Skip(cur * 20)
-                        .Take(20)
-                        .GroupBy(x => x.Model.Group)
-                        .OrderBy(x => x.Key);
+                var rolesStr = new StringBuilder();
+                var roleGroups = roles
+                    .OrderBy(x => x.Model.Group)
+                    .Skip(--page * 40)
+                    .Take(40)
+                    .GroupBy(x => x.Model.Group)
+                    .OrderBy(x => x.Key);
 
-                    foreach (var kvp in roleGroups)
+                var embed = new EmbedBuilder().WithOkColor()
+                .WithTitle(Format.Bold(GetText("self_assign_list", roles.Count())))
+                .WithDescription(rolesStr.ToString())
+                .WithFooter(GetText("self_assign_footer"));
+
+
+                foreach (var kvp in roleGroups)
+                {
+                    var groupNameText = "";
+                    if (!groups.TryGetValue(kvp.Key, out var name))
                     {
-                        var groupNameText = "";
-                        if (!groups.TryGetValue(kvp.Key, out var name))
+                        groupNameText = Format.Bold(GetText("self_assign_group", kvp.Key));
+                    }
+                    else
+                    {
+                        groupNameText = Format.Bold(name.TrimTo(25, true));
+                    }
+
+                    rolesStr.Clear();
+                    foreach (var (Model, Role) in kvp.AsEnumerable())
+                    {
+                        if (Role == null)
                         {
-                            groupNameText = Format.Bold(GetText("self_assign_group", kvp.Key));
+                            continue;
                         }
                         else
                         {
-                            groupNameText = Format.Bold($"{kvp.Key} - {name.TrimTo(25, true)}");
-                        }
-
-                        rolesStr.AppendLine("\t\t\t\t ⟪" + groupNameText + "⟫");
-                        foreach (var (Model, Role) in kvp.AsEnumerable())
-                        {
-                            if (Role == null)
-                            {
-                                continue;
-                            }
+                            rolesStr.AppendLine("‌‌   " + Role.Mention);
+                            // first character is invisible space
+                            /*if (Model.LevelRequirement == 0)
+                                rolesStr.AppendLine("‌‌   " + Role.Mention);
                             else
-                            {
-                                // first character is invisible space
-                                if (Model.LevelRequirement == 0)
-                                    rolesStr.AppendLine("‌‌   " + Role.Name);
-                                else
-                                    rolesStr.AppendLine("‌‌   " + Role.Name + $" (lvl {Model.LevelRequirement}+)");
-                            }
+                                rolesStr.AppendLine("‌‌   " + Role.Mention + $" (lvl {Model.LevelRequirement}+)");*/
                         }
-                        rolesStr.AppendLine();
                     }
+                    embed.AddField("⟪" + groupNameText + "⟫ " + GetText("self_lvl_required", kvp.First().Model.LevelRequirement), rolesStr, true);
+                }
 
-                    return new EmbedBuilder().WithOkColor()
-                        .WithTitle(Format.Bold(GetText("self_assign_list", roles.Count())))
-                        .WithDescription(rolesStr.ToString())
-                        .WithFooter(exclusive
-                            ? GetText("self_assign_are_exclusive")
-                            : GetText("self_assign_are_not_exclusive"));
-                }, roles.Count(), 20).ConfigureAwait(false);
+                await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -217,7 +216,11 @@ namespace NadekoBot.Modules.Administration
                 }
                 else if (result == SelfAssignedRolesService.AssignResult.Err_Already_Have)
                 {
-                    msg = await ReplyErrorLocalized("self_assign_already", Format.Bold(role.Name)).ConfigureAwait(false);
+                    msg = await ReplyErrorLocalized("self_assign_already", Format.Bold(role.Mention)).ConfigureAwait(false);
+                }
+                else if (result == SelfAssignedRolesService.AssignResult.Err_Already_Have_Category)
+                {
+                    msg = await ReplyErrorLocalized("self_assign_already_category").ConfigureAwait(false);
                 }
                 else if (result == SelfAssignedRolesService.AssignResult.Err_Not_Perms)
                 {
@@ -225,7 +228,7 @@ namespace NadekoBot.Modules.Administration
                 }
                 else
                 {
-                    msg = await ReplyConfirmLocalized("self_assign_success", Format.Bold(role.Name)).ConfigureAwait(false);
+                    msg = await ReplyConfirmLocalized("self_assign_success", Format.Bold(role.Mention)).ConfigureAwait(false);
                 }
 
                 if (autoDelete)
@@ -250,7 +253,7 @@ namespace NadekoBot.Modules.Administration
                 }
                 else if (result == SelfAssignedRolesService.RemoveResult.Err_Not_Have)
                 {
-                    msg = await ReplyErrorLocalized("self_assign_not_have", Format.Bold(role.Name)).ConfigureAwait(false);
+                    msg = await ReplyErrorLocalized("self_assign_not_have", Format.Bold(role.Mention)).ConfigureAwait(false);
                 }
                 else if (result == SelfAssignedRolesService.RemoveResult.Err_Not_Perms)
                 {
@@ -258,7 +261,7 @@ namespace NadekoBot.Modules.Administration
                 }
                 else
                 {
-                    msg = await ReplyConfirmLocalized("self_assign_remove", Format.Bold(role.Name)).ConfigureAwait(false);
+                    msg = await ReplyConfirmLocalized("self_assign_remove", Format.Bold(role.Mention)).ConfigureAwait(false);
                 }
 
                 if (autoDelete)
