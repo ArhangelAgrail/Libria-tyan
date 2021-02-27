@@ -121,7 +121,7 @@ namespace NadekoBot.Modules.Administration
                     .GroupBy(x => x.Model.Group)
                     .OrderBy(x => x.Key);
 
-                var embed = new EmbedBuilder().WithOkColor()
+                var embed = new EmbedBuilder().WithColor(3553599)
                 .WithTitle(Format.Bold(GetText("self_assign_list", roles.Count())))
                 .WithDescription(rolesStr.ToString())
                 .WithFooter(GetText("self_assign_footer"));

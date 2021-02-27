@@ -217,6 +217,8 @@
   "gambling_max_bet_limit": "Вы не можете поставить больше {0}",
   "gambling_min_bet_limit": "Вы не можете поставить меньше {0}",
   "gambling_not_enough": "У Вас недостаточно {0}",
+  "gambling_received_cur": "Вам подарили {0} на сервере {1}",
+  "gambling_received_cur_description": "Пользователь {0} подарил Вам {1}{2} с сообщением:\n{3}",
   "gambling_no_club": "Вы не состоите в клубе",
   "gambling_club_invested": "Вы перевели {0} клубу {1}",
   "gambling_no_more_cards": "В колоде закончились карты.",

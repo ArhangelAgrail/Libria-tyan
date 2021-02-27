@@ -427,9 +427,20 @@ namespace NadekoBot.Modules.Gambling
                 await ReplyErrorLocalized("not_enough", CurrencyPluralName).ConfigureAwait(false);
                 return;
             }
-            await _cs.AddAsync(receiver, $"Gift from {Context.User.Username} ({Context.User.Id}) - {msg}.", amount, true).ConfigureAwait(false);
-            await ReplyConfirmLocalized("gifted", amount + CurrencySign, Format.Bold(receiver.Mention), msg)
-                .ConfigureAwait(false);
+            await _cs.AddAsync(receiver, $"Gift from {Context.User.Username} ({Context.User.Id}) - {msg}.", amount, false).ConfigureAwait(false);
+            
+            try
+            {
+                await (await receiver.GetOrCreateDMChannelAsync())
+                    .EmbedAsync(new EmbedBuilder()
+                        .WithOkColor()
+                        .WithTitle(GetText("received_cur", Bc.BotConfig.CurrencySign, Context.Guild.Name))
+                        .WithDescription(GetText("received_cur_description", Format.Bold(Context.User.Username), Format.Bold(amount.ToString()), Bc.BotConfig.CurrencySign, Format.Italics(msg))));
+            }
+            catch
+            { }
+
+            await ReplyConfirmLocalized("gifted", amount + CurrencySign, Format.Bold(receiver.Mention), msg).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
