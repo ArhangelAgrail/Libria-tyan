@@ -986,16 +986,15 @@ namespace NadekoBot.Modules.Xp.Services
             {
                 var clubs = uow.Clubs.GetAll();
                 
-                foreach (var clb in clubs)
+                foreach (var club in clubs)
                 {
-                    var club = uow.Clubs.GetByName(clb.Name);
                     var lvl = new LevelStats(club.Xp);
                     club.Currency += lvl.Level * mult * 100;
                     lisa += club.Name + " - " + (lvl.Level * mult * 100) + _bc.BotConfig.CurrencySign + "\n";
 
-                    var total = clb.TotalCurrency;
+                    var total = club.TotalCurrency;
 
-                    foreach (var user in clb.Users)
+                    foreach (var user in club.Users)
                     {
                         var amount = (int)((user.TotalXp - user.ClubXp) * 0.00001 * total);
                         _cs.AddAsync(user.UserId, $"Awarded for Club XP - {user.TotalXp - user.ClubXp} by {total}", amount, gamble: true);

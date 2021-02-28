@@ -62,7 +62,7 @@ namespace NadekoBot.Modules.Gambling
 
                 await Context.SendPaginatedConfirmAsync(page, (curPage) =>
                 {
-                    var theseEntries = entries.Skip(curPage * 12).Take(12).ToArray();
+                    var theseEntries = entries.Skip(curPage * 9).Take(9).ToArray();
 
                     if (reputation > 2500) reputation = 2500;
                     if (price > 500000) price = 500000;
@@ -79,13 +79,13 @@ namespace NadekoBot.Modules.Gambling
                     for (int i = 0; i < theseEntries.Length; i++)
                     {
                         var entry = theseEntries[i];
-                        if (curPage * 12 + i + 1 == 1)
-                            embed.AddField(efb => efb.WithName($"#{curPage * 12 + i + 1} - {GetText("shop_unique")}\n{GetText("shop_price", entry.Price, Bc.BotConfig.CurrencySign)}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
+                        if (curPage * 9 + i + 1 == 1)
+                            embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - {GetText("shop_unique")}\n{GetText("shop_price", entry.Price, Bc.BotConfig.CurrencySign)}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
                         else
-                            embed.AddField(efb => efb.WithName($"#{curPage * 12 + i + 1} - ~~{entry.Price}~~{Bc.BotConfig.CurrencySign}\n{GetText("shop_price", entry.Price, Bc.BotConfig.CurrencySign)}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
+                            embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - ~~{entry.Price}~~{Bc.BotConfig.CurrencySign}\n{GetText("shop_price", entry.Price, Bc.BotConfig.CurrencySign)}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
                     }
                     return embed;
-                }, entries.Count, 12, true).ConfigureAwait(false);
+                }, entries.Count, 9, true).ConfigureAwait(false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]
@@ -144,7 +144,7 @@ namespace NadekoBot.Modules.Gambling
                                 return;
                             }
 
-                            entry.Price += 50000;
+                            entry.Price += 10000;
                             entry.AuthorId = guser.Id;
 
                             await ConfirmLocalized("shop_role_unique_purchase", $"<@&{role.Id}>", Format.Bold(entry.Price.ToString()), Bc.BotConfig.CurrencySign, $"<@{entry.AuthorId}>").ConfigureAwait(false);
