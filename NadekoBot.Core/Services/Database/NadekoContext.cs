@@ -28,6 +28,7 @@ namespace NadekoBot.Core.Services.Database
 
     public class NadekoContext : DbContext
     {
+        public DbSet<Achievements> Achievements { get; set; }
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<GuildConfig> GuildConfigs { get; set; }
         public DbSet<Reminder> Reminders { get; set; }

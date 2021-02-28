@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NLog;
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NadekoBot.Modules.Xp.Common;
@@ -190,6 +191,83 @@ namespace NadekoBot.Modules.Gambling.Services
                 }
 
                 u.LastReputation = target.Id;
+
+                var guildUser = target as IGuildUser;
+                var roles = uow.Achievements.ByGroup("Reputation");
+                var roleIds = roles.Select(x => x.RoleId).ToArray();
+                var sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                IRole role = null;
+                foreach (var cond in roles)
+                {
+                    if (total >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                        role = guildUser.Guild.GetRole(cond.RoleId);
+                }
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                    if (role != sameRole)
+                        if (sameRole != null)
+                        {
+                            try
+                            {
+                                await guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                await Task.Delay(50).ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                        }
+                }
+
+                if (role != null)
+                {
+                    try
+                    {
+                        await guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                    }
+                    catch
+                    { }
+                }
+
+                roles = uow.Achievements.ByGroup("ReputationGet");
+                roleIds = roles.Select(x => x.RoleId).ToArray();
+                sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                role = null;
+                foreach (var cond in roles)
+                {
+                    if (GetRepLogForUser(target).Count() >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                        role = guildUser.Guild.GetRole(cond.RoleId);
+                }
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                    if (role != sameRole)
+                        if (sameRole != null)
+                        {
+                            try
+                            {
+                                await guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                await Task.Delay(50).ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                        }
+                }
+
+                if (role != null)
+                {
+                    try
+                    {
+                        await guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                    }
+                    catch
+                    { }
+                }
 
                 await uow.CompleteAsync();
             }

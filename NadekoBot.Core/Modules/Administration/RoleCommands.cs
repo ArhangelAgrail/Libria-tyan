@@ -327,6 +327,22 @@ namespace NadekoBot.Modules.Administration
                     await Context.Channel.SendMessageAsync(role.Mention).ConfigureAwait(false);
                 }
             }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [OwnerOnly]
+            public async Task AddAchievementRole(string GroupName, int Condition, [Remainder] IRole role)
+            {
+                _service.AchievemntRoleAdd(role.Id, GroupName, Condition);
+                await Context.Channel.SendConfirmAsync(GetText("achievement_added", role.Mention, GroupName, Condition)).ConfigureAwait(false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [OwnerOnly]
+            public async Task DeleteAchievementRole([Remainder] IRole role)
+            {
+                _service.AchievemntRoleDelete(role.Id);
+                await Context.Channel.SendConfirmAsync(GetText("achievement_deleted", role.Mention)).ConfigureAwait(false);
+            }
         }
     }
 }

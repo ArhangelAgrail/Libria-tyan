@@ -313,7 +313,7 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }   
 
-                if (_service.AcceptApplication(Context.User.Id, userName, out var discordUser))
+                if (_service.AcceptApplication(Context.User.Id, userName, Context.Guild, out var discordUser))
                 {
                     var du = Context.User as IGuildUser;
                     var gu = await du.Guild.GetUserAsync(discordUser.UserId);
@@ -344,7 +344,7 @@ namespace NadekoBot.Modules.Xp
             {
                 var clb = _service.GetClubByMember(Context.User);
 
-                if (_service.LeaveClub(Context.User))
+                if (_service.LeaveClub(Context.User, Context.Guild))
                 {
                     if (clb.roleId != 0)
                     {
@@ -389,7 +389,7 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
-                if (_service.Kick(Context.User.Id, usr, out var club))
+                if (_service.Kick(Context.User.Id, usr, Context.Guild, out var club))
                 {
                     if (clb.roleId != 0)
                     {
@@ -440,7 +440,7 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
-                if (_service.Ban(Context.User.Id, usr, out var club))
+                if (_service.Ban(Context.User.Id, usr, Context.Guild, out var club))
                 {
                     if (clb.roleId != 0)
                     {
@@ -549,7 +549,7 @@ namespace NadekoBot.Modules.Xp
                 if (!await PromptUserConfirmAsync(embed).ConfigureAwait(false))
                     return;
 
-                if (_service.Disband(Context.User.Id, out ClubInfo club))
+                if (_service.Disband(Context.User.Id, Context.Guild, out ClubInfo club))
                 {
                     if (club.roleId != 0)
                     {
@@ -584,7 +584,7 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
-                if (_service.Disband(club))
+                if (_service.Disband(club, Context.Guild))
                 {
                     if (club.roleId != 0)
                     {

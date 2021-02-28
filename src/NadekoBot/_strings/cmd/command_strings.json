@@ -3516,5 +3516,19 @@
     "usage": [
       "{0}clubinr"
     ]
+  },
+  "addachievementrole": {
+    "cmd": "addachievementrole addarole",
+    "desc": "Adds new achievement.",
+    "usage": [
+      "{0}addarole Reputation 100 @Role"
+    ]
+  },
+  "deleteachievementrole": {
+    "cmd": "deleteachievementrole delarole",
+    "desc": "Deletes all achievements with mentioned role.",
+    "usage": [
+      "{0}delarole @Role"
+    ]
   }
 }

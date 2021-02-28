@@ -74,6 +74,65 @@ namespace NadekoBot.Modules.Xp.Services
                 club.Owner.IsClubAdmin = true; // old owner will stay as admin
                 newOwnerUser.IsClubAdmin = true;
                 club.Owner = newOwnerUser;
+
+                var guildUser = from as IGuildUser;
+                var roles = uow.Achievements.ByGroup("ClubLead");
+                var roleIds = roles.Select(x => x.RoleId).ToArray();
+                var sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                    if (sameRole != null)
+                    {
+                        try
+                        {
+                            guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                            Task.Delay(50).ConfigureAwait(false);
+                        }
+                        catch
+                        { }
+                    }
+                }
+
+                guildUser = newOwner as IGuildUser;
+                sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                IRole role = null;
+                foreach (var cond in roles)
+                {
+                    if (club.Users.Count >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                        role = guildUser.Guild.GetRole(cond.RoleId);
+                }
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                    if (role != sameRole)
+                        if (sameRole != null)
+                        {
+                            try
+                            {
+                                guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                Task.Delay(50).ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                        }
+                }
+
+                if (role != null)
+                {
+                    try
+                    {
+                        guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                    }
+                    catch
+                    { }
+                }
+
                 uow.Complete();
             }
             return club;
@@ -187,7 +246,7 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
-        public bool AcceptApplication(ulong clubOwnerUserId, string userName, out DiscordUser discordUser)
+        public bool AcceptApplication(ulong clubOwnerUserId, string userName, IGuild guild, out DiscordUser discordUser)
         {
             discordUser = null;
             using (var uow = _db.UnitOfWork)
@@ -208,6 +267,46 @@ namespace NadekoBot.Modules.Xp.Services
                 uow._context.Set<ClubApplicants>()
                     .RemoveRange(uow._context.Set<ClubApplicants>().Where(x => x.UserId == applicant.User.Id));
                 discordUser = applicant.User;
+
+                var guildUser = guild.GetUserAsync(club.Owner.UserId).Result;
+                var roles = uow.Achievements.ByGroup("ClubLead");
+                var roleIds = roles.Select(x => x.RoleId).ToArray();
+                var sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                IRole role = null;
+                foreach (var cond in roles)
+                {
+                    if (club.Users.Count+1 >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                        role = guildUser.Guild.GetRole(cond.RoleId);
+                }
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                    if (role != sameRole)
+                        if (sameRole != null)
+                        {
+                            try
+                            {
+                                guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                Task.Delay(50).ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                        }
+                }
+
+                if (role != null)
+                {
+                    try
+                    {
+                        guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                    }
+                    catch
+                    { }
+                }
+
                 uow.Complete();
             }
             return true;
@@ -221,7 +320,7 @@ namespace NadekoBot.Modules.Xp.Services
             }
         }
 
-        public bool LeaveClub(IUser user)
+        public bool LeaveClub(IUser user, IGuild guild)
         {
             using (var uow = _db.UnitOfWork)
             {
@@ -233,6 +332,46 @@ namespace NadekoBot.Modules.Xp.Services
 
                 du.Club = null;
                 du.IsClubAdmin = false;
+
+                var guildUser = guild.GetUserAsync(club.Owner.UserId).Result;
+                var roles = uow.Achievements.ByGroup("ClubLead");
+                var roleIds = roles.Select(x => x.RoleId).ToArray();
+                var sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                IRole role = null;
+                foreach (var cond in roles)
+                {
+                    if (club.Users.Count >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                        role = guildUser.Guild.GetRole(cond.RoleId);
+                }
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                    if (role != sameRole)
+                        if (sameRole != null)
+                        {
+                            try
+                            {
+                                guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                Task.Delay(50).ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                        }
+                }
+
+                if (role != null)
+                {
+                    try
+                    {
+                        guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                    }
+                    catch
+                    { }
+                }
+
                 uow.Complete();
             }
             return true;
@@ -271,26 +410,68 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
-        public bool Disband(ulong userId, out ClubInfo club)
+        public bool Disband(ulong userId, IGuild guild, out ClubInfo club)
         {
             using (var uow = _db.UnitOfWork)
             {
                 club = uow.Clubs.GetByOwner(userId);
                 if (club == null)
                     return false;
-                
+
+                var guildUser = guild.GetUserAsync(club.Owner.UserId).Result;
+                var roles = uow.Achievements.ByGroup("ClubLead");
+                var roleIds = roles.Select(x => x.RoleId).ToArray();
+                var sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                        if (sameRole != null)
+                        {
+                            try
+                            {
+                                guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                Task.Delay(50).ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                        }
+                }
+
                 uow.Clubs.Remove(club);
                 uow.Complete();
             }
             return true;
         }
 
-        public bool Disband(ClubInfo club)
+        public bool Disband(ClubInfo club, IGuild guild)
         {
             using (var uow = _db.UnitOfWork)
             {
                 if (club == null)
                     return false;
+
+                var guildUser = guild.GetUserAsync(club.Owner.UserId).Result;
+                var roles = uow.Achievements.ByGroup("ClubLead");
+                var roleIds = roles.Select(x => x.RoleId).ToArray();
+                var sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                        if (sameRole != null)
+                        {
+                            try
+                            {
+                                guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                Task.Delay(50).ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                        }
+                }
 
                 uow.Clubs.Remove(club);
                 uow.Complete();
@@ -379,7 +560,7 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
-        public bool Ban(ulong bannerId, DiscordUser usr, out ClubInfo club)
+        public bool Ban(ulong bannerId, DiscordUser usr, IGuild guild, out ClubInfo club)
         {
             using (var uow = _db.UnitOfWork)
             {
@@ -397,6 +578,45 @@ namespace NadekoBot.Modules.Xp.Services
                 var app = club.Applicants.FirstOrDefault(x => x.UserId == usr.Id);
                 if (app != null)
                     club.Applicants.Remove(app);
+
+                var guildUser = guild.GetUserAsync(club.Owner.UserId).Result;
+                var roles = uow.Achievements.ByGroup("ClubLead");
+                var roleIds = roles.Select(x => x.RoleId).ToArray();
+                var sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                IRole role = null;
+                foreach (var cond in roles)
+                {
+                    if (club.Users.Count >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                        role = guildUser.Guild.GetRole(cond.RoleId);
+                }
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                    if (role != sameRole)
+                        if (sameRole != null)
+                        {
+                            try
+                            {
+                                guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                Task.Delay(50).ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                        }
+                }
+
+                if (role != null)
+                {
+                    try
+                    {
+                        guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                    }
+                    catch
+                    { }
+                }
 
                 uow.Complete();
             }
@@ -442,7 +662,7 @@ namespace NadekoBot.Modules.Xp.Services
             return true;
         }
 
-        public bool Kick(ulong kickerId, DiscordUser usr, out ClubInfo club)
+        public bool Kick(ulong kickerId, DiscordUser usr, IGuild guild, out ClubInfo club)
         {
             using (var uow = _db.UnitOfWork)
             {
@@ -454,6 +674,46 @@ namespace NadekoBot.Modules.Xp.Services
                 var app = club.Applicants.FirstOrDefault(x => x.UserId == usr.Id);
                 if (app != null)
                     club.Applicants.Remove(app);
+
+                var guildUser = guild.GetUserAsync(club.Owner.UserId).Result;
+                var roles = uow.Achievements.ByGroup("ClubLead");
+                var roleIds = roles.Select(x => x.RoleId).ToArray();
+                var sameRoles = guildUser.RoleIds
+                    .Where(r => roleIds.Contains(r));
+
+                IRole role = null;
+                foreach (var cond in roles)
+                {
+                    if (club.Users.Count-1 >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                        role = guildUser.Guild.GetRole(cond.RoleId);
+                }
+
+                foreach (var roleId in sameRoles)
+                {
+                    var sameRole = guildUser.Guild.GetRole(roleId);
+                    if (role != sameRole)
+                        if (sameRole != null)
+                        {
+                            try
+                            {
+                                guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                Task.Delay(50).ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                        }
+                }
+
+                if (role != null)
+                {
+                    try
+                    {
+                        guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                    }
+                    catch
+                    { }
+                }
+
                 uow.Complete();
             }
 

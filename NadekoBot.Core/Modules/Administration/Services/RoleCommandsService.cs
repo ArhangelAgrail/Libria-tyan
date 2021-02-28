@@ -187,5 +187,29 @@ namespace NadekoBot.Modules.Administration.Services
                 uow.Complete();
             }
         }
+
+        public void AchievemntRoleAdd(ulong RoleId, string GroupName, int Condition)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var achievement = new Achievements();
+                achievement.RoleId = RoleId;
+                achievement.GroupName = GroupName;
+                achievement.Condition = Condition;
+
+                uow.Achievements.Add(achievement);
+                uow.Complete();
+            }
+        }
+
+        public void AchievemntRoleDelete(ulong roleId)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var achievements = uow.Achievements.ByRoleId(roleId);
+                uow.Achievements.RemoveRange(achievements);
+                uow.Complete();
+            }
+        }
     }
 }

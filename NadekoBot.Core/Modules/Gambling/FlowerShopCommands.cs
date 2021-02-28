@@ -79,7 +79,10 @@ namespace NadekoBot.Modules.Gambling
                     for (int i = 0; i < theseEntries.Length; i++)
                     {
                         var entry = theseEntries[i];
-                        embed.AddField(efb => efb.WithName($"#{curPage * 12 + i + 1} - ~~{entry.Price}~~{Bc.BotConfig.CurrencySign}\nЦена: {(int)(entry.Price - entry.Price * (discount * 0.01))}{Bc.BotConfig.CurrencySign}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
+                        if (curPage * 12 + i + 1 == 1)
+                            embed.AddField(efb => efb.WithName($"#{curPage * 12 + i + 1} - {GetText("shop_unique")}\n{GetText("shop_price", entry.Price, Bc.BotConfig.CurrencySign)}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
+                        else
+                            embed.AddField(efb => efb.WithName($"#{curPage * 12 + i + 1} - ~~{entry.Price}~~{Bc.BotConfig.CurrencySign}\n{GetText("shop_price", entry.Price, Bc.BotConfig.CurrencySign)}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
                     }
                     return embed;
                 }, entries.Count, 12, true).ConfigureAwait(false);
@@ -105,6 +108,56 @@ namespace NadekoBot.Modules.Gambling
 
                     reputation = uow.Waifus.GetWaifuInfo(Context.User.Id).Reputation;
                     price = uow.Waifus.GetWaifuInfo(Context.User.Id).Price;
+
+                    if (index == 0)
+                    {
+                        var guser = (IGuildUser)Context.User;
+                        var role = Context.Guild.GetRole(entry.RoleId);
+
+                        if (role == null)
+                        {
+                            await ReplyErrorLocalized("shop_role_not_found").ConfigureAwait(false);
+                            uow.Complete();
+                            return;
+                        }
+
+                        if (await _cs.RemoveAsync(Context.User.Id, $"Shop purchase - {entry.Type}", entry.Price).ConfigureAwait(false))
+                        {
+                            var previousUser = Context.Guild.GetUserAsync(entry.AuthorId).Result;
+                            if (previousUser != null)
+                                try
+                                {
+                                    await previousUser.RemoveRoleAsync(role).ConfigureAwait(false);
+                                }
+                                catch { }
+                            try
+                            {
+                                await guser.AddRoleAsync(role).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                _log.Warn(ex);
+                                await previousUser.AddRoleAsync(role).ConfigureAwait(false);
+                                await _cs.AddAsync(Context.User.Id, $"Shop error refund", entry.Price).ConfigureAwait(false);
+                                await ReplyErrorLocalized("shop_role_purchase_error").ConfigureAwait(false);
+                                uow.Complete();
+                                return;
+                            }
+
+                            entry.Price += 50000;
+                            entry.AuthorId = guser.Id;
+
+                            await ConfirmLocalized("shop_role_unique_purchase", $"<@&{role.Id}>", Format.Bold(entry.Price.ToString()), Bc.BotConfig.CurrencySign, $"<@{entry.AuthorId}>").ConfigureAwait(false);
+                            uow.Complete();
+                            return;
+                        }
+                        else
+                        {
+                            await ReplyErrorLocalized("not_enough", Bc.BotConfig.CurrencySign).ConfigureAwait(false);
+                            uow.Complete();
+                            return;
+                        }
+                    }
 
                     uow.Complete();
                 }

@@ -9,6 +9,9 @@ namespace NadekoBot.Core.Services.Database
     {
         public NadekoContext _context { get; }
 
+        private IAchievementsRepository _achievements;
+        public IAchievementsRepository Achievements => _achievements ?? (_achievements = new AchievementsRepository(_context));
+
         private IQuoteRepository _quotes;
         public IQuoteRepository Quotes => _quotes ?? (_quotes = new QuoteRepository(_context));
 
