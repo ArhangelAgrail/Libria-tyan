@@ -103,7 +103,7 @@ namespace NadekoBot.Modules.Xp.Services
                 IRole role = null;
                 foreach (var cond in roles)
                 {
-                    if (club.Users.Count >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                    if (club.Users.Count >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
                 }
 
@@ -277,7 +277,7 @@ namespace NadekoBot.Modules.Xp.Services
                 IRole role = null;
                 foreach (var cond in roles)
                 {
-                    if (club.Users.Count+1 >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                    if (club.Users.Count+1 >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
                 }
 
@@ -342,7 +342,7 @@ namespace NadekoBot.Modules.Xp.Services
                 IRole role = null;
                 foreach (var cond in roles)
                 {
-                    if (club.Users.Count >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                    if (club.Users.Count >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
                 }
 
@@ -588,7 +588,7 @@ namespace NadekoBot.Modules.Xp.Services
                 IRole role = null;
                 foreach (var cond in roles)
                 {
-                    if (club.Users.Count >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                    if (club.Users.Count >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
                 }
 
@@ -684,7 +684,7 @@ namespace NadekoBot.Modules.Xp.Services
                 IRole role = null;
                 foreach (var cond in roles)
                 {
-                    if (club.Users.Count-1 >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                    if (club.Users.Count-1 >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
                 }
 

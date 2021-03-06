@@ -201,7 +201,7 @@ namespace NadekoBot.Modules.Gambling.Services
                 IRole role = null;
                 foreach (var cond in roles)
                 {
-                    if (total >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                    if (total >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
                 }
 
@@ -239,7 +239,7 @@ namespace NadekoBot.Modules.Gambling.Services
                 role = null;
                 foreach (var cond in roles)
                 {
-                    if (GetRepLogForUser(target).Count() >= cond.Condition && !sameRoles.Contains(cond.RoleId))
+                    if (GetRepLogForUser(target).Count() >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
                 }
 
