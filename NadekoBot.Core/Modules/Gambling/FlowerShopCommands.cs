@@ -80,9 +80,9 @@ namespace NadekoBot.Modules.Gambling
                     {
                         var entry = theseEntries[i];
                         if (curPage * 9 + i + 1 == 1)
-                            embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - {GetText("shop_unique")}\n{GetText("shop_price", entry.Price, Bc.BotConfig.CurrencySign)}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
+                            embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - {GetText("shop_unique")}\n{GetText("shop_price", entry.Price, Bc.BotConfig.CurrencySign)}").WithValue($"<@&{entry.RoleId}>").WithIsInline(true));
                         else
-                            embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - ~~{entry.Price}~~{Bc.BotConfig.CurrencySign}\n{GetText("shop_price", entry.Price, Bc.BotConfig.CurrencySign)}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
+                            embed.AddField(efb => efb.WithName($"#{curPage * 9 + i + 1} - ~~{entry.Price}~~{Bc.BotConfig.CurrencySign}\n{GetText("shop_price", (int)(entry.Price - entry.Price * (discount * 0.01)), Bc.BotConfig.CurrencySign)}").WithValue(GetText("shop_role", $"<@&{entry.RoleId}>")).WithIsInline(true));
                     }
                     return embed;
                 }, entries.Count, 9, true).ConfigureAwait(false);

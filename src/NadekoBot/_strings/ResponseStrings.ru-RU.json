@@ -1018,7 +1018,7 @@
   "searches_crypto_not_found": "Криптовалюта с этим названием не найдена.",
   "searches_did_you_mean": "Вы имели в виду {0}?",
   "administration_self_assign_level_req": "Самоназначеная роль {0} теперь требует {1} уровень на сервере.",
-  "administration_self_assign_not_level": "Эта самоназначенная роль требует хотя бы {0} уровень на сервере.",
+  "administration_self_assign_not_level": "Эта самоназначаемая роль требует хотя бы {0} уровень на сервере.",
   "administration_invalid": "Неверное значение / Не найдено ({0})",
   "administration_mass_kill_in_progress": "Идёт добавление {0} пользователей в чёрный список и список банов...",
   "administration_mass_kill_completed": "Закончено добавление {0} пользователей в чёрный список и список банов.",
