@@ -20,5 +20,8 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
         public Achievements[] ByRoleId(ulong RoleId)
             => _set.Where(x => x.RoleId == RoleId)
             .ToArray();
+
+        public Achievements[] GetAllAchievements()
+            => _set.ToArray();
     }
 }

@@ -60,7 +60,7 @@ namespace NadekoBot.Modules.Gambling
                     case CurrencyEvent.Type.Reaction:
                         return new EmbedBuilder()
                             .WithOkColor()
-                            .WithTitle(GetText("event_title", type.ToString()))
+                            .WithTitle(GetText("event_title", GetText("event_" + type.ToString())))
                             .WithDescription(GetReactionDescription(opts.Amount, currentPot))
                             .WithFooter(GetText("event_duration_footer", opts.Hours));
                     case CurrencyEvent.Type.GameStatus:

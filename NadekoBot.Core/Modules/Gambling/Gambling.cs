@@ -50,6 +50,27 @@ namespace NadekoBot.Modules.Gambling
         }
 
         [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        public async Task Achievements()
+        {
+            var Achieves = _service.AllAchievements();
+
+            await Context.SendPaginatedConfirmAsync(0, (page) =>
+            {
+                var embed = new EmbedBuilder()
+                    .WithOkColor()
+                    .WithAuthor(name: GetText("all_achievements"))
+                    .WithDescription(string.Join("\n", Achieves
+                    .Skip(page * 50)
+                    .Take(50)
+                    .GroupBy(x => x.GroupName)
+                    .Select(x => $"{Format.Bold(GetText("achieve_" + x.Key))}:\n{string.Join("\n", x.Select(y => $"☆{y.Condition}+ <@&{y.RoleId}>"))}")));
+
+                return embed;
+            }, 100, 20, false).ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
         public async Task Economy()
         {
             var ec = _service.GetEconomy();
@@ -276,62 +297,44 @@ namespace NadekoBot.Modules.Gambling
             var user = usr as SocketGuildUser;
             if (user.Roles.Count == 1) goto reroll;
 
-            var amount = 0;
-            var awardRole1 = user.Guild.Roles.FirstOrDefault(x => x.Id == 461111950458224640);
-            var awardRole2 = user.Guild.Roles.FirstOrDefault(x => x.Id == 405341253807374349);
-            var awardRole3 = user.Guild.Roles.FirstOrDefault(x => x.Id == 405341261277560842);
-            var awardRole4 = user.Guild.Roles.FirstOrDefault(x => x.Id == 475305705230958598);
-            var awardRole5 = user.Guild.Roles.FirstOrDefault(x => x.Id == 425627158581346314);
-            var awardRole6 = user.Guild.Roles.FirstOrDefault(x => x.Id == 475306009011683359);
-            var awardRole7 = user.Guild.Roles.FirstOrDefault(x => x.Id == 405340766240636928);
-            var awardRole8 = user.Guild.Roles.FirstOrDefault(x => x.Id == 475306363673772043);
-            var awardRole9 = user.Guild.Roles.FirstOrDefault(x => x.Id == 405338590290378763);
-            var awardRole10 = user.Guild.Roles.FirstOrDefault(x => x.Id == 425657999105982464);
-            var awardRole11 = user.Guild.Roles.FirstOrDefault(x => x.Id == 408903151568158740);
-            var awardRole12 = user.Guild.Roles.FirstOrDefault(x => x.Id == 408902786294480897);
+            List<ulong> roles = new List<ulong>()
+            {
+                461111950458224640,
+                694297950104584273,
+                405341253807374349,
+                405341261277560842,
+                475305705230958598,
+                425627158581346314,
+                475306009011683359,
+                405340766240636928,
+                475306363673772043,
+                405338590290378763,
+                425657999105982464,
+                694297952205668424,
+                408902786294480897,
+                694297954777038898,
+                408903151568158740,
+                694298252387811378
+            };
 
-            if (user.Roles.Contains(awardRole1))
-                amount = 500;
-            else
-                if (user.Roles.Contains(awardRole2))
-                amount = 1000;
-            else
-                if (user.Roles.Contains(awardRole3))
-                amount = 1500;
-            else
-                if (user.Roles.Contains(awardRole4))
-                amount = 2000;
-            else
-                if (user.Roles.Contains(awardRole5))
-                amount = 3000;
-            else
-                if (user.Roles.Contains(awardRole6))
-                amount = 4000;
-            else
-                if (user.Roles.Contains(awardRole7))
-                amount = 5000;
-            else
-                if (user.Roles.Contains(awardRole8))
-                amount = 7000;
-            else
-                if (user.Roles.Contains(awardRole9))
-                amount = 10000;
-            else
-                if (user.Roles.Contains(awardRole10))
-                amount = 15000;
-            else
-                if (user.Roles.Contains(awardRole11))
-                amount = 30000;
-            else
-                if (user.Roles.Contains(awardRole12))
-                amount = 50000;
-            else
-                amount = 500;
+            var amount = 1000;
+            ulong n = 0;
+            foreach (var roleId in roles)
+            {
+                amount += 1000;
+                if (user.Roles.Contains(user.Guild.Roles.FirstOrDefault(x => x.Id == roleId)))
+                {
+                    n = roleId;
+                    break;
+                }
+            }
+
+            if (n == 0) amount = 1000;
 
             await _cs.AddAsync(usr.Id, $"Awarded by raffle. ({Context.User.Username}/{Context.User.Id})", amount, gamble: true);
-            await Context.Channel.SendMessageAsync(GetText("raffled_grats", usr.Mention));
+            await Context.Channel.SendMessageAsync(GetText("raffled_grats", usr.Mention, role.Name));
             await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user", usr), 
-                $"{GetText("raffled_result", usr.Mention, $"{amount}{_bc.BotConfig.CurrencySign}")}", footer: $"{usr.Id}").ConfigureAwait(false);
+                $"{GetText("raffled_result", usr.Mention, Format.Bold($"{amount}{_bc.BotConfig.CurrencySign}"), $"<@&{n}>")}", footer: $"{_bc.BotConfig.CurrencySign} в следующий раз повезет и тебе ^-^").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]

@@ -16,11 +16,13 @@ namespace NadekoBot.Modules.Utility
         [Group]
         public class InfoCommands : NadekoSubmodule
         {
+            private readonly DbService _db;
             private readonly DiscordSocketClient _client;
             private readonly IStatsService _stats;
 
-            public InfoCommands(DiscordSocketClient client, IStatsService stats)
+            public InfoCommands(DbService db, DiscordSocketClient client, IStatsService stats)
             {
+                _db = db;
                 _client = client;
                 _stats = stats;
             }
@@ -100,28 +102,37 @@ namespace NadekoBot.Modules.Utility
                 var user = usr ?? Context.User as IGuildUser;
                 var time = DateTime.UtcNow - user.JoinedAt;
 
-                if (user == null)
-                    return;
-
-                var embed = new EmbedBuilder();
-                if (!string.IsNullOrWhiteSpace(user.Nickname))
-                    embed.WithAuthor(user.Nickname);
-
-                embed.WithTitle($"{user.Username}#{user.Discriminator}")
-                    .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"} ({time:dd} {GetText("days")})").WithIsInline(true))
-                    .AddField(fb => fb.WithName(GetText("joined_discord")).WithValue($"{user.CreatedAt:dd.MM.yyyy HH:mm}").WithIsInline(true))
-                    .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{string.Join("\n", user.GetRoles().Take(10).Where(r => r.Id != r.Guild.EveryoneRole.Id).Select(r => { var id = r.Id; return $"<@&{id}>"; })).SanitizeMentions()}").WithIsInline(true))
-                    .WithFooter(user.Id.ToString(), "https://cdn.discordapp.com/attachments/404549045168766986/649672628298055695/icon-45.png")
-                    .WithColor(NadekoBot.OkColor);
-                
-                var av = user.RealAvatarUrl();
-                if (av != null && av.IsAbsoluteUri)
+                using (var uow = _db.UnitOfWork)
                 {
-                    embed.WithUrl(av.ToString())
-                        .WithThumbnailUrl(av.ToString());
-                }   
-                
-                await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+                    var du = uow.DiscordUsers.GetOrCreate(user);
+                    var firstTime = DateTime.UtcNow - du.DateAdded;
+
+                    await uow.CompleteAsync();
+
+                    if (user == null)
+                        return;
+
+                    var embed = new EmbedBuilder();
+                    if (!string.IsNullOrWhiteSpace(user.Nickname))
+                        embed.WithAuthor(user.Nickname);
+
+                    embed.WithTitle($"{user.Username}#{user.Discriminator}")
+                        .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"} ({time:dd} {GetText("days")})").WithIsInline(true))
+                        .AddField(fb => fb.WithName(GetText("first_server_join")).WithValue($"{du.DateAdded?.ToString("dd.MM.yyyy HH:mm") ?? "?"} ({firstTime:dd} {GetText("days")})").WithIsInline(true))
+                        .AddField(fb => fb.WithName(GetText("joined_discord")).WithValue($"{user.CreatedAt:dd.MM.yyyy HH:mm}").WithIsInline(true))
+                        .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{string.Join(" | ", user.GetRoles().Skip(1).Select(r => { return $"<@&{r.Id}>"; })).SanitizeMentions()}").WithIsInline(false))
+                        .WithFooter(user.Id.ToString(), "https://cdn.discordapp.com/attachments/404549045168766986/649672628298055695/icon-45.png")
+                        .WithColor(NadekoBot.OkColor);
+
+                    var av = user.RealAvatarUrl();
+                    if (av != null && av.IsAbsoluteUri)
+                    {
+                        embed.WithUrl(av.ToString())
+                            .WithThumbnailUrl(av.ToString());
+                    }
+
+                    await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+                }
             }
 
             [NadekoCommand, Usage, Description, Aliases]

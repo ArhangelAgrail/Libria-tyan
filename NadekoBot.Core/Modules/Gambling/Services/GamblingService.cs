@@ -142,6 +142,17 @@ namespace NadekoBot.Modules.Gambling.Services
             return result;
         }
 
+        public Achievements[] AllAchievements()
+        {
+            Achievements[] allAchieves;
+            using (var uow = _db.UnitOfWork)
+            {
+                allAchieves = uow.Achievements.GetAllAchievements();
+                uow.Complete();
+            }
+            return allAchieves;
+        }
+
         public Task<WheelOfFortuneGame.Result> WheelOfFortuneSpinAsync(ulong userId, long bet)
         {
             return new WheelOfFortuneGame(userId, bet, _cs).SpinAsync();

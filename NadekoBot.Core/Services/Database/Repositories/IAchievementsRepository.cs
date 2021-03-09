@@ -8,5 +8,6 @@ namespace NadekoBot.Core.Services.Database.Repositories
     {
         IEnumerable<Achievements> ByGroup(string GroupName);
         Achievements[] ByRoleId(ulong RoleId);
+        Achievements[] GetAllAchievements();
     }
 }
