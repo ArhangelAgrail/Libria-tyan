@@ -125,7 +125,7 @@ namespace NadekoBot.Modules.Gambling
                     str = Context.User.Mention + ", " + GetText("flip_positive") + "\n" + GetText("better_luck");
                 }
 
-                string cur = GetText("currency_left", _service.GetUserCurrency(Context.User).ToString(), Bc.BotConfig.CurrencySign);
+                string cur = GetText("currency_left", String.Format("{0:#,0}", _service.GetUserCurrency(Context.User)), Bc.BotConfig.CurrencySign);
 
                 await Context.Channel.EmbedAsync(new EmbedBuilder()
                     .WithTitle(title)

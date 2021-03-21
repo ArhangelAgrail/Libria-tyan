@@ -110,7 +110,7 @@ namespace NadekoBot.Modules.Gambling
                     TimeSpan? rem;
                     if ((rem = _cache.AddRepGive(Context.User.Id, period)) != null)
                     {
-                        await ReplyErrorLocalized("rep_already_gived", rem?.ToString(@"dd\d\ hh\h\ mm\m\ ss\s")).ConfigureAwait(false);
+                        await ReplyErrorLocalized("rep_already_gived", rem?.Days, rem?.Hours, rem?.Minutes, rem?.Seconds).ConfigureAwait(false);
                         return;
                     }
 
@@ -208,14 +208,15 @@ namespace NadekoBot.Modules.Gambling
             TimeSpan? rem;
             if ((rem = _cache.AddTimelyClaim(Context.User.Id, period)) != null)
             {
-                await ReplyErrorLocalized("timely_already_claimed", rem?.ToString(@"dd\d\ hh\h\ mm\m\ ss\s")).ConfigureAwait(false);
+                await ReplyErrorLocalized("timely_already_claimed", rem?.Days, rem?.Hours, rem?.Minutes, rem?.Seconds).ConfigureAwait(false);
                 return;
             }
 
             await _cs.AddAsync(Context.User.Id, "Timely claim", val).ConfigureAwait(false);
             var cur = _service.GetUserCurrency(Context.User);
 
-            await ReplyConfirmLocalized("timely", String.Format("{0:#,0}", val) + Bc.BotConfig.CurrencySign, String.Format("{0:#,0}", cur) + Bc.BotConfig.CurrencySign, period).ConfigureAwait(false);
+            string usercur = GetText("currency_left", String.Format("{0:#,0}", cur), Bc.BotConfig.CurrencySign);
+            await Context.Channel.SendConfirmAsync(GetText("timely", Context.User.Mention, String.Format("{0:#,0}", val) + Bc.BotConfig.CurrencySign, period), usercur).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
@@ -475,8 +476,8 @@ namespace NadekoBot.Modules.Gambling
                 club.TotalCurrency += (int)amount;
                 await uow.CompleteAsync();
 
-                string cur = GetText("currency_left", _service.GetUserCurrency(Context.User).ToString(), Bc.BotConfig.CurrencySign);
-                await Context.Channel.SendConfirmAsync(GetText("club_invested", amount + CurrencySign, Format.Bold(club.Name)), cur).ConfigureAwait(false);
+                string cur = GetText("currency_left", String.Format("{0:#,0}", _service.GetUserCurrency(Context.User)), Bc.BotConfig.CurrencySign);
+                await Context.Channel.SendConfirmAsync(GetText("club_invested", Format.Bold(amount.ToString()) + CurrencySign, Format.Bold(club.Name)), cur).ConfigureAwait(false);
             }
         }
 
@@ -718,7 +719,7 @@ namespace NadekoBot.Modules.Gambling
                 }
             }
 
-            string cur = GetText("currency_left", _service.GetUserCurrency(Context.User).ToString(), Bc.BotConfig.CurrencySign);
+            string cur = GetText("currency_left", String.Format("{0:#,0}", _service.GetUserCurrency(Context.User)), Bc.BotConfig.CurrencySign);
             await Context.Channel.SendConfirmAsync(str, cur).ConfigureAwait(false);
         }
 
