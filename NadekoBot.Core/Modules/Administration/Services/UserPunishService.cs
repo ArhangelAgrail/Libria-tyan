@@ -24,7 +24,7 @@ namespace NadekoBot.Modules.Administration.Services
             _db = db;
         }
 
-        public async Task<WarningPunishment> Warn(IGuild guild, ulong userId, IUser mod, string reason)
+        public async Task<WarningPunishment> Warn(IGuild guild, IUser user, IUser mod, string reason)
         {
             var modName = mod.ToString();
 
@@ -35,7 +35,7 @@ namespace NadekoBot.Modules.Administration.Services
 
             var warn = new Warning()
             {
-                UserId = userId,
+                UserId = user.Id,
                 GuildId = guildId,
                 Forgiven = false,
                 Reason = reason,
@@ -44,7 +44,7 @@ namespace NadekoBot.Modules.Administration.Services
 
             var log = new ModLog()
             {
-                UserId = userId,
+                UserId = user.Id,
                 GuildId = guildId,
                 Type = "Warn",
                 Reason = reason,
@@ -59,12 +59,36 @@ namespace NadekoBot.Modules.Administration.Services
                     .WarnPunishments;
 
                 warnings += uow.Warnings
-                    .ForId(guildId, userId)
-                    .Where(w => !w.Forgiven && w.UserId == userId)
+                    .ForId(guildId, user.Id)
+                    .Where(w => !w.Forgiven && w.UserId == user.Id)
                     .Count();
 
                 uow.Warnings.Add(warn);
                 uow.ModLog.Add(log);
+
+                var du = uow.DiscordUsers.GetOrCreate(user);
+                var w = uow.Waifus.ByWaifuUserId(user.Id);
+                var thisUser = uow.DiscordUsers.GetOrCreate(user);
+
+                if (w == null)
+                {
+                    uow.Waifus.Add(new WaifuInfo()
+                    {
+                        Waifu = thisUser,
+                        Price = 1,
+                        Claimer = null,
+                        Immune = false,
+                        Reputation = -100
+                    });
+                }
+                else
+                    w.Reputation -= 100;
+
+                uow.RepLog.Add(new RepLog()
+                {
+                    UserId = thisUser.UserId,
+                    FromId = 0
+                });
 
                 uow.Complete();
             }
@@ -73,39 +97,39 @@ namespace NadekoBot.Modules.Administration.Services
 
             if (p != null)
             {
-                var user = await guild.GetUserAsync(userId).ConfigureAwait(false);
-                if (user == null)
+                var guser = await guild.GetUserAsync(user.Id).ConfigureAwait(false);
+                if (guser == null)
                     return null;
                 switch (p.Punishment)
                 {
                     case PunishmentAction.Mute:
                         if (p.Time == 0)
-                            await _mute.MuteUser(user, mod).ConfigureAwait(false);
+                            await _mute.MuteUser(guser, mod).ConfigureAwait(false);
                         else
-                            await _mute.TimedMute(user, mod, TimeSpan.FromMinutes(p.Time)).ConfigureAwait(false);
+                            await _mute.TimedMute(guser, mod, TimeSpan.FromMinutes(p.Time)).ConfigureAwait(false);
                         break;
                     case PunishmentAction.Kick:
-                        await user.KickAsync("Warned too many times.").ConfigureAwait(false);
+                        await guser.KickAsync("Warned too many times.").ConfigureAwait(false);
                         break;
                     case PunishmentAction.Ban:
                         if (p.Time == 0)
-                            await guild.AddBanAsync(user, reason: "Warned too many times.").ConfigureAwait(false);
+                            await guild.AddBanAsync(guser, reason: "Warned too many times.").ConfigureAwait(false);
                         else
-                            await _mute.TimedBan(user, TimeSpan.FromMinutes(p.Time), "Warned too many times.").ConfigureAwait(false);
+                            await _mute.TimedBan(guser, TimeSpan.FromMinutes(p.Time), "Warned too many times.").ConfigureAwait(false);
                         break;
                     case PunishmentAction.Softban:
-                        await guild.AddBanAsync(user, 7, reason: "Warned too many times").ConfigureAwait(false);
+                        await guild.AddBanAsync(guser, 7, reason: "Warned too many times").ConfigureAwait(false);
                         try
                         {
-                            await guild.RemoveBanAsync(user).ConfigureAwait(false);
+                            await guild.RemoveBanAsync(guser).ConfigureAwait(false);
                         }
                         catch
                         {
-                            await guild.RemoveBanAsync(user).ConfigureAwait(false);
+                            await guild.RemoveBanAsync(guser).ConfigureAwait(false);
                         }
                         break;
                     case PunishmentAction.RemoveRoles:
-                        await user.RemoveRolesAsync(user.GetRoles().Where(x => x.Id != guild.EveryoneRole.Id)).ConfigureAwait(false);
+                        await guser.RemoveRolesAsync(guser.GetRoles().Where(x => x.Id != guild.EveryoneRole.Id)).ConfigureAwait(false);
                         break;
                     default:
                         break;
@@ -164,18 +188,43 @@ namespace NadekoBot.Modules.Administration.Services
             }
         }
 
-        public async Task<bool> WarnClearAsync(ulong guildId, ulong userId, int index, string moderator)
+        public async Task<bool> WarnClearAsync(ulong guildId, IGuildUser user, int index, string moderator)
         {
             bool toReturn = true;
             using (var uow = _db.UnitOfWork)
             {
                 if (index == 0)
                 {
-                    await uow.Warnings.ForgiveAll(guildId, userId, moderator);
+                    await uow.Warnings.ForgiveAll(guildId, user.Id, moderator);
                 }
                 else
                 {
-                    toReturn = uow.Warnings.Forgive(guildId, userId, moderator, index - 1);
+                    toReturn = uow.Warnings.Forgive(guildId, user.Id, moderator, index - 1);
+
+                    var du = uow.DiscordUsers.GetOrCreate(user);
+                    var w = uow.Waifus.ByWaifuUserId(user.Id);
+                    var thisUser = uow.DiscordUsers.GetOrCreate(user);
+
+                    if (w == null)
+                    {
+                        uow.Waifus.Add(new WaifuInfo()
+                        {
+                            Waifu = thisUser,
+                            Price = 1,
+                            Claimer = null,
+                            Immune = false,
+                            Reputation = 0
+                        });
+                    }
+                    else
+                        w.Reputation += 100;
+
+                    uow.RepLog.Add(new RepLog()
+                    {
+                        UserId = thisUser.UserId,
+                        FromId = 1
+                    });
+
                 }
                 uow.Complete();
             }

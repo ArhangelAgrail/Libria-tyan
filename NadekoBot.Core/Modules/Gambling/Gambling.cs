@@ -154,17 +154,25 @@ namespace NadekoBot.Modules.Gambling
 
                 await Context.SendPaginatedConfirmAsync(0, (page) =>
                 {
-                    var embed = new EmbedBuilder()
-                        .WithOkColor()
-                        .WithFooter(GetText("page", page + 1))
-                        .WithAuthor(name: GetText("rep_for_user", user.ToString()), iconUrl: user.GetAvatarUrl())
-                        .WithDescription(string.Join("\n", replog
+                var embed = new EmbedBuilder()
+                    .WithOkColor()
+                    .WithFooter(GetText("page", page + 1))
+                    .WithAuthor(name: GetText("rep_for_user", user.ToString()), iconUrl: user.GetAvatarUrl())
+                    .WithDescription(string.Join("\n", replog.Where(x => x.UserId == 0 || x.UserId == 1).Select(x =>
+                        {
+                            if (x.UserId == 0)
+                                return $"{Format.Bold(GetText("warn_take"))}: **-{x.Count * 100}**☆";
+                            if (x.UserId == 1)
+                                return $"{Format.Bold(GetText("warn_clear"))}: **+{x.Count * 100}**☆";
+                            return "";
+                        })) + "\n" + string.Join("\n", replog
                         .OrderByDescending(x => x.Count)
                         .Skip(page * 20)
                         .Take(20)
+                        .Where(x => x.UserId != 0 && x.UserId != 1)
                         .Select(x =>
                         {
-                            return $"<@{x.UserId}> - **+{x.Count}**";
+                            return $"<@{x.UserId}>: **+{x.Count}**☆";
                         })));
 
                     return embed;

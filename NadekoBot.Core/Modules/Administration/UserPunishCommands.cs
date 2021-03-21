@@ -52,7 +52,7 @@ namespace NadekoBot.Modules.Administration
                 WarningPunishment punishment;
                 try
                 {
-                    punishment = await _service.Warn(Context.Guild, user.Id, Context.User, reason).ConfigureAwait(false);
+                    punishment = await _service.Warn(Context.Guild, user, Context.User, reason).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -67,7 +67,7 @@ namespace NadekoBot.Modules.Administration
                         .WithFooter("ID: " + user.Id + " → " + $"[{time:dd.MM.yyyy HH:mm:ss}]")
                         .WithThumbnailUrl(imageToSend.ToString())
                         .WithAuthor(name: user.ToString() + GetText("warn"), iconUrl: user.GetAvatarUrl())
-                        .AddField(efb => efb.WithName(GetText("user")).WithValue(user.Mention).WithIsInline(true))
+                        .AddField(efb => efb.WithName(GetText("user")).WithValue(user.Mention + "\n" + GetText("lost_rep")).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.Mention).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-").WithIsInline(true));
 
@@ -93,7 +93,7 @@ namespace NadekoBot.Modules.Administration
                         .WithFooter("ID: " + user.Id + " → " + $"[{time:dd.MM.yyyy HH:mm:ss}]")
                         .WithThumbnailUrl(imageToSend.ToString())
                         .WithAuthor(name: user.ToString() + GetText("warn_and_punish") + GetText(punishment.Punishment.ToString()), iconUrl: user.GetAvatarUrl())
-                        .AddField(efb => efb.WithName(GetText("user")).WithValue(user.Mention).WithIsInline(true))
+                        .AddField(efb => efb.WithName(GetText("user")).WithValue(user.Mention + "\n" + GetText("lost_rep")).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("moderator")).WithValue(Context.User.Mention).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("p_time")).WithValue(_service.GetTime(punishment.Time / 60)).WithIsInline(true))
                         .AddField(efb => efb.WithName(GetText("reason")).WithValue(reason ?? "-").WithIsInline(true));
@@ -228,7 +228,9 @@ namespace NadekoBot.Modules.Administration
             {
                 if (index < 0)
                     return;
-                var success = await _service.WarnClearAsync(Context.Guild.Id, userId, index, Context.User.ToString());
+
+                var user = await Context.Guild.GetUserAsync(userId);
+                var success = await _service.WarnClearAsync(Context.Guild.Id, user, index, Context.User.ToString());
                 var userStr = Format.Bold((Context.Guild as SocketGuild)?.GetUser(userId)?.ToString() ?? userId.ToString());
                 if (index == 0)
                 {
