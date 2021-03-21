@@ -211,7 +211,7 @@
   "gambling_flip_win": "Молодец, ты угадал!",
   "gambling_flip_lose": "Упс, не повезло :с",
   "gambling_flip_invalid": "Указано неверное число. Вы можете подбросить от 1 до {0} монет.",
-  "gambling_gifted": "подарил {0} {1}",
+  "gambling_gifted": "подарил {0} пользователю {1}\nС сообщением:\n{2}",
   "gambling_has": "У {0} есть {1}",
   "gambling_heads": "Решка",
   "gambling_leaderboard": "Таблица лидеров",
