@@ -199,9 +199,11 @@ namespace NadekoBot.Modules.Administration
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
-            public async Task Iam([Remainder] IRole role)
+            public async Task Iam([Remainder] string Srole)
             {
                 var guildUser = (IGuildUser)Context.User;
+
+                IRole role = Context.Guild.Roles.Where(x => x.Name.Contains(Srole)).First();
 
                 var (result, autoDelete, extra) = await _service.Assign(guildUser, role).ConfigureAwait(false);
 
@@ -240,9 +242,11 @@ namespace NadekoBot.Modules.Administration
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
-            public async Task Iamnot([Remainder] IRole role)
+            public async Task Iamnot([Remainder] string Srole)
             {
                 var guildUser = (IGuildUser)Context.User;
+
+                IRole role = Context.Guild.Roles.Where(x => x.Name.Contains(Srole)).First();
 
                 var (result, autoDelete) = await _service.Remove(guildUser, role).ConfigureAwait(false);
 
