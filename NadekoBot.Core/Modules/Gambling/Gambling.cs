@@ -499,29 +499,34 @@ namespace NadekoBot.Modules.Gambling
         [RequireContext(ContextType.Guild)]
         [OwnerOnly]
         [Priority(0)]
-        public Task Award(ShmartNumber amount, IGuildUser usr, [Remainder] string msg) =>
-            Award(amount, usr.Id, msg);
+        public Task Award(ShmartNumber amount, [Remainder] IGuildUser usr) =>
+            Award(amount, usr);
 
         [NadekoCommand, Usage, Description, Aliases]
-        [RequireContext(ContextType.Guild)]
         [OwnerOnly]
         [Priority(1)]
-        public Task Award(ShmartNumber amount, [Remainder] IGuildUser usr) =>
-            Award(amount, usr.Id);
-
-        [NadekoCommand, Usage, Description, Aliases]
-        [OwnerOnly]
-        [Priority(2)]
-        public async Task Award(ShmartNumber amount, ulong usrId, [Remainder] string msg = null)
+        public async Task Award(ShmartNumber amount, IGuildUser usr, [Remainder] string msg = null)
         {
             if (amount <= 0)
                 return;
 
-            await _cs.AddAsync(usrId,
+            await _cs.AddAsync(usr.Id,
                 $"Awarded by bot owner. ({Context.User.Username}/{Context.User.Id}) {(msg ?? "")}",
                 amount,
-                gamble: (Context.Client.CurrentUser.Id != usrId)).ConfigureAwait(false);
-            await ReplyConfirmLocalized("awarded", amount + CurrencySign, $"<@{usrId}>").ConfigureAwait(false);
+                gamble: (Context.Client.CurrentUser.Id != usr.Id)).ConfigureAwait(false);
+
+            try
+            {
+                await (await usr.GetOrCreateDMChannelAsync())
+                    .EmbedAsync(new EmbedBuilder()
+                        .WithOkColor()
+                        .WithTitle(GetText("award_cur", Bc.BotConfig.CurrencySign, Context.Guild.Name))
+                        .WithDescription(GetText("award_cur_description", Format.Bold(amount.ToString()), Bc.BotConfig.CurrencySign, Format.Italics(msg))));
+            }
+            catch
+            { }
+
+            await ReplyConfirmLocalized("awarded", amount + CurrencySign, $"<@{usr.Id}>").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
