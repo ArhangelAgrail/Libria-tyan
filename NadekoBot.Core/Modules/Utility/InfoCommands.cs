@@ -102,37 +102,29 @@ namespace NadekoBot.Modules.Utility
                 var user = usr ?? Context.User as IGuildUser;
                 var time = DateTime.UtcNow - user.JoinedAt;
 
-                using (var uow = _db.UnitOfWork)
-                {
-                    var du = uow.DiscordUsers.GetOrCreate(user);
-                    var firstTime = DateTime.UtcNow - du.DateAdded;
+                if (user == null)
+                    return;
 
-                    await uow.CompleteAsync();
+                var embed = new EmbedBuilder();
+                if (!string.IsNullOrWhiteSpace(user.Nickname))
+                    embed.WithAuthor(user.Nickname);
+                var roles = user.RoleIds.Count > 1 ? user.GetRoles().Skip(1).Select(r => { return $"<@&{r.Id}>"; }) : null;
 
-                    if (user == null)
-                        return;
-
-                    var embed = new EmbedBuilder();
-                    if (!string.IsNullOrWhiteSpace(user.Nickname))
-                        embed.WithAuthor(user.Nickname);
-
-                    embed.WithTitle($"{user.Username}#{user.Discriminator}")
-                        .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"} ({time:dd} {GetText("days")})").WithIsInline(true))
-                        .AddField(fb => fb.WithName(GetText("first_server_join")).WithValue($"{du.DateAdded?.ToString("dd.MM.yyyy HH:mm") ?? "?"} ({firstTime:dd} {GetText("days")})").WithIsInline(true))
-                        .AddField(fb => fb.WithName(GetText("joined_discord")).WithValue($"{user.CreatedAt:dd.MM.yyyy HH:mm}").WithIsInline(true))
-                        .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{string.Join(" | ", user.GetRoles().Skip(1).Select(r => { return $"<@&{r.Id}>"; })).SanitizeMentions()}").WithIsInline(false))
-                        .WithFooter(user.Id.ToString(), "https://cdn.discordapp.com/attachments/404549045168766986/649672628298055695/icon-45.png")
-                        .WithColor(NadekoBot.OkColor);
+                embed.WithTitle($"{user.Username}#{user.Discriminator}")
+                    .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"`{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"}` ({time:dd} {GetText("days")})").WithIsInline(true))
+                    .AddField(fb => fb.WithName(GetText("joined_discord")).WithValue($"`{user.CreatedAt:dd.MM.yyyy HH:mm}`").WithIsInline(true))
+                    .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{(roles != null ? string.Join(" | ", roles).SanitizeMentions() : GetText("no_roles"))}").WithIsInline(false))
+                    .WithFooter($"{GetText("user_id")} - {user.Id}")
+                    .WithColor(NadekoBot.OkColor);
 
                     var av = user.RealAvatarUrl();
-                    if (av != null && av.IsAbsoluteUri)
-                    {
-                        embed.WithUrl(av.ToString())
-                            .WithThumbnailUrl(av.ToString());
-                    }
-
-                    await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+                if (av != null && av.IsAbsoluteUri)
+                {
+                    embed.WithUrl(av.ToString())
+                        .WithThumbnailUrl(av.ToString());
                 }
+
+                await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
             }
 
             [NadekoCommand, Usage, Description, Aliases]

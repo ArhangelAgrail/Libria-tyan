@@ -317,7 +317,7 @@ namespace NadekoBot.Modules.Gambling
             [RequireContext(ContextType.Guild)]
             public async Task WaifuInfo([Remainder]IGuildUser target = null)
             {
-                if (target == null)
+               if (target == null)
                     target = (IGuildUser)Context.User;
                 var wi = _service.GetFullWaifuInfoAsync(target);
                 var affInfo = _service.GetAffinityTitle(wi.AffinityCount);

@@ -37,6 +37,7 @@ VALUES ({userId}, {username}, {discrim}, {avatarId});
         {
             EnsureCreated(userId, username, discrim, avatarId);
             return _set
+                .Where(x => x.UserId == userId)
                 .Include(x => x.Club)
                 .First(u => u.UserId == userId);
         }
