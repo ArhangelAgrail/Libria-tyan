@@ -1,4 +1,4 @@
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
 using NadekoBot.Common;
 using NadekoBot.Common.Collections;
@@ -985,20 +985,27 @@ namespace NadekoBot.Modules.Xp.Services
             using (var uow = _db.UnitOfWork)
             {
                 var clubs = uow.Clubs.GetAll();
-                
+                var i = 0;
+
                 foreach (var club in clubs)
                 {
                     var lvl = new LevelStats(club.Xp);
-                    club.Currency += lvl.Level * mult * 100;
-                    lisa += club.Name + " - " + (lvl.Level * mult * 100) + _bc.BotConfig.CurrencySign + "\n";
+                    var bonus = lvl.Level * mult * 100;
+                    club.Currency += bonus;
+                    i += 1;
+                    lisa += $"**{i}: {club.Name}** (**{lvl.Level}✧︎**) - {Format.Bold(bonus.ToString())}{_bc.BotConfig.CurrencySign}\n";
 
                     var total = club.TotalCurrency;
+                    var clubSumm = 0;
 
                     foreach (var user in club.Users)
                     {
                         var amount = (int)((user.TotalXp - user.ClubXp) * 0.00001 * total);
-                        _cs.AddAsync(user.UserId, $"Awarded for Club XP - {user.TotalXp - user.ClubXp} by {total}", amount, gamble: true);
+                        club.Currency += amount;
+                        clubSumm += amount;
                     }
+                    lisa += i > 9 ? " " : "";
+                    lisa += $"‎‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎└︎ (**Σ︎ {club.Users.Count}**) - {Format.Bold(clubSumm.ToString())}{_bc.BotConfig.CurrencySign}\n";
                 }
                 
                 uow.Xp.ResetClubsXp();

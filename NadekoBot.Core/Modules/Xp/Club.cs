@@ -117,7 +117,8 @@ namespace NadekoBot.Modules.Xp
                 Bc.Reload();
                 if (DateTime.Now.Month != Bc.BotConfig.ClubsReset.Month)
                 {
-                    _xps.ClubsXpReset(3);
+                    var msg = _xps.ClubsXpReset(3);
+                    await ConfirmLocalized("club_reset_awards", msg).ConfigureAwait(false);
                 }
 
                 if (!_service.GetClubByName(clubName, out ClubInfo club))
@@ -625,14 +626,15 @@ namespace NadekoBot.Modules.Xp
                 if (--page < 0 || page > 100)
                     return Task.CompletedTask;
 
+                Bc.Reload();
+                if (DateTime.Now.Month != Bc.BotConfig.ClubsReset.Month)
+                {
+                    var msg = _xps.ClubsXpReset(3);
+                    ConfirmLocalized("club_reset_awards", msg).ConfigureAwait(false);
+                }
+
                 return Context.SendPaginatedConfirmAsync(page, (curPage) =>
                 {
-                    Bc.Reload();
-                    if (DateTime.Now.Month != Bc.BotConfig.ClubsReset.Month)
-                    {
-                        _xps.ClubsXpReset(3);
-                    }
-
                     var clubs = _service.GetClubLeaderboardPage(curPage);
 
                     var embed = new EmbedBuilder()
@@ -745,6 +747,51 @@ namespace NadekoBot.Modules.Xp
                 await text.AddPermissionOverwriteAsync(everyoneRole, overwriteDeny);
 
                 if (_service.TextCreate(Context.User, text))
+                await ReplyConfirmLocalized("club_text_created").ConfigureAwait(false);
+            }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            public async Task ClubAward(IGuildUser user, int amount)
+            {
+                var club = _service.GetClubByMember(Context.User);
+                if (club == null)
+                {
+                    await ReplyErrorLocalized("club_null").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Owner.UserId != Context.User.Id)
+                {
+                    await ReplyErrorLocalized("club_not_owner").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.roleId == 0)
+                {
+                    await ReplyErrorLocalized("club_role_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.XpImageUrl == "")
+                {
+                    await ReplyErrorLocalized("club_xp_image_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.textId != 0)
+                {
+                    await ReplyErrorLocalized("club_text_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Currency < amount)
+                {
+                    await ReplyErrorLocalized("club_not_enough").ConfigureAwait(false);
+                    return;
+                }
+
+
+
                 await ReplyConfirmLocalized("club_text_created").ConfigureAwait(false);
             }
 

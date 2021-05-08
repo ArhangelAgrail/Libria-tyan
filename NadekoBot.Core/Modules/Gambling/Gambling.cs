@@ -116,7 +116,7 @@ namespace NadekoBot.Modules.Gambling
 
                     var total = await _service.GiveReputation(target, Context.User);
                     await _service.LogReputation(target, Context.User);
-                    await ReplyConfirmLocalized("rep", target.Mention, total, period).ConfigureAwait(false);
+                    await Context.Channel.SendConfirmAsync(GetText("rep", Context.User.Mention, target.Mention, period), GetText("total_rep", total)).ConfigureAwait(false);
                 }
                 else
                 await ReplyErrorLocalized("last_rep", target.Mention).ConfigureAwait(false);
@@ -220,7 +220,7 @@ namespace NadekoBot.Modules.Gambling
                 return;
             }
 
-            await _cs.AddAsync(Context.User.Id, "Timely claim", val).ConfigureAwait(false);
+            await _cs.AddAsync(Context.User.Id, "Timely claim", val, gamble:true).ConfigureAwait(false);
             var cur = _service.GetUserCurrency(Context.User);
 
             string usercur = GetText("currency_left", String.Format("{0:#,0}", cur), Bc.BotConfig.CurrencySign);
