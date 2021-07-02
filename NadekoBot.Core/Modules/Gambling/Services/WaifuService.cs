@@ -399,11 +399,10 @@ namespace NadekoBot.Modules.Gambling.Services
             }
         }
 
-        public async Task<(WaifuInfo, DivorceResult, long, TimeSpan?)> DivorceWaifuAsync(IUser user, ulong targetId)
+        public async Task<(WaifuInfo, DivorceResult, TimeSpan?)> DivorceWaifuAsync(IUser user, ulong targetId)
         {
             DivorceResult result;
             TimeSpan? remaining = null;
-            long amount = 0;
             WaifuInfo w = null;
             using (var uow = _db.UnitOfWork)
             {
@@ -417,36 +416,33 @@ namespace NadekoBot.Modules.Gambling.Services
                 }
                 else
                 {
-                    amount = w.Price / 2;
 
                     if (w.Affinity?.UserId == user.Id)
                     {
-                        await _cs.AddAsync(w.Waifu.UserId, "Waifu Compensation", amount, gamble: true);
                         w.Price = (int)Math.Floor(w.Price * 0.75f);
                         result = DivorceResult.SucessWithPenalty;
                     }
                     else
                     {
-                        await _cs.AddAsync(user.Id, "Waifu Refund", amount, gamble: true);
 
                         result = DivorceResult.Success;
                     }
-                    var oldClaimer = w.Claimer;
-                    w.Claimer = null;
 
                     uow._context.WaifuUpdates.Add(new WaifuUpdate()
                     {
                         User = w.Waifu,
-                        Old = oldClaimer,
+                        Old = w.Claimer,
                         New = null,
                         UpdateType = WaifuUpdateType.Claimed
                     });
+
+                    w.Claimer = null;
                 }
 
                 await uow.CompleteAsync();
             }
 
-            return (w, result, amount, remaining);
+            return (w, result, remaining);
         }
 
         public async Task<bool> GiftWaifuAsync(ulong from, int count, IUser giftedWaifu, WaifuItem itemObj)

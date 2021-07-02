@@ -27,5 +27,37 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
                 .Sum(x => x.Amount)
                 .ToString();
         }
+
+        public int GetClubAwarded(ulong userId)
+        {
+            string reason = "Club Award";
+            var AllAwards = _set.Where(x => x.UserId == userId && x.Reason == reason)
+                .ToList();
+
+            int inUse = 0, used = 0;
+            var last = AllAwards.Last();
+            var previous = AllAwards.First().DateAdded;
+            foreach (var award in AllAwards)
+            {
+                used = (int)_set.Where(x => x.UserId == userId && x.DateAdded > previous && x.DateAdded < award.DateAdded)
+                    .Where(x => x.Reason == "Shop purchase - Role" || x.Reason == "Claimed Waifu" || x.Reason == "Bought waifu item" || x.Reason == "Immune set" || x.Reason == "Waifu Reset")
+                    .Sum(x => x.Amount);
+
+                inUse += (int)award.Amount + used;
+
+                if (inUse <= 0)
+                    inUse = 0;
+
+                previous = award.DateAdded;
+            }
+
+            used = (int)_set.Where(x => x.UserId == userId && x.DateAdded > last.DateAdded)
+                    .Where(x => x.Reason == "Shop purchase - Role" || x.Reason == "Claimed Waifu" || x.Reason == "Bought waifu item" || x.Reason == "Immune set" || x.Reason == "Waifu Reset")
+                    .Sum(x => x.Amount);
+
+            inUse += (int)last.Amount + used;
+
+            return inUse;
+        }
     }
 }

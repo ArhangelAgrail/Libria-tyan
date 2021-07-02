@@ -431,6 +431,13 @@ namespace NadekoBot.Modules.Gambling
                     await ReplyErrorLocalized("lvl_give", Bc.BotConfig.MinimumLevel).ConfigureAwait(false);
                     return;
                 }
+
+                var inUse = uow.CurrencyTransactions.GetClubAwarded(Context.User.Id);
+                if (inUse > 0)
+                {
+                    await ReplyErrorLocalized("should_use", Format.Bold(String.Format("{0:#,0}", inUse.ToString())), Bc.BotConfig.CurrencySign).ConfigureAwait(false);
+                    return;
+                }
             }
 
             var success = await _cs.RemoveAsync((IGuildUser)Context.User, $"Gift to {receiver.Username} ({receiver.Id}).", amount, false).ConfigureAwait(false);
@@ -471,6 +478,13 @@ namespace NadekoBot.Modules.Gambling
                     return;
                 }
 
+                var inUse = uow.CurrencyTransactions.GetClubAwarded(Context.User.Id);
+                if (inUse > 0)
+                {
+                    await ReplyErrorLocalized("should_use", Format.Bold(String.Format("{0:#,0}", inUse.ToString())), Bc.BotConfig.CurrencySign).ConfigureAwait(false);
+                    return;
+                }
+
                 var success = await _cs.RemoveAsync((IGuildUser)Context.User, $"Invest into {club.Name} storage.", amount, false, gamble: true).ConfigureAwait(false);
                 if (!success)
                 {
@@ -486,6 +500,74 @@ namespace NadekoBot.Modules.Gambling
 
                 string cur = GetText("currency_left", String.Format("{0:#,0}", _service.GetUserCurrency(Context.User)), Bc.BotConfig.CurrencySign);
                 await Context.Channel.SendConfirmAsync(GetText("club_invested", Format.Bold(amount.ToString()) + CurrencySign, Format.Bold(club.Name)), cur).ConfigureAwait(false);
+            }
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        [Priority(0)]
+        public async Task ClubAward(int amount, IGuildUser user)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var club = uow.Clubs.GetByMember(Context.User.Id);
+                if (club == null)
+                {
+                    await ReplyErrorLocalized("club_null").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Owner.UserId != Context.User.Id)
+                {
+                    await ReplyErrorLocalized("club_not_owner").ConfigureAwait(false);
+                    return;
+                }
+
+                var usr = club.Users.FirstOrDefault(x => x.ToString().ToUpperInvariant() == user.Username.ToUpperInvariant() + "#" + user.Discriminator);
+                if (usr == null)
+                {
+                    await ReplyErrorLocalized("club_user_not_found");
+                    return;
+                }
+
+                if (club.roleId == 0)
+                {
+                    await ReplyErrorLocalized("club_role_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.XpImageUrl == "")
+                {
+                    await ReplyErrorLocalized("club_xp_image_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.textId == 0)
+                {
+                    await ReplyErrorLocalized("club_text_not_exists").ConfigureAwait(false);
+                    return;
+                }
+
+                if (club.Currency < amount)
+                {
+                    await ReplyErrorLocalized("club_not_enough").ConfigureAwait(false);
+                    return;
+                }
+
+                /*TimeSpan? rem;
+                if ((rem = _cache.AddRepGive(Context.User.Id, 24)) != null)
+                {
+                    await ReplyErrorLocalized("club_already_awarded", rem?.Days, rem?.Hours, rem?.Minutes, rem?.Seconds).ConfigureAwait(false);
+                    return;
+                }*/
+
+                await _cs.AddAsync(user.Id, "Club Award", amount, gamble: true).ConfigureAwait(false);
+                club.Currency -= amount;
+
+                await Context.Channel.SendConfirmAsync(GetText("club_awarded", user.Mention, Format.Bold(amount.ToString()), Bc.BotConfig.CurrencySign, Format.Bold(club.Name)),
+                    GetText("club_currency_left", club.Currency, Bc.BotConfig.CurrencySign)).ConfigureAwait(false);
+
+                await uow.CompleteAsync();
             }
         }
 

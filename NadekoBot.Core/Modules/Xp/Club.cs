@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Core.Services.Database.Models;
+using NadekoBot.Core.Services;
 using NadekoBot.Extensions;
 using NadekoBot.Modules.Xp.Common;
 using NadekoBot.Modules.Xp.Services;
@@ -751,51 +752,6 @@ namespace NadekoBot.Modules.Xp
             }
 
             [NadekoCommand, Usage, Description, Aliases]
-            public async Task ClubAward(IGuildUser user, int amount)
-            {
-                var club = _service.GetClubByMember(Context.User);
-                if (club == null)
-                {
-                    await ReplyErrorLocalized("club_null").ConfigureAwait(false);
-                    return;
-                }
-
-                if (club.Owner.UserId != Context.User.Id)
-                {
-                    await ReplyErrorLocalized("club_not_owner").ConfigureAwait(false);
-                    return;
-                }
-
-                if (club.roleId == 0)
-                {
-                    await ReplyErrorLocalized("club_role_not_exists").ConfigureAwait(false);
-                    return;
-                }
-
-                if (club.XpImageUrl == "")
-                {
-                    await ReplyErrorLocalized("club_xp_image_not_exists").ConfigureAwait(false);
-                    return;
-                }
-
-                if (club.textId != 0)
-                {
-                    await ReplyErrorLocalized("club_text_exists").ConfigureAwait(false);
-                    return;
-                }
-
-                if (club.Currency < amount)
-                {
-                    await ReplyErrorLocalized("club_not_enough").ConfigureAwait(false);
-                    return;
-                }
-
-
-
-                await ReplyConfirmLocalized("club_text_created").ConfigureAwait(false);
-            }
-
-            [NadekoCommand, Usage, Description, Aliases]
             public async Task ClubPlaceAdd(Rgba32 color = default)
             {
                 var club = _service.GetClubByMember(Context.User);
@@ -843,7 +799,7 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                          {
                              var sum = _service.GetAmountByUser(x.UserId);
-                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% ({(int)((x.TotalXp - x.ClubXp) * 0.00001 * club.TotalCurrency)}{Bc.BotConfig.CurrencySign}) - <@{x.UserId}>";
+                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.0005)}% ({(int)((x.TotalXp - x.ClubXp) * 0.000005 * club.TotalCurrency)}{Bc.BotConfig.CurrencySign}) - <@{x.UserId}>";
                              return sumStr;
                          }));
 
@@ -881,7 +837,7 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                     {
                         var sum = _service.GetAmountByUser(x.UserId);
-                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% ({(int)((x.TotalXp - x.ClubXp) * 0.00001 * club.TotalCurrency)}{Bc.BotConfig.CurrencySign}) - {x.Username}";
+                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.0005)}% ({(int)((x.TotalXp - x.ClubXp) * 0.000005 * club.TotalCurrency)}{Bc.BotConfig.CurrencySign}) - {x.Username}";
                         return sumStr;
                     }));
 
@@ -919,7 +875,7 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                     {
                         var sum = _service.GetAmountByUser(x.UserId);
-                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} + {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.001)}% - <@{x.UserId}>";
+                        var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} + {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.0005)}% - <@{x.UserId}>";
                         return sumStr;
                     }));
 

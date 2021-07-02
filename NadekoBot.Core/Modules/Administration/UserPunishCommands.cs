@@ -738,21 +738,22 @@ namespace NadekoBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             [RequireUserPermission(GuildPermission.BanMembers)]
             [Priority(0)]
-            public async Task ModStats([Remainder] IRole role = null)
+            public async Task ModStats(int page = 1, [Remainder] IRole role = null)
             {
+                if (page < 1)
+                    return;
+
                 role = role ?? Context.Guild.EveryoneRole;
 
                 var members = (await role.GetMembersAsync().ConfigureAwait(false));
                 var membersArray = members as IUser[] ?? members.ToArray();
                 if (membersArray.Length == 0)
-                {
                     return;
-                }
 
                 var embed = new EmbedBuilder().WithTitle(GetText("modstats"))
                     .WithOkColor();
 
-                foreach (var moders in membersArray)
+                foreach (var moders in membersArray.Skip((page - 1) * 7).Take(7))
                 {
                     var stats = _service.ModeratorStats(Context.Guild.Id, moders.Id);
                     if (stats.Length > 0)

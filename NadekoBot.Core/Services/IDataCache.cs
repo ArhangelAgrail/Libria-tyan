@@ -20,6 +20,7 @@ namespace NadekoBot.Core.Services
         Task SetNovelDataAsync(string link, string data);
         TimeSpan? AddTimelyClaim(ulong id, int period);
         TimeSpan? AddRepGive(ulong id, int period);
+        TimeSpan? AddClubAward(ulong id, int period);
         TimeSpan? TryAddRatelimit(ulong id, string name, int expireIn);
         void RemoveAllTimelyClaims();
         void RemoveAllRepGives();

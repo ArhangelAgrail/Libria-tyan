@@ -1000,7 +1000,7 @@ namespace NadekoBot.Modules.Xp.Services
 
                     foreach (var user in club.Users)
                     {
-                        var amount = (int)((user.TotalXp - user.ClubXp) * 0.00001 * total);
+                        var amount = (int)((user.TotalXp - user.ClubXp) * 0.000005 * total);
                         club.Currency += amount;
                         clubSumm += amount;
                     }

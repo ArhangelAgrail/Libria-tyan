@@ -7,5 +7,6 @@ namespace NadekoBot.Core.Services.Database.Repositories
     {
         List<CurrencyTransaction> GetPageFor(ulong userId, int page);
         string GetInvestedAmount(ulong userId, string clubName);
+        int GetClubAwarded(ulong userId);
     }
 }

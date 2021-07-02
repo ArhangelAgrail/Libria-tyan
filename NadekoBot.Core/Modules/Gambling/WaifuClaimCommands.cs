@@ -162,15 +162,15 @@ namespace NadekoBot.Modules.Gambling
                 if (targetId == Context.User.Id)
                     return;
 
-                var (w, result, amount, remaining) = await _service.DivorceWaifuAsync(Context.User, targetId);
+                var (w, result, remaining) = await _service.DivorceWaifuAsync(Context.User, targetId);
 
                 if (result == DivorceResult.SucessWithPenalty)
                 {
-                    await ReplyConfirmLocalized("waifu_divorced_like", Format.Bold(w.Waifu.ToString()), amount + Bc.BotConfig.CurrencySign);
+                    await ReplyConfirmLocalized("waifu_divorced_like");
                 }
                 else if (result == DivorceResult.Success)
                 {
-                    await ReplyConfirmLocalized("waifu_divorced_notlike", amount + Bc.BotConfig.CurrencySign);
+                    await ReplyConfirmLocalized("waifu_divorced_notlike");
                 }
                 else if (result == DivorceResult.NotYourWife)
                 {

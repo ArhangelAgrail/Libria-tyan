@@ -116,6 +116,24 @@ namespace NadekoBot.Core.Services.Impl
             }
         }
 
+        private readonly object clubAwardLock = new object();
+        public TimeSpan? AddClubAward(ulong id, int period)
+        {
+            if (period == 0)
+                return null;
+            lock (clubAwardLock)
+            {
+                var time = TimeSpan.FromHours(period);
+                var _db = Redis.GetDatabase();
+                if ((bool?)_db.StringGet($"{_redisKey}_club_award_{id}") == null)
+                {
+                    _db.StringSet($"{_redisKey}_club_award_{id}", true, time);
+                    return null;
+                }
+                return _db.KeyTimeToLive($"{_redisKey}_club_award_{id}");
+            }
+        }
+
         public void RemoveAllRepGives()
         {
             var server = Redis.GetServer(_redisEndpoint);
