@@ -116,13 +116,16 @@ namespace NadekoBot.Modules.Xp
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
-        public async Task XpNotify(NotifyPlace place = NotifyPlace.Guild, XpNotificationType type = XpNotificationType.Dm)
+        public async Task XpNotify(XpNotificationType type = XpNotificationType.Dm)
         {
+            NotifyPlace place = NotifyPlace.Guild;
+
             if (place == NotifyPlace.Guild)
                 await _service.ChangeNotificationType(Context.User.Id, Context.Guild.Id, type).ConfigureAwait(false);
-            else
-                await _service.ChangeNotificationType(Context.User, type).ConfigureAwait(false);
-            await Context.Channel.SendConfirmAsync("notify_type_changed").ConfigureAwait(false);
+            //else
+                //await _service.ChangeNotificationType(Context.User, type).ConfigureAwait(false);
+
+            await ReplyConfirmLocalized("notify_type_changed").ConfigureAwait(false);
         }
 
         public enum Server { Server };

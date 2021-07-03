@@ -134,6 +134,8 @@ namespace NadekoBot.Modules.Xp.Services
                         if (toAddTo.Count == 0)
                             continue;
 
+                        string crewstring = "";
+
                         using (var uow = _db.UnitOfWork)
                         {
                             foreach (var item in group)
@@ -158,13 +160,13 @@ namespace NadekoBot.Modules.Xp.Services
                                     du.Club.Xp += xp;
                                 var newGuildLevelData = new LevelStats(usr.Xp + usr.AwardedXp);
 
-                                if (oldGlobalLevelData.Level < newGlobalLevelData.Level)
+                                /*if (oldGlobalLevelData.Level < newGlobalLevelData.Level)
                                 {
                                     du.LastLevelUp = DateTime.UtcNow;
                                     var first = item.First();
                                     if (du.NotifyOnLevelUp != XpNotificationType.None)
                                         toNotify.Add((first.Channel, first.User, newGlobalLevelData.Level, du.NotifyOnLevelUp, NotifOf.Global));
-                                }
+                                }*/
 
                                 if (oldGuildLevelData.Level < newGuildLevelData.Level)
                                 {
@@ -181,6 +183,87 @@ namespace NadekoBot.Modules.Xp.Services
                                         roleRewards.Add(usr.GuildId, rrews);
                                     }
 
+                                    var guildUser = item.Key.User;
+                                    var roles = uow.Achievements.ByGroup("NoWarn");
+                                    var roleIds = roles.Select(x => x.RoleId).ToArray();
+                                    var sameRoles = guildUser.RoleIds
+                                        .Where(r => roleIds.Contains(r));
+
+                                    IRole role = null;
+                                    foreach (var cond in roles)
+                                    {
+                                        if (uow.Warnings
+                                        .ForId(item.Key.GuildId, guildUser.Id)
+                                        .Where(w => !w.Forgiven && w.UserId == guildUser.Id)
+                                        .Count() == 0 && newGuildLevelData.Level >= cond.Condition)
+                                            role = guildUser.Guild.GetRole(cond.RoleId);
+                                    }
+
+                                    foreach (var roleId in sameRoles)
+                                    {
+                                        var sameRole = guildUser.Guild.GetRole(roleId);
+                                        if (role != sameRole)
+                                            if (sameRole != null)
+                                            {
+                                                try
+                                                {
+                                                    await guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                                    await Task.Delay(50).ConfigureAwait(false);
+                                                }
+                                                catch
+                                                { }
+                                            }
+                                    }
+
+                                    if (role != null)
+                                    {
+                                        try
+                                        {
+                                            await guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                                        }
+                                        catch
+                                        { }
+                                    }
+
+                                    roles = uow.Achievements.ByGroup("ServerYear");
+                                    roleIds = roles.Select(x => x.RoleId).ToArray();
+                                    sameRoles = guildUser.RoleIds
+                                        .Where(r => roleIds.Contains(r));
+
+                                    role = null;
+                                    var time = DateTime.UtcNow - guildUser.JoinedAt;
+                                    foreach (var cond in roles)
+                                    {
+                                        if (time.Value.TotalDays >= 365 && newGuildLevelData.Level >= cond.Condition)
+                                            role = guildUser.Guild.GetRole(cond.RoleId);
+                                    }
+
+                                    foreach (var roleId in sameRoles)
+                                    {
+                                        var sameRole = guildUser.Guild.GetRole(roleId);
+                                        if (role != sameRole)
+                                            if (sameRole != null)
+                                            {
+                                                try
+                                                {
+                                                    await guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                                    await Task.Delay(50).ConfigureAwait(false);
+                                                }
+                                                catch
+                                                { }
+                                            }
+                                    }
+
+                                    if (role != null)
+                                    {
+                                        try
+                                        {
+                                            await guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                                        }
+                                        catch
+                                        { }
+                                    }
+
                                     if (!curRewards.TryGetValue(usr.GuildId, out var crews))
                                     {
                                         crews = uow.GuildConfigs.XpSettingsFor(usr.GuildId).CurrencyRewards.ToList();
@@ -190,10 +273,10 @@ namespace NadekoBot.Modules.Xp.Services
                                     var rrew = rrews.FirstOrDefault(x => x.Level == newGuildLevelData.Level);
                                     if (rrew != null)
                                     {
-                                        var role = first.User.Guild.GetRole(rrew.RoleId);
-                                        if (role != null)
+                                        var rolle = first.User.Guild.GetRole(rrew.RoleId);
+                                        if (rolle != null)
                                         {
-                                            var __ = first.User.AddRoleAsync(role);
+                                            var __ = first.User.AddRoleAsync(rolle);
                                         }
                                     }
                                     //get currency reward for this level
@@ -202,6 +285,10 @@ namespace NadekoBot.Modules.Xp.Services
                                     {
                                         //give the user the reward if it exists
                                         await _cs.AddAsync(item.Key.User.Id, "Level-up Reward", crew.Amount);
+                                        
+                                        crewstring = _strings.GetText("level_award", 
+                                            crew.XpSettings.GuildConfig.GuildId, "xp",
+                                            Format.Bold(crew.Amount.ToString()), bc.BotConfig.CurrencySign);
                                     }
                                 }
                             }
@@ -221,7 +308,8 @@ namespace NadekoBot.Modules.Xp.Services
                                             (x.MessageChannel as ITextChannel)?.GuildId,
                                             "xp",
                                             x.User.Mention, Format.Bold(x.Level.ToString()),
-                                            Format.Bold((x.MessageChannel as ITextChannel)?.Guild.ToString() ?? "-")));
+                                            Format.Bold((x.MessageChannel as ITextChannel)?.Guild.ToString() ?? "-"),
+                                            crewstring));
                                 }
                                 else // channel
                                 {
