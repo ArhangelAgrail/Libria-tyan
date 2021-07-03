@@ -385,7 +385,7 @@ namespace NadekoBot.Modules.Gambling
                                         .OrderBy(x => x.Price)
                                         .Skip(9 * curentPage)
                                         .Take(9)
-                                        .ForEach(x => embed.AddField(f => f.WithName("#" + i++ + " " + x.ItemEmoji + " " + x.Item.ToString()).WithValue(GetText("waifu_gift_price", x.Price, Bc.BotConfig.CurrencySign)).WithIsInline(true)));
+                                        .ForEach(x => embed.AddField(f => f.WithName(x.ItemEmoji + " " + x.Item.ToString() + " [#" + i++ + "]").WithValue(GetText("waifu_gift_price", Format.Bold(x.Price.ToString()), Bc.BotConfig.CurrencySign)).WithIsInline(true)));
 
                     return embed;
                 }, Enum.GetValues(typeof(WaifuItem.ItemName)).Length, 9);

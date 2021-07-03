@@ -261,6 +261,7 @@ namespace NadekoBot.Modules.Gambling.Services
                 {
                     if (GetRepLogForUser(target).Count() >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
+                    else break;
                 }
 
                 foreach (var roleId in sameRoles)

@@ -105,6 +105,7 @@ namespace NadekoBot.Modules.Xp.Services
                 {
                     if (club.Users.Count >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
+                    else break;
                 }
 
                 foreach (var roleId in sameRoles)
@@ -279,6 +280,7 @@ namespace NadekoBot.Modules.Xp.Services
                 {
                     if (club.Users.Count+1 >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
+                    else break;
                 }
 
                 foreach (var roleId in sameRoles)
@@ -344,6 +346,7 @@ namespace NadekoBot.Modules.Xp.Services
                 {
                     if (club.Users.Count >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
+                    else break;
                 }
 
                 foreach (var roleId in sameRoles)
@@ -590,6 +593,7 @@ namespace NadekoBot.Modules.Xp.Services
                 {
                     if (club.Users.Count >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
+                    else break;
                 }
 
                 foreach (var roleId in sameRoles)
@@ -684,8 +688,9 @@ namespace NadekoBot.Modules.Xp.Services
                 IRole role = null;
                 foreach (var cond in roles)
                 {
-                    if (club.Users.Count-1 >= cond.Condition)
+                    if (club.Users.Count - 1 >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
+                    else break;
                 }
 
                 foreach (var roleId in sameRoles)

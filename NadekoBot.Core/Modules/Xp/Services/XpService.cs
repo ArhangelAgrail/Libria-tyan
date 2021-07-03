@@ -197,6 +197,7 @@ namespace NadekoBot.Modules.Xp.Services
                                         .Where(w => !w.Forgiven && w.UserId == guildUser.Id)
                                         .Count() == 0 && newGuildLevelData.Level >= cond.Condition)
                                             role = guildUser.Guild.GetRole(cond.RoleId);
+                                        else break;
                                     }
 
                                     foreach (var roleId in sameRoles)
@@ -236,6 +237,7 @@ namespace NadekoBot.Modules.Xp.Services
                                     {
                                         if (time.Value.TotalDays >= 365 && newGuildLevelData.Level >= cond.Condition)
                                             role = guildUser.Guild.GetRole(cond.RoleId);
+                                        else break;
                                     }
 
                                     foreach (var roleId in sameRoles)
