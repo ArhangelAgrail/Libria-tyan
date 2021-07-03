@@ -114,9 +114,11 @@ namespace NadekoBot.Modules.Gambling
                         return;
                     }
 
-                    var total = await _service.GiveReputation(target, Context.User);
+                    var (total, curAchievement, repForNext, rolePercent) = await _service.GiveReputation(target, Context.User);
+                    var achievementStr = curAchievement is null ? GetText("cur_achievement_null", repForNext) : repForNext > 0 ? GetText("cur_achievement", curAchievement.Mention, rolePercent*100, repForNext) : GetText("cur_achievement_max", curAchievement.Mention, rolePercent*100);
+
                     await _service.LogReputation(target, Context.User);
-                    await Context.Channel.SendConfirmAsync(GetText("rep", Context.User.Mention, target.Mention, period), GetText("total_rep", total)).ConfigureAwait(false);
+                    await Context.Channel.SendConfirmAsync(GetText("rep", Context.User.Mention, target.Mention, achievementStr, period), GetText("total_rep", total)).ConfigureAwait(false);
                 }
                 else
                 await ReplyErrorLocalized("last_rep", target.Mention).ConfigureAwait(false);
@@ -194,7 +196,7 @@ namespace NadekoBot.Modules.Gambling
                         .Take(20)
                         .Select(x =>
                         {
-                            return $"<@{x.UserId}> - **+{x.Count}**";
+                            return $"<@{x.UserId}>: **+{x.Count}**☆";
                         })));
 
                     return embed;
@@ -554,12 +556,12 @@ namespace NadekoBot.Modules.Gambling
                     return;
                 }
 
-                /*TimeSpan? rem;
+                TimeSpan? rem;
                 if ((rem = _cache.AddRepGive(Context.User.Id, 24)) != null)
                 {
                     await ReplyErrorLocalized("club_already_awarded", rem?.Days, rem?.Hours, rem?.Minutes, rem?.Seconds).ConfigureAwait(false);
                     return;
-                }*/
+                }
 
                 await _cs.AddAsync(user.Id, "Club Award", amount, gamble: true).ConfigureAwait(false);
                 club.Currency -= amount;

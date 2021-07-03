@@ -111,7 +111,7 @@ namespace NadekoBot.Modules.Utility
                 var roles = user.RoleIds.Count > 1 ? user.GetRoles().Skip(1).Select(r => { return $"<@&{r.Id}>"; }) : null;
 
                 embed.WithTitle($"{user.Username}#{user.Discriminator}")
-                    .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"`{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"}` ({time:dd} {GetText("days")})").WithIsInline(true))
+                    .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"`{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"}`\n({GetText("days", time.Value.TotalDays)})").WithIsInline(true))
                     .AddField(fb => fb.WithName(GetText("joined_discord")).WithValue($"`{user.CreatedAt:dd.MM.yyyy HH:mm}`").WithIsInline(true))
                     .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{(roles != null ? string.Join(" | ", roles).SanitizeMentions() : GetText("no_roles"))}").WithIsInline(false))
                     .WithFooter($"{GetText("user_id")} - {user.Id}")

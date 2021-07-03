@@ -158,9 +158,12 @@ namespace NadekoBot.Modules.Gambling.Services
             return new WheelOfFortuneGame(userId, bet, _cs).SpinAsync();
         }
 
-        public async Task<int> GiveReputation(IUser target, IUser user)
+        public async Task<(int, IRole, int, double)> GiveReputation(IUser target, IUser user)
         {
-            var total = 1;
+            int total = 1, nextTotal = 0;
+            IRole curRole = null;
+            double rolePercent = 0;
+
             using (var uow = _db.UnitOfWork)
             {
                 var du = uow.DiscordUsers.GetOrCreate(user);
@@ -212,8 +215,11 @@ namespace NadekoBot.Modules.Gambling.Services
                 IRole role = null;
                 foreach (var cond in roles)
                 {
+                    nextTotal = cond.Condition;
+
                     if (total >= cond.Condition)
                         role = guildUser.Guild.GetRole(cond.RoleId);
+                    else break;
                 }
 
                 foreach (var roleId in sameRoles)
@@ -241,6 +247,9 @@ namespace NadekoBot.Modules.Gambling.Services
                     catch
                     { }
                 }
+
+                curRole = role;
+                rolePercent = (double)guildUser.Guild.GetUsersAsync().Result.Where(x => x.RoleIds.Contains(curRole.Id)).Count() / (double)guildUser.Guild.GetUsersAsync().Result.Count;
 
                 roles = uow.Achievements.ByGroup("ReputationGet");
                 roleIds = roles.Select(x => x.RoleId).ToArray();
@@ -283,7 +292,7 @@ namespace NadekoBot.Modules.Gambling.Services
                 await uow.CompleteAsync();
             }
 
-            return total;
+            return (total, curRole, nextTotal-total, rolePercent);
         }
 
         public async Task<bool> LogReputation(IUser target, IUser user)
