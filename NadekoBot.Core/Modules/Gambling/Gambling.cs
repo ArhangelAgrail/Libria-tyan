@@ -117,7 +117,7 @@ namespace NadekoBot.Modules.Gambling
                     var (total, curAchievement, repForNext, rolePercent) = await _service.GiveReputation(target, Context.User);
                     var achievementStr = curAchievement is null ? 
                         GetText("cur_achievement_null", repForNext) : repForNext > 0 ? 
-                        GetText("cur_achievement", curAchievement.Mention, rolePercent*100, repForNext) : GetText("cur_achievement_max", curAchievement.Mention, rolePercent*100);
+                        GetText("cur_achievement", curAchievement.Mention, rolePercent*100, repForNext) : GetText("cur_achievement_max", curAchievement.Mention, String.Format("{0:0.##}", rolePercent*100));
 
                     await _service.LogReputation(target, Context.User);
                     await Context.Channel.SendConfirmAsync(GetText("rep", Context.User.Mention, target.Mention, achievementStr, period), GetText("total_rep", total)).ConfigureAwait(false);
