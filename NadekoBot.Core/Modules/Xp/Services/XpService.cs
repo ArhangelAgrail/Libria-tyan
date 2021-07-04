@@ -1071,13 +1071,13 @@ namespace NadekoBot.Modules.Xp.Services
 
         public string ClubsXpReset(int mult)
         {
-            string lisa = "";
+            string lisa = "\n";
             using (var uow = _db.UnitOfWork)
             {
                 var clubs = uow.Clubs.GetAll();
                 var i = 0;
 
-                foreach (var club in clubs)
+                foreach (var club in clubs.Take(10))
                 {
                     var lvl = new LevelStats(club.Xp);
                     var bonus = lvl.Level * mult * 100;
@@ -1096,6 +1096,16 @@ namespace NadekoBot.Modules.Xp.Services
                     }
                     lisa += i > 9 ? " " : "";
                     lisa += $"‎‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎└︎ (**Σ︎ {club.Users.Count}**) - {Format.Bold(clubSumm.ToString())}{_bc.BotConfig.CurrencySign}\n";
+                }
+
+                foreach (var other in clubs.Skip(10))
+                {
+                    var total = other.TotalCurrency;
+                    foreach (var user in other.Users)
+                    {
+                        var amount = (int)((user.TotalXp - user.ClubXp) * 0.000005 * total);
+                        other.Currency += amount;
+                    }
                 }
                 
                 uow.Xp.ResetClubsXp();

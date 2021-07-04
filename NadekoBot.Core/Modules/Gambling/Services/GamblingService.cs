@@ -238,18 +238,18 @@ namespace NadekoBot.Modules.Gambling.Services
                         }
                 }
 
+                curRole = role;
+
                 if (role != null)
                 {
                     try
                     {
                         await guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                        rolePercent = (double)guildUser.Guild.GetUsersAsync().Result.Where(x => x.RoleIds.Contains(curRole.Id)).Count() / (double)guildUser.Guild.GetUsersAsync().Result.Count;
                     }
                     catch
                     { }
                 }
-
-                curRole = role;
-                rolePercent = (double)guildUser.Guild.GetUsersAsync().Result.Where(x => x.RoleIds.Contains(curRole.Id)).Count() / (double)guildUser.Guild.GetUsersAsync().Result.Count;
 
                 roles = uow.Achievements.ByGroup("ReputationGet");
                 roleIds = roles.Select(x => x.RoleId).ToArray();

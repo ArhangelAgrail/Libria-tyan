@@ -347,6 +347,7 @@ namespace NadekoBot.Modules.Gambling
                         .Select(x => string.Join(" ", x)));
 
                 var count = wi.Items.Select(x => x.Count).Sum();
+                var preRep = wi.Reputation > 0 ? "+" : "";
 
                 var embed = new EmbedBuilder()
                     .WithColor(16738816)
@@ -356,7 +357,7 @@ namespace NadekoBot.Modules.Gambling
                     .AddField(efb => efb.WithName(GetText("likes")).WithValue(wi.AffinityName ?? nobody).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("changes_of_heart")).WithValue($"{wi.AffinityCount} - \"{GetText(affInfo)}\"").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("club")).WithValue(clubName).WithIsInline(true))
-                    .AddField(efb => efb.WithName(GetText("reputation")).WithValue("**+" + wi.Reputation.ToString() + "☆**").WithIsInline(true))
+                    .AddField(efb => efb.WithName(GetText("reputation")).WithValue($"**{preRep}{wi.Reputation}☆**").WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("gifts", count)).WithValue(itemsStr).WithIsInline(true))
                     .AddField(efb => efb.WithName(GetText("Waifus", wi.ClaimCount)).WithValue(wi.ClaimCount == 0 ? nobody + "\n_______" : string.Join("\n", wi.Claims30) + "\n_______").WithIsInline(true))
                     .WithFooter(text: GetText("info") + " " + info, iconUrl: "https://cdn.discordapp.com/attachments/404549045168766986/650350116221353995/sK6tzE73ub.png");

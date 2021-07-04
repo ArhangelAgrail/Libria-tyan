@@ -802,6 +802,7 @@
   "gambling_shop_none": "На этой странице нет предметов для покупки.",
   "gambling_shop_role": "Роль {0}",
   "gambling_shop_discount": "ваша скидка -{0}%",
+  "gambling_shop_discount_desc": "Скидка зависит от Вашей репутации и стоимости как Вайфу.\nУ Вас {0}☆ и {1}❀",
   "gambling_shop_price": "Цена: {0}{1}",
   "gambling_shop_unique": "Уникальная роль",
   "gambling_type": "Вид",

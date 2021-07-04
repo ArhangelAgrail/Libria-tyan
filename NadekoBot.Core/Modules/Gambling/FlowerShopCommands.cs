@@ -74,7 +74,8 @@ namespace NadekoBot.Modules.Gambling
                     var discount = reputation * 0.01 + price * 0.00005;
 
                     var embed = new EmbedBuilder().WithOkColor()
-                        .WithTitle(GetText("shop", Bc.BotConfig.CurrencySign) + " - " + GetText("shop_discount", String.Format("{0:0.##}", discount)));
+                        .WithTitle(GetText("shop", Bc.BotConfig.CurrencySign) + " - " + GetText("shop_discount", String.Format("{0:0.##}", discount)))
+                        .WithDescription(GetText("shop_discount_desc", reputation, price));
 
                     for (int i = 0; i < theseEntries.Length; i++)
                     {
