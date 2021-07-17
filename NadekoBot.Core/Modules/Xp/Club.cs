@@ -160,8 +160,7 @@ namespace NadekoBot.Modules.Xp
                     var embed = new EmbedBuilder()
                         .WithOkColor()
                         .WithTitle($"{club.Name}")
-                        .WithUrl(club.XpImageUrl)
-                        .WithDescription(GetText("level_x", Format.Bold(lvl.Level.ToString()), String.Format("{0:#,0}", club.Xp)))
+                        .WithDescription(GetText("club_level_x", Format.Bold(lvl.Level.ToString()), String.Format("{0:#,0}", club.Xp)))
                         .AddField(GetText("description"), string.IsNullOrWhiteSpace(club.Description) ? "-" : club.Description, false)
                         .AddField(GetText("owner_and_role"), $" ▹<@{club.Owner.UserId}>\n" + (club.roleId != 0 ? $"▹<@&{club.roleId}>" : GetText("club_no_role")), true)
                         .AddField(GetText("storage") + GetText(target), $" **{String.Format("{0:#,0}", club.Currency)}/{String.Format("{0:#,0}", maxAmount)}** {Bc.BotConfig.CurrencySign}\n{progress}", true)
@@ -172,12 +171,12 @@ namespace NadekoBot.Modules.Xp
                             {
                                 var l = new LevelStats(x.TotalXp);
                                 var user = x as IUser;
-                                var lvlStr = Format.Bold($"{String.Format("{0:#,0}", x.TotalXp - x.ClubXp)}◈ ⟪{String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) / club.Xp * 100)}%⟫");
+                                var lvlStr = Format.Bold($"{String.Format("{0:#,0}", x.TotalXp - x.ClubXp)}◈ ⟪{String.Format("{0:0.##}", (double)(x.TotalXp - x.ClubXp) / club.Xp * 100)}%⟫");
                                 if (club.OwnerId == x.Id)
-                                    return $"`{x}` `🌟` - {lvlStr}";
+                                    return $"`🌟` [`{x.Username}`](https://discord.com/users/{x.UserId}) - {lvlStr}";
                                 else if (x.IsClubAdmin)
-                                    return $"`{x}` `⭐` - {lvlStr}";
-                                return $"`{x}` - {lvlStr}";
+                                    return $"`⭐` [`{x.Username}`](https://discord.com/users/{x.UserId}) - {lvlStr}";
+                                return $"[`{x.Username}`](https://discord.com/users/{x.UserId}) - {lvlStr}";
                             })), false);
 
                     if (Uri.IsWellFormedUriString(club.ImageUrl, UriKind.Absolute))

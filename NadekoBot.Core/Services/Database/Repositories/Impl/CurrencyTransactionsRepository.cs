@@ -34,6 +34,9 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
             var AllAwards = _set.Where(x => x.UserId == userId && x.Reason == reason)
                 .ToList();
 
+            if (AllAwards.Count == 0)
+                return 0;
+
             int inUse = 0, used = 0;
             var last = AllAwards.Last();
             var previous = AllAwards.First().DateAdded;

@@ -108,20 +108,20 @@ namespace NadekoBot.Modules.Utility
                 var embed = new EmbedBuilder();
                 if (!string.IsNullOrWhiteSpace(user.Nickname))
                     embed.WithAuthor(user.Nickname);
-                var roles = user.RoleIds.Count > 1 ? user.GetRoles().Skip(1).Select(r => { return $"<@&{r.Id}>"; }) : null;
+                var roles = user.RoleIds.Count > 1 ? user.GetRoles().Skip(1).OrderByDescending(x => x.Position).Select(r => { return r.Mention; }) : null;
 
                 embed.WithTitle($"{user.Username}#{user.Discriminator}")
-                    .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"`{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"}`\n({GetText("days", time.Value.TotalDays)})").WithIsInline(true))
+                    .WithUrl($"https://discord.com/users/{user.Id}")
                     .AddField(fb => fb.WithName(GetText("joined_discord")).WithValue($"`{user.CreatedAt:dd.MM.yyyy HH:mm}`").WithIsInline(true))
+                    .AddField(fb => fb.WithName(GetText("joined_server")).WithValue($"`{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"}`\n({GetText("days", (int)time.Value.TotalDays)})").WithIsInline(true))
                     .AddField(fb => fb.WithName($"{GetText("roles")} ({ user.RoleIds.Count - 1})").WithValue($"{(roles != null ? string.Join(" | ", roles).SanitizeMentions() : GetText("no_roles"))}").WithIsInline(false))
                     .WithFooter($"{GetText("user_id")} - {user.Id}")
                     .WithColor(NadekoBot.OkColor);
 
-                    var av = user.RealAvatarUrl();
+                var av = user.RealAvatarUrl();
                 if (av != null && av.IsAbsoluteUri)
                 {
-                    embed.WithUrl(av.ToString())
-                        .WithThumbnailUrl(av.ToString());
+                    embed.WithThumbnailUrl(av.ToString());
                 }
 
                 await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);

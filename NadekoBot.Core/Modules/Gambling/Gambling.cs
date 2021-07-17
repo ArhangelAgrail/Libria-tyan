@@ -117,7 +117,7 @@ namespace NadekoBot.Modules.Gambling
                     var (total, curAchievement, repForNext, rolePercent) = await _service.GiveReputation(target, Context.User);
                     var achievementStr = curAchievement is null ? 
                         GetText("cur_achievement_null", repForNext) : repForNext > 0 ? 
-                        GetText("cur_achievement", curAchievement.Mention, rolePercent*100, repForNext) : GetText("cur_achievement_max", curAchievement.Mention, String.Format("{0:0.##}", rolePercent*100));
+                        GetText("cur_achievement", curAchievement.Mention, String.Format("{0:0.##}", rolePercent*100), repForNext) : GetText("cur_achievement_max", curAchievement.Mention, String.Format("{0:0.##}", rolePercent*100));
 
                     await _service.LogReputation(target, Context.User);
                     await Context.Channel.SendConfirmAsync(GetText("rep", Context.User.Mention, target.Mention, achievementStr, period), GetText("total_rep", total)).ConfigureAwait(false);
@@ -347,7 +347,7 @@ namespace NadekoBot.Modules.Gambling
             await _cs.AddAsync(usr.Id, $"Awarded by raffle. ({Context.User.Username}/{Context.User.Id})", amount, gamble: true);
             await Context.Channel.SendMessageAsync(GetText("raffled_grats", usr.Mention, $"`{role.Name}`"));
             await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user", user.Nickname), 
-                $"{GetText("raffled_result", usr.Mention, Format.Bold($"{amount}{_bc.BotConfig.CurrencySign}"), $"<@&{n}>")}", footer: $"{_bc.BotConfig.CurrencySign} в следующий раз повезет и тебе ^-^").ConfigureAwait(false);
+                $"{GetText("raffled_result", usr.Mention, Format.Bold($"{String.Format("{0:#,0}", amount)}{_bc.BotConfig.CurrencySign}"), $"<@&{n}>")}", footer: $"{_bc.BotConfig.CurrencySign} в следующий раз повезет и тебе ^-^").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
