@@ -128,10 +128,12 @@ namespace NadekoBot.Modules.Utility
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
-        public async Task InRole([Remainder] IRole role)
+        public async Task InRole([Remainder] string Nrole)
         {
             var rng = new NadekoRandom();
             var usrs = (await Context.Guild.GetUsersAsync().ConfigureAwait(false)).ToArray();
+            IRole role = Context.Guild.Roles.Where(x => x.Name.Contains(Nrole)).First();
+
             var roleUsers = usrs
                 .Where(u => u.RoleIds.Contains(role.Id))
                 .Select(u => u.ToString())

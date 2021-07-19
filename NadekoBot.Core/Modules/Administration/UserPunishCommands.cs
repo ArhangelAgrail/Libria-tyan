@@ -684,7 +684,7 @@ namespace NadekoBot.Modules.Administration
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             [RequireUserPermission(GuildPermission.BanMembers)]
-            [Priority(3)]
+            [Priority(0)]
             public async Task ModStats([Remainder] IUser user)
             {
                 var embed = new EmbedBuilder().WithTitle(GetText("modstats"))
@@ -737,7 +737,7 @@ namespace NadekoBot.Modules.Administration
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             [RequireUserPermission(GuildPermission.BanMembers)]
-            [Priority(0)]
+            [Priority(2)]
             public async Task ModStats(int page = 1, [Remainder] IRole role = null)
             {
                 if (page < 1)
