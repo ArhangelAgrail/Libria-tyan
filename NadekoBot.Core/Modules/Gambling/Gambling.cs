@@ -559,7 +559,7 @@ namespace NadekoBot.Modules.Gambling
                 }
 
                 TimeSpan? rem;
-                if ((rem = _cache.AddRepGive(Context.User.Id, 24)) != null)
+                if ((rem = _cache.AddClubAward(Context.User.Id, 24)) != null)
                 {
                     await ReplyErrorLocalized("club_already_awarded", rem?.Days, rem?.Hours, rem?.Minutes, rem?.Seconds).ConfigureAwait(false);
                     return;

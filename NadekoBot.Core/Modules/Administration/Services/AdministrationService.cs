@@ -148,9 +148,9 @@ namespace NadekoBot.Modules.Administration.Services
             }
         }
 
-        public async Task EditMessage(ICommandContext context, ulong messageId, string text)
+        public async Task EditMessage(ITextChannel channel, ICommandContext context, ulong messageId, string text)
         {
-            var msgs = await context.Channel.GetMessagesAsync().FlattenAsync()
+            var msgs = await channel.GetMessagesAsync().FlattenAsync()
                    .ConfigureAwait(false);
 
             IUserMessage msg = (IUserMessage)msgs.FirstOrDefault(x => x.Id == messageId
@@ -170,7 +170,7 @@ namespace NadekoBot.Modules.Administration.Services
                 await msg.ModifyAsync(x =>
                 {
                     x.Embed = crembed.ToEmbed().Build();
-                    x.Content = crembed.PlainText?.SanitizeMentions() ?? "";
+                    x.Content = crembed.PlainText;
                 }).ConfigureAwait(false);
             }
             else

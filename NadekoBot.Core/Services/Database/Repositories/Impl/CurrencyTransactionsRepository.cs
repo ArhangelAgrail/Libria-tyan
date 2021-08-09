@@ -58,7 +58,10 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
                     .Where(x => x.Reason == "Shop purchase - Role" || x.Reason == "Claimed Waifu" || x.Reason == "Bought waifu item" || x.Reason == "Immune set" || x.Reason == "Waifu Reset")
                     .Sum(x => x.Amount);
 
-            inUse += (int)last.Amount + used;
+            if (AllAwards.Count > 1)
+                inUse += (int)last.Amount + used;
+            else
+                inUse += used;
 
             return inUse;
         }

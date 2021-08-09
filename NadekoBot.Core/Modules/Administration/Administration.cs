@@ -189,12 +189,12 @@ namespace NadekoBot.Modules.Administration
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageMessages)]
-        public async Task Edit(ulong messageId, [Remainder] string text)
+        public async Task Edit(ITextChannel channel, ulong messageId, [Remainder] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            await _service.EditMessage(Context, messageId, text).ConfigureAwait(false);
+            await _service.EditMessage(channel, Context, messageId, text).ConfigureAwait(false);
         }
     }
 }

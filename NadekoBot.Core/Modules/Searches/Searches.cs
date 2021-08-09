@@ -79,7 +79,7 @@ namespace NadekoBot.Modules.Searches
                 rep.Replace(embedData);
                 try
                 {
-                    await channel.EmbedAsync(embedData.ToEmbed(), embedData.PlainText?.SanitizeMentions() ?? "").ConfigureAwait(false);
+                    await channel.EmbedAsync(embedData.ToEmbed(), embedData.PlainText).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
