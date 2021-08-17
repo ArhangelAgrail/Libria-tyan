@@ -189,6 +189,7 @@ namespace NadekoBot.Modules.Administration
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageMessages)]
+        [Priority(1)]
         public async Task Edit(ITextChannel channel, ulong messageId, [Remainder] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
@@ -196,5 +197,12 @@ namespace NadekoBot.Modules.Administration
 
             await _service.EditMessage(channel, Context, messageId, text).ConfigureAwait(false);
         }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.ManageMessages)]
+        [Priority(0)]
+        public Task Edit(ulong messageId, [Remainder] string text) =>
+            Edit((ITextChannel)Context.Channel, messageId, text);
     }
 }

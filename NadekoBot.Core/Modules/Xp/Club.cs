@@ -173,9 +173,9 @@ namespace NadekoBot.Modules.Xp
                                 var user = x as IUser;
                                 var lvlStr = Format.Bold($"{String.Format("{0:#,0}", x.TotalXp - x.ClubXp)}◈ ⟪{String.Format("{0:0.##}", (double)(x.TotalXp - x.ClubXp) / club.Xp * 100)}%⟫");
                                 if (club.OwnerId == x.Id)
-                                    return $"`🌟` [`{x.Username}`](https://discord.com/users/{x.UserId}) - {lvlStr}";
+                                    return $"**𓇻** [`{x.Username}`](https://discord.com/users/{x.UserId}) - {lvlStr}"; 
                                 else if (x.IsClubAdmin)
-                                    return $"`⭐` [`{x.Username}`](https://discord.com/users/{x.UserId}) - {lvlStr}";
+                                    return $"𓇼 [`{x.Username}`](https://discord.com/users/{x.UserId}) - {lvlStr}";
                                 return $"[`{x.Username}`](https://discord.com/users/{x.UserId}) - {lvlStr}";
                             })), false);
 
@@ -781,10 +781,11 @@ namespace NadekoBot.Modules.Xp
             [NadekoCommand, Usage, Description, Aliases]
             public Task ClubInvestLb(int page = 1)
             {
-                if (--page < 0 || page > 20)
+                var club = _service.GetClubByMember(Context.User);
+
+                if (--page < 0 || ++page > club.Users.Count/10)
                     return Task.CompletedTask;
 
-                var club = _service.GetClubByMember(Context.User);
                 if (club == null)
                 {
                     return Task.CompletedTask;
@@ -799,20 +800,21 @@ namespace NadekoBot.Modules.Xp
                     list.AddRange(users.Select(x =>
                          {
                              var sum = _service.GetAmountByUser(x.UserId);
-                             var sumStr = $"{sum}{Bc.BotConfig.CurrencySign} - {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.0005)}% ({(int)((x.TotalXp - x.ClubXp) * 0.000005 * club.TotalCurrency)}{Bc.BotConfig.CurrencySign}) - <@{x.UserId}>";
+                             var sumStr = $"➣ {sum} {Bc.BotConfig.CurrencySign}\n ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎└︎<@{x.UserId}>: {String.Format("{0:0.##}", (x.TotalXp - x.ClubXp) * 0.0005)}% ({String.Format("{0:#,0}", ((x.TotalXp - x.ClubXp) * 0.000005 * club.TotalCurrency))} {Bc.BotConfig.CurrencySign})";
                              return sumStr;
                          }));
 
-                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split(Bc.BotConfig.CurrencySign).First()));
+                    var result = list.OrderByDescending(x => Convert.ToInt32(x.Split(' ').Skip(1).First()));
                     var total = club.Users.Select(x => x.ClubInvetsAmount).Sum();
 
                     var embed = new EmbedBuilder()
                         .WithAuthor(GetText("club_top_investers", club.Name))
-                        .WithTitle(GetText("club_total_invests", total, Bc.BotConfig.CurrencySign) + "\n" + GetText("club_month_invests", club.TotalCurrency, Bc.BotConfig.CurrencySign))
-                        .WithDescription(GetText("club_invests_desc"))
-                        .WithFooter(GetText("page", curPage + 1))
+                        .WithTitle(GetText("club_storage_invests", String.Format("{0:#,0}", club.Currency), Bc.BotConfig.CurrencySign))
+                        .WithDescription(GetText("club_month_invests", String.Format("{0:#,0}", club.TotalCurrency), Bc.BotConfig.CurrencySign))
+                        .WithFooter(GetText("club_invests_desc"))
                         .WithOkColor()
-                        .AddField(GetText("members", club.Users.Count), Format.Bold(string.Join("\n", result.Skip(curPage*10).Take(10))), false);
+                        .AddField(GetText("club_invests_members", (curPage + 1) * 1, club.Users.Count/((curPage + 1) * 10) < 1 ? club.Users.Count : (curPage + 1) * 10, club.Users.Count), Format.Bold(string.Join("\n", result.Skip(curPage * 10).Take(10))), false)
+                        .AddField("_ _", GetText("club_total_invests", String.Format("{0:#,0}", total), Bc.BotConfig.CurrencySign));
                     return embed;
                 }, club.Users.Count, 10, addPaginatedFooter: false);
             }
