@@ -813,7 +813,7 @@ namespace NadekoBot.Modules.Xp
                         .WithDescription(GetText("club_month_invests", String.Format("{0:#,0}", club.TotalCurrency), Bc.BotConfig.CurrencySign))
                         .WithFooter(GetText("club_invests_desc"))
                         .WithOkColor()
-                        .AddField(GetText("club_invests_members", curPage > 1 ? curPage*10 : curPage, club.Users.Count/((curPage) * 10) < 1 ? club.Users.Count : (curPage) * 10, club.Users.Count), Format.Bold(string.Join("\n", result.Skip((curPage - 1) * 10).Take(10))), false)
+                        .AddField(GetText("club_invests_members", curPage > 1 ? curPage * 10 : curPage, club.Users.Count/((curPage + 1) * 10) < 1 ? club.Users.Count : (curPage + 1) * 10, club.Users.Count), Format.Bold(string.Join("\n", result.Skip((curPage - 1) * 10).Take(10))), false)
                         .AddField("_ _", GetText("club_total_invests", String.Format("{0:#,0}", total), Bc.BotConfig.CurrencySign));
                     return embed;
                 }, club.Users.Count, 10, addPaginatedFooter: false);
