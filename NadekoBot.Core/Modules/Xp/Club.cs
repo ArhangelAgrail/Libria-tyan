@@ -779,7 +779,7 @@ namespace NadekoBot.Modules.Xp
 
 
             [NadekoCommand, Usage, Description, Aliases]
-            public Task ClubInvestLb(int page = 1)
+            public Task ClubInvestLb(int page = 0)
             {
                 var club = _service.GetClubByMember(Context.User);
 
