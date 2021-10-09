@@ -22,7 +22,7 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
 
         public EventSchedule[] ByDate(ulong guildId, DateTime date)
         {
-            var query = _set.Where(x => x.GuildId == guildId && x.Date.DayOfYear == date.DayOfYear)
+            var query = _set.Where(x => x.GuildId == guildId && x.Date.DayOfYear == date.DayOfYear && x.Date.Year == date.Year)
                 .OrderBy(x => x.Date);
 
             return query.ToArray();
