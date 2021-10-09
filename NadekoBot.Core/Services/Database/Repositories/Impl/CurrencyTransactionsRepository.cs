@@ -31,25 +31,28 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
         public int GetClubAwarded(ulong userId)
         {
             string reason = "Club Award";
-            var AllAwards = _set.Where(x => x.UserId == userId && x.Reason == reason)
+            var Date = _set.Where(x => x.Reason.Contains("Invest into") || x.Reason.Contains("Gift to")).Last().DateAdded;
+            var AllAwards = _set.Where(x => x.UserId == userId && x.Reason == reason && x.DateAdded > Date)
                 .ToList();
 
             if (AllAwards.Count == 0)
                 return 0;
 
-            int inUse = 0, used = 0;
+            int inUse = (int)AllAwards.First().Amount, used = 0;
             var last = AllAwards.Last();
             var previous = AllAwards.First().DateAdded;
-            foreach (var award in AllAwards)
+            foreach (var award in AllAwards.Skip(1))
             {
                 used = (int)_set.Where(x => x.UserId == userId && x.DateAdded > previous && x.DateAdded < award.DateAdded)
                     .Where(x => x.Reason == "Shop purchase - Role" || x.Reason == "Claimed Waifu" || x.Reason == "Bought waifu item" || x.Reason == "Immune set" || x.Reason == "Waifu Reset")
                     .Sum(x => x.Amount);
 
-                inUse += (int)award.Amount + used;
+                inUse += used;
 
                 if (inUse <= 0)
                     inUse = 0;
+
+                inUse += (int)award.Amount;
 
                 previous = award.DateAdded;
             }
@@ -58,10 +61,7 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
                     .Where(x => x.Reason == "Shop purchase - Role" || x.Reason == "Claimed Waifu" || x.Reason == "Bought waifu item" || x.Reason == "Immune set" || x.Reason == "Waifu Reset")
                     .Sum(x => x.Amount);
 
-            if (AllAwards.Count > 1)
-                inUse += (int)last.Amount + used;
-            else
-                inUse += used;
+            inUse += used;
 
             return inUse;
         }
