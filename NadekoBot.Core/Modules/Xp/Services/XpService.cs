@@ -184,6 +184,17 @@ namespace NadekoBot.Modules.Xp.Services
                                     }
 
                                     var guildUser = item.Key.User;
+
+                                    var TempRole = guildUser.Guild.GetRole(873916631171104800);
+                                    if (guildUser.RoleIds.Contains(TempRole.Id))
+                                        try
+                                        {
+                                            await guildUser.RemoveRoleAsync(TempRole).ConfigureAwait(false);
+                                            await Task.Delay(50).ConfigureAwait(false);
+                                        }
+                                        catch
+                                        { }
+
                                     var roles = uow.Achievements.ByGroup("NoWarn");
                                     var roleIds = roles.Select(x => x.RoleId).ToArray();
                                     var sameRoles = guildUser.RoleIds

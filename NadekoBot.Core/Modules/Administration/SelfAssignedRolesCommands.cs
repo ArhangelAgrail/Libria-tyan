@@ -233,11 +233,11 @@ namespace NadekoBot.Modules.Administration
                     msg = await ReplyConfirmLocalized("self_assign_success", Format.Bold(role.Mention)).ConfigureAwait(false);
                 }
 
-                if (autoDelete)
-                {
-                    msg.DeleteAfter(3);
-                    Context.Message.DeleteAfter(3);
-                }
+                //if (autoDelete)
+                //{
+                    msg.DeleteAfter(5);
+                    Context.Message.DeleteAfter(5);
+                //}
             }
 
             [NadekoCommand, Usage, Description, Aliases]

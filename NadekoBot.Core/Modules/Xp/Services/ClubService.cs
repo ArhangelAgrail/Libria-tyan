@@ -336,44 +336,48 @@ namespace NadekoBot.Modules.Xp.Services
                 du.IsClubAdmin = false;
 
                 var guildUser = guild.GetUserAsync(club.Owner.UserId).Result;
-                var roles = uow.Achievements.ByGroup("ClubLead");
-                var roleIds = roles.Select(x => x.RoleId).ToArray();
-                var sameRoles = guildUser.RoleIds
-                    .Where(r => roleIds.Contains(r));
-
-                IRole role = null;
-                foreach (var cond in roles)
+                if (guildUser != null)
                 {
-                    if (club.Users.Count >= cond.Condition)
-                        role = guildUser.Guild.GetRole(cond.RoleId);
-                    else break;
-                }
+                    var roles = uow.Achievements.ByGroup("ClubLead");
+                    var roleIds = roles.Select(x => x.RoleId).ToArray();
+                    var sameRoles = guildUser.RoleIds
+                        .Where(r => roleIds.Contains(r));
 
-                foreach (var roleId in sameRoles)
-                {
-                    var sameRole = guildUser.Guild.GetRole(roleId);
-                    if (role != sameRole)
-                        if (sameRole != null)
-                        {
-                            try
-                            {
-                                guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
-                                Task.Delay(50).ConfigureAwait(false);
-                            }
-                            catch
-                            { }
-                        }
-                }
-
-                if (role != null)
-                {
-                    try
+                    IRole role = null;
+                    foreach (var cond in roles)
                     {
-                        guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                        if (club.Users.Count >= cond.Condition)
+                            role = guildUser.Guild.GetRole(cond.RoleId);
+                        else break;
                     }
-                    catch
-                    { }
+
+                    foreach (var roleId in sameRoles)
+                    {
+                        var sameRole = guildUser.Guild.GetRole(roleId);
+                        if (role != sameRole)
+                            if (sameRole != null)
+                            {
+                                try
+                                {
+                                    guildUser.RemoveRoleAsync(sameRole).ConfigureAwait(false);
+                                    Task.Delay(50).ConfigureAwait(false);
+                                }
+                                catch
+                                { }
+                            }
+                    }
+
+                    if (role != null)
+                    {
+                        try
+                        {
+                            guildUser.AddRoleAsync(role).ConfigureAwait(false);
+                        }
+                        catch
+                        { }
+                    }
                 }
+                
 
                 uow.Complete();
             }
