@@ -22,6 +22,7 @@ namespace NadekoBot.Core.Services.Database
         IWarningsRepository Warnings { get; }
         IModLogRepository ModLog { get; }
         IRepLogRepository RepLog { get; }
+        IRolesBonusRepository RolesBonus { get; }
         IEventScheduleRepository EventSchedule { get; }
         IXpRepository Xp { get; }
         IXpCardRepository XpCards { get; }

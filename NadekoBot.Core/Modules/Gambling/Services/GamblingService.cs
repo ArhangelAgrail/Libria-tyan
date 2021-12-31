@@ -368,7 +368,18 @@ namespace NadekoBot.Modules.Gambling.Services
             {
                 var du = uow.DiscordUsers.GetOrCreate(user);
                 var lvl = new LevelStats(du.TotalXp).Level;
+
                 return lvl;
+            }
+        }
+
+        public RolesBonus[] GetBonusValue()
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var bonuses = uow.RolesBonus.GetAllBonus();
+
+                return bonuses;
             }
         }
 
@@ -378,6 +389,7 @@ namespace NadekoBot.Modules.Gambling.Services
             {
                 var du = uow.DiscordUsers.GetOrCreate(user);
                 var cur = du.CurrencyAmount;
+
                 return cur;
             }
         }
@@ -387,6 +399,7 @@ namespace NadekoBot.Modules.Gambling.Services
             using (var uow = _db.UnitOfWork)
             {
                 var lastrep = uow.Waifus.GetWaifuInfo(user.Id).LastReputation;
+
                 return lastrep;
             }
         }

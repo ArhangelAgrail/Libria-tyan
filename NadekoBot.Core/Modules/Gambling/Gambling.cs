@@ -224,11 +224,24 @@ namespace NadekoBot.Modules.Gambling
                 return;
             }
 
+            var bonus = _service.GetBonusValue();
+            string strbonus = GetText("role_bonus");
+
+            foreach (var bon in bonus)
+            {
+                var user = Context.User as IGuildUser;
+                if (user.RoleIds.Contains(bon.RoleId))
+                {
+                    val += bon.Bonus;
+                    strbonus += $"\n<@&{bon.RoleId}> : **+{bon.Bonus}**{Bc.BotConfig.CurrencySign}";
+                }
+            }
+
             await _cs.AddAsync(Context.User.Id, "Timely claim", val, gamble:true).ConfigureAwait(false);
             var cur = _service.GetUserCurrency(Context.User);
 
             string usercur = GetText("currency_left", String.Format("{0:#,0}", cur), Bc.BotConfig.CurrencySign);
-            await Context.Channel.SendConfirmAsync(GetText("timely", Context.User.Mention, String.Format("{0:#,0}", val) + Bc.BotConfig.CurrencySign, period), usercur).ConfigureAwait(false);
+            await Context.Channel.SendConfirmAsync(GetText("timely", Context.User.Mention, String.Format("{0:#,0}", val) + Bc.BotConfig.CurrencySign, period, Bc.BotConfig.TimelyCurrency + Bc.BotConfig.CurrencySign, strbonus), usercur).ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]

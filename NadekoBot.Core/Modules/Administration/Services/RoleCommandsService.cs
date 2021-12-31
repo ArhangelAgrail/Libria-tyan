@@ -211,5 +211,18 @@ namespace NadekoBot.Modules.Administration.Services
                 uow.Complete();
             }
         }
+
+        public void RoleBonusAdd(ulong RoleId, int bonus)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                var RoleBonus = new RolesBonus();
+                RoleBonus.RoleId = RoleId;
+                RoleBonus.Bonus = bonus;
+
+                uow.RolesBonus.Add(RoleBonus);
+                uow.Complete();
+            }
+        }
     }
 }

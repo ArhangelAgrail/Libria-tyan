@@ -343,6 +343,14 @@ namespace NadekoBot.Modules.Administration
                 _service.AchievemntRoleDelete(role.Id);
                 await Context.Channel.SendConfirmAsync(GetText("achievement_deleted", role.Mention)).ConfigureAwait(false);
             }
+
+            [NadekoCommand, Usage, Description, Aliases]
+            [OwnerOnly]
+            public async Task AddRoleBonus(int bonus, [Remainder] IRole role)
+            {
+                _service.RoleBonusAdd(role.Id, bonus);
+                await Context.Channel.SendConfirmAsync(GetText("role_bonus_added", role.Mention, bonus, Bc.BotConfig.CurrencySign)).ConfigureAwait(false);
+            }
         }
     }
 }

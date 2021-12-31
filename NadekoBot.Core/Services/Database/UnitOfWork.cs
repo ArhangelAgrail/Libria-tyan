@@ -51,6 +51,9 @@ namespace NadekoBot.Core.Services.Database
         private IRepLogRepository _replog;
         public IRepLogRepository RepLog => _replog ?? (_replog = new RepLogRepository(_context));
 
+        private IRolesBonusRepository _rolesbonus;
+        public IRolesBonusRepository RolesBonus => _rolesbonus ?? (_rolesbonus = new RolesBonusRepository(_context));
+
         private IEventScheduleRepository _eventschedule;
         public IEventScheduleRepository EventSchedule => _eventschedule ?? (_eventschedule = new EventScheduleRepository(_context));
 

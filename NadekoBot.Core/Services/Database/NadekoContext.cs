@@ -41,6 +41,7 @@ namespace NadekoBot.Core.Services.Database
         public DbSet<Warning> Warnings { get; set; }
         public DbSet<ModLog> ModLog { get; set; }
         public DbSet<RepLog> RepLog { get; set; }
+        public DbSet<RolesBonus> RolesBonus { get; set; }
         public DbSet<EventSchedule> EventSchedule { get; set; }
         public DbSet<UserXpStats> UserXpStats { get; set; }
         public DbSet<ClubInfo> Clubs { get; set; }
@@ -270,6 +271,12 @@ namespace NadekoBot.Core.Services.Database
             eventschedule.HasIndex(x => x.UserId);
             eventschedule.HasIndex(x => x.Type);
             eventschedule.HasIndex(x => x.Description);
+            #endregion
+
+            #region RolesBonus
+            var rolesbonus = modelBuilder.Entity<RolesBonus>();
+            rolesbonus.HasIndex(x => x.RoleId);
+            rolesbonus.HasIndex(x => x.Bonus);
             #endregion
 
             #region PatreonRewards

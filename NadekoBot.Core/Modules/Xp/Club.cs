@@ -773,6 +773,12 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }
 
+                if (club.Members >= 60)
+                {
+                    await ReplyErrorLocalized("club_place_limit").ConfigureAwait(false);
+                    return;
+                }
+
                 if (_service.PlaceAdd(Context.User))
                     await ReplyConfirmLocalized("club_place_added", club.Members + 1).ConfigureAwait(false);
             }
