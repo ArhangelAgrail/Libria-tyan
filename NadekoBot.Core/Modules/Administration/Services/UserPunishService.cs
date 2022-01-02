@@ -58,11 +58,11 @@ namespace NadekoBot.Modules.Administration.Services
                 ps = uow.GuildConfigs.ForId(guildId, set => set.Include(x => x.WarnPunishments))
                     .WarnPunishments;
 
-                if (uow.Warnings.ForId(guildId, user.Id).First() != null)
+                if (uow.Warnings.ForId(guildId, user.Id).FirstOrDefault() != null)
                 {
                     DateTime lastDate = (DateTime)uow.Warnings.ForId(guildId, user.Id).First().DateAdded;
 
-                    if (DateTime.Compare(lastDate, DateTime.UtcNow.AddDays(-180)) < 0)
+                    if (lastDate != null && DateTime.Compare(lastDate, DateTime.UtcNow.AddDays(-180)) < 0)
                     {
                         await uow.Warnings.ForgiveAll(guildId, user.Id, "Expiration Date");
                     }
@@ -162,10 +162,10 @@ namespace NadekoBot.Modules.Administration.Services
         {
             using (var uow = _db.UnitOfWork)
             {
-                if (uow.Warnings.ForId(gid, userId).First() != null)
+                if (uow.Warnings.ForId(gid, userId).FirstOrDefault() != null)
                 {
                     DateTime lastDate = (DateTime)uow.Warnings.ForId(gid, userId).First().DateAdded;
-           
+
                     if (DateTime.Compare(lastDate, DateTime.UtcNow.AddDays(-180)) < 0)
                     {
                         uow.Warnings.ForgiveAll(gid, userId, "Expiration Date");
