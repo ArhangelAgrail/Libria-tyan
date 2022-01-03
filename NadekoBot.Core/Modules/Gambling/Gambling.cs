@@ -306,61 +306,61 @@ namespace NadekoBot.Modules.Gambling
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
         [OwnerOnly]
-        public async Task RaffleAward([Remainder] IRole role = null)
+        public async Task RaffleAward()
         {
-            role = role ?? Context.Guild.EveryoneRole;
+            var everyoneRole = Context.Guild.EveryoneRole;
+            var sponsorRole = Context.Guild.GetRole(761300230842744902);
+            var sponsorPlusRole = Context.Guild.GetRole(927134254318641152);
+            var boosterRole = Context.Guild.GetRole(585568500303527947);
+            var patreonRole = Context.Guild.GetRole(319081760241745920);
 
-            var members = (await role.GetMembersAsync().ConfigureAwait(false));
-            var membersArray = members as IUser[] ?? members.ToArray();
-            if (membersArray.Length == 0)
-            {
-                return;
-            }
-            var usr = membersArray[0];
-            reroll:
-                usr = membersArray[new NadekoRandom().Next(0, membersArray.Length)];
+            var everyoneMembers = await everyoneRole.GetMembersAsync().ConfigureAwait(false);
+            var sponsorMembers = await sponsorRole.GetMembersAsync().ConfigureAwait(false);
+            sponsorMembers.Union(await sponsorPlusRole.GetMembersAsync().ConfigureAwait(false));
+            var boosterMembers = await boosterRole.GetMembersAsync().ConfigureAwait(false);
+            var patreonMembers = await patreonRole.GetMembersAsync().ConfigureAwait(false);
 
-            var user = usr as SocketGuildUser;
-            if (user.Roles.Count == 1) goto reroll;
+            var everyoneMembersArray = everyoneMembers as IUser[] ?? everyoneMembers.ToArray();
+            var sponsorMembersArray = sponsorMembers as IUser[] ?? sponsorMembers.ToArray();
+            var boosterMembersArray = boosterMembers as IUser[] ?? boosterMembers.ToArray();
+            var patreonMembersArray = patreonMembers as IUser[] ?? patreonMembers.ToArray();
 
-            List<ulong> roles = new List<ulong>()
-            {
-                461111950458224640,
-                694297950104584273,
-                405341253807374349,
-                405341261277560842,
-                475305705230958598,
-                425627158581346314,
-                475306009011683359,
-                405340766240636928,
-                475306363673772043,
-                405338590290378763,
-                425657999105982464,
-                694297952205668424,
-                408902786294480897,
-                694297954777038898,
-                408903151568158740,
-                694298252387811378
-            };
+            /* everyone raffle */
+            var userE = everyoneMembersArray[0];
+        reroll:
+            userE = everyoneMembersArray[new NadekoRandom().Next(0, everyoneMembersArray.Length)];
 
-            var amount = 1000;
-            ulong n = 319073776383819776;
-            foreach (var roleId in roles)
-            {
-                amount += 1000;
-                if (user.Roles.Contains(user.Guild.Roles.FirstOrDefault(x => x.Id == roleId)))
-                {
-                    n = roleId;
-                    break;
-                }
-            }
+            var userG = userE as SocketGuildUser;
+            if (userG.Roles.Count == 1) goto reroll;
 
-            if (n == 319073776383819776) amount = 1000;
+            var amountE = _service.GetUserLevel(userE) * 100;
+            await _cs.AddAsync(userE.Id, $"Awarded by everyone raffle.", amountE, gamble: true);
 
-            await _cs.AddAsync(usr.Id, $"Awarded by raffle. ({Context.User.Username}/{Context.User.Id})", amount, gamble: true);
-            await Context.Channel.SendMessageAsync(GetText("raffled_grats", usr.Mention, $"`{role.Name}`"));
-            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user", user.Nickname), 
-                $"{GetText("raffled_result", usr.Mention, Format.Bold($"{String.Format("{0:#,0}", amount)}{_bc.BotConfig.CurrencySign}"), $"<@&{n}>")}", footer: $"{_bc.BotConfig.CurrencySign} в следующий раз повезет и тебе ^-^").ConfigureAwait(false);
+            /* sponsor raffle */
+            var userS = sponsorMembersArray[new NadekoRandom().Next(0, sponsorMembersArray.Length)];
+
+            var amountS = _service.GetUserLevel(userS) * 100;
+            await _cs.AddAsync(userS.Id, $"Awarded by sponsor raffle.", amountS, gamble: true);
+
+            /* booster raffle */
+            var userB = boosterMembersArray[new NadekoRandom().Next(0, boosterMembersArray.Length)];
+
+            var amountB = _service.GetUserLevel(userB) * 100;
+            await _cs.AddAsync(userB.Id, $"Awarded by booster raffle.", amountB, gamble: true);
+
+            /* patreon raffle */
+            var userP = patreonMembersArray[new NadekoRandom().Next(0, patreonMembersArray.Length)];
+
+            var amountP = _service.GetUserLevel(userP) * 100;
+            await _cs.AddAsync(userP.Id, $"Awarded by patreon raffle.", amountP, gamble: true);
+
+
+            await Context.Channel.SendMessageAsync(GetText("raffled_grats", userE.Mention, userS.Mention, userB.Mention, userP.Mention));
+            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_award"),
+                $"{GetText("raffled_resultE", userE.Mention, Format.Bold($"{String.Format("{0:#,0}", amountE)}{_bc.BotConfig.CurrencySign}"), amountE / 100, everyoneMembers.Count())}" +
+                $"\n\n{GetText("raffled_resultS", userS.Mention, Format.Bold($"{String.Format("{0:#,0}", amountS)}{_bc.BotConfig.CurrencySign}"), amountS / 100, sponsorMembers.Count())}" +
+                $"\n\n{GetText("raffled_resultB", userB.Mention, Format.Bold($"{String.Format("{0:#,0}", amountB)}{_bc.BotConfig.CurrencySign}"), amountB / 100, boosterMembers.Count())}" +
+                $"\n\n{GetText("raffled_resultP", userP.Mention, Format.Bold($"{String.Format("{0:#,0}", amountP)}{_bc.BotConfig.CurrencySign}"), amountP / 100, patreonMembers.Count())}", footer: $"{GetText("raffled_desc")}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
