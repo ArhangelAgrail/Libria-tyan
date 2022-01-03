@@ -316,7 +316,7 @@ namespace NadekoBot.Modules.Gambling
 
             var everyoneMembers = await everyoneRole.GetMembersAsync().ConfigureAwait(false);
             var sponsorMembers = await sponsorRole.GetMembersAsync().ConfigureAwait(false);
-            sponsorMembers.Union(await sponsorPlusRole.GetMembersAsync().ConfigureAwait(false));
+            sponsorMembers = sponsorMembers.Union(await sponsorPlusRole.GetMembersAsync().ConfigureAwait(false));
             var boosterMembers = await boosterRole.GetMembersAsync().ConfigureAwait(false);
             var patreonMembers = await patreonRole.GetMembersAsync().ConfigureAwait(false);
 
