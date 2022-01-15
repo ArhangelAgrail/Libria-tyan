@@ -333,34 +333,42 @@ namespace NadekoBot.Modules.Gambling
             var userG = userE as SocketGuildUser;
             if (userG.Roles.Count == 1) goto reroll;
 
-            var amountE = _service.GetUserLevel(userE) * 100;
+            var userElvl = _service.GetUserLevel(userE);
+            var amountE = userElvl * 100;
+            amountE = amountE < 1000 ? 1000 : amountE;
             await _cs.AddAsync(userE.Id, $"Awarded by everyone raffle.", amountE, gamble: true);
 
             /* sponsor raffle */
             var userS = sponsorMembersArray[new NadekoRandom().Next(0, sponsorMembersArray.Length)];
 
-            var amountS = _service.GetUserLevel(userS) * 100;
+            var userSlvl = _service.GetUserLevel(userS);
+            var amountS = userSlvl * 100;
+            amountS = amountS < 1000 ? 1000 : amountS;
             await _cs.AddAsync(userS.Id, $"Awarded by sponsor raffle.", amountS, gamble: true);
 
             /* booster raffle */
             var userB = boosterMembersArray[new NadekoRandom().Next(0, boosterMembersArray.Length)];
 
-            var amountB = _service.GetUserLevel(userB) * 100;
+            var userBlvl = _service.GetUserLevel(userB);
+            var amountB = userBlvl * 100;
+            amountB = amountB < 1000 ? 1000 : amountB;
             await _cs.AddAsync(userB.Id, $"Awarded by booster raffle.", amountB, gamble: true);
 
             /* patreon raffle */
             var userP = patreonMembersArray[new NadekoRandom().Next(0, patreonMembersArray.Length)];
 
-            var amountP = _service.GetUserLevel(userP) * 100;
+            var userPlvl = _service.GetUserLevel(userP);
+            var amountP = userPlvl * 100;
+            amountP = amountP < 1000 ? 1000 : amountP;
             await _cs.AddAsync(userP.Id, $"Awarded by patreon raffle.", amountP, gamble: true);
 
 
             await Context.Channel.SendMessageAsync(GetText("raffled_grats", userE.Mention, userS.Mention, userB.Mention, userP.Mention));
             await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_award"),
-                $"{GetText("raffled_resultE", userE.Mention, Format.Bold($"{String.Format("{0:#,0}", amountE)}{_bc.BotConfig.CurrencySign}"), amountE / 100, everyoneMembers.Count())}" +
-                $"\n\n{GetText("raffled_resultS", userS.Mention, Format.Bold($"{String.Format("{0:#,0}", amountS)}{_bc.BotConfig.CurrencySign}"), amountS / 100, sponsorMembers.Count())}" +
-                $"\n\n{GetText("raffled_resultB", userB.Mention, Format.Bold($"{String.Format("{0:#,0}", amountB)}{_bc.BotConfig.CurrencySign}"), amountB / 100, boosterMembers.Count())}" +
-                $"\n\n{GetText("raffled_resultP", userP.Mention, Format.Bold($"{String.Format("{0:#,0}", amountP)}{_bc.BotConfig.CurrencySign}"), amountP / 100, patreonMembers.Count())}", footer: $"{GetText("raffled_desc")}").ConfigureAwait(false);
+                $"{GetText("raffled_resultE", userE.Mention, Format.Bold($"{String.Format("{0:#,0}", amountE)}{_bc.BotConfig.CurrencySign}"), userElvl, everyoneMembers.Count())}" +
+                $"\n\n{GetText("raffled_resultS", userS.Mention, Format.Bold($"{String.Format("{0:#,0}", amountS)}{_bc.BotConfig.CurrencySign}"), userSlvl, sponsorMembers.Count())}" +
+                $"\n\n{GetText("raffled_resultB", userB.Mention, Format.Bold($"{String.Format("{0:#,0}", amountB)}{_bc.BotConfig.CurrencySign}"), userBlvl, boosterMembers.Count())}" +
+                $"\n\n{GetText("raffled_resultP", userP.Mention, Format.Bold($"{String.Format("{0:#,0}", amountP)}{_bc.BotConfig.CurrencySign}"), userPlvl, patreonMembers.Count())}", footer: $"{GetText("raffled_desc")}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
