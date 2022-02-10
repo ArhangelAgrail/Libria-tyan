@@ -28,6 +28,15 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
                 .ToString();
         }
 
+        public long GetEventsAmount(System.DateTime date, ulong bot)
+        {
+            string reason = $"Awarded by bot owner.";
+            string reasonEvent = $"Ивент";
+
+            return _set.Where(x => x.DateAdded > date && x.Reason.Contains(reason) && x.Reason.Contains(reasonEvent) && x.UserId != bot)
+                .Sum(x => x.Amount);
+        }
+
         public int GetClubAwarded(ulong userId)
         {
             string reason = "Club Award";

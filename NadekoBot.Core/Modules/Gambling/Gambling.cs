@@ -890,11 +890,12 @@ namespace NadekoBot.Modules.Gambling
             var Date = DateTime.Now;
             EventSchedule[] Events;
             string Description = "-", today = " (" + GetText("today") + ")";
+            var awards = _service.EventsAwards(DateTime.Today.AddDays(-7), Context.Client.CurrentUser.Id);
 
             var embed = new EmbedBuilder()
                 .WithColor(3553599)
                 .WithTitle(GetText("events_schedule"))
-                .WithDescription(GetText("events_desc"))
+                .WithDescription(GetText("events_desc", awards, Bc.BotConfig.CurrencySign))
                 .WithImageUrl("https://media.discordapp.net/attachments/404934630148407297/765968161107214376/PicsArt_10-14-06.56.33.jpg")
                 .WithFooter(GetText("events_footer"));
 

@@ -339,6 +339,14 @@ namespace NadekoBot.Modules.Gambling.Services
             }
         }
 
+        public long EventsAwards(DateTime date, ulong bot)
+        {
+            using (var uow = _db.UnitOfWork)
+            {
+                return uow.CurrencyTransactions.GetEventsAmount(date, bot);
+            }
+        }
+
         public async Task<bool> AddEvent(IGuild guild, IUser user, string desc, DateTime date)
         {
             var result = false;
