@@ -363,11 +363,11 @@ namespace NadekoBot.Modules.Xp
             [NadekoCommand, Usage, Description, Aliases]
             [Priority(1)]
             public Task ClubKick([Remainder]IUser user)
-                => ClubKick(user.ToString());
+                => ClubKick(user.Id, user.ToString());
 
             [NadekoCommand, Usage, Description, Aliases]
             [Priority(0)]
-            public async Task ClubKick([Remainder]string userName)
+            public async Task ClubKick(ulong userId, string userName = null)
             {
                 var clb = _service.GetClubByMember(Context.User);
 
@@ -377,7 +377,7 @@ namespace NadekoBot.Modules.Xp
                     return;
                 }   
 
-                var usr = clb.Users.FirstOrDefault(x => x.ToString().ToUpperInvariant() == userName.ToUpperInvariant());
+                var usr = clb.Users.FirstOrDefault(x => x.UserId == userId);
                 if (usr == null)
                 {
                     await ReplyErrorLocalized("club_user_not_found");
@@ -404,6 +404,8 @@ namespace NadekoBot.Modules.Xp
                         catch { };
                         
                     }
+                    userName = userName ?? usr.ToString();
+
                     await ReplyConfirmLocalized("club_user_kick", Format.Bold(userName), Format.Bold(club.Name));
                 }
                 else
