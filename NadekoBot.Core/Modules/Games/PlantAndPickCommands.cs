@@ -19,6 +19,11 @@ namespace NadekoBot.Modules.Games
             [RequireContext(ContextType.Guild)]
             public async Task Pick(string pass = null)
             {
+                if (((SocketGuild)Context.Guild).CurrentUser.GuildPermissions.ManageMessages)
+                {
+                    try { await Context.Message.DeleteAsync().ConfigureAwait(false); } catch { }
+                }
+                
                 if (!string.IsNullOrWhiteSpace(pass) && !pass.IsAlphaNumeric())
                 {
                     return;
@@ -32,17 +37,17 @@ namespace NadekoBot.Modules.Games
                        .ConfigureAwait(false);
                     msg.DeleteAfter(10);
                 }
-
-                if (((SocketGuild)Context.Guild).CurrentUser.GuildPermissions.ManageMessages)
-                {
-                    try { await Context.Message.DeleteAsync().ConfigureAwait(false); } catch { }
-                }
             }
 
             [NadekoCommand, Usage, Description, Aliases]
             [RequireContext(ContextType.Guild)]
             public async Task Plant(int amount = 1, string pass = null)
             {
+                if (((SocketGuild)Context.Guild).CurrentUser.GuildPermissions.ManageMessages)
+                {
+                    try {await Context.Message.DeleteAsync().ConfigureAwait(false);} catch { }
+                }
+                
                 if (amount < 1)
                     return;
 
@@ -56,11 +61,6 @@ namespace NadekoBot.Modules.Games
                 {
                     await ReplyErrorLocalized("not_enough", Bc.BotConfig.CurrencySign).ConfigureAwait(false);
                     return;
-                }
-
-                if (((SocketGuild)Context.Guild).CurrentUser.GuildPermissions.ManageMessages)
-                {
-                    await Context.Message.DeleteAsync().ConfigureAwait(false);
                 }
             }
 
