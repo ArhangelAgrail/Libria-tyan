@@ -368,6 +368,20 @@ namespace NadekoBot.Modules.Gambling.Services
 
             return result;
         }
+        
+        public async Task<bool> EventDelete(DateTime date)
+        {
+            var result = false;
+            using (var uow = _db.UnitOfWork)
+            {
+                EventSchedule ev = uow.EventSchedule.ByEventDate(date);
+                try { uow.EventSchedule.Remove(ev); result = true; } catch (NullReferenceException) { }
+
+                await uow.CompleteAsync();
+            }
+
+            return result;
+        }
 
         public async Task<bool> EditEventDate(DateTime date, DateTime newDate)
         {
