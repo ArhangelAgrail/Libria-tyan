@@ -932,6 +932,33 @@ namespace NadekoBot.Modules.Gambling
             await ReplyConfirmLocalized("event_added").ConfigureAwait(false);
         }
 
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task EditEventDate(string date, string newdate) 
+        {
+            DateTime Date = Convert.ToDateTime(date);
+            DateTime newDate = Convert.ToDateTime(newdate);
+
+            bool success = await _service.EditEventDate(Date, newDate);
+            string toSend = success ? "event_edited_date" : "event_edit_errored";
+
+            if (success) await ReplyConfirmLocalized(toSend).ConfigureAwait(false);
+            else await ReplyErrorLocalized(toSend).ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        private async Task EditEventDesc(string date, [Remainder]string desc = null)
+        {
+            DateTime Date = Convert.ToDateTime(date);
+
+            bool success = await _service.EditEventDesc(Date, desc);
+            string toSend = success ? "event_edited_description" : "event_edit_errored";
+
+            if (success) await ReplyConfirmLocalized(toSend).ConfigureAwait(false);
+            else await ReplyErrorLocalized(toSend).ConfigureAwait(false);
+        }
+
         public enum RpsPick
         {
             R = 0,
