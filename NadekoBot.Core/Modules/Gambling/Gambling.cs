@@ -931,6 +931,19 @@ namespace NadekoBot.Modules.Gambling
             await _service.AddEvent(Context.Guild, Context.User, desc, Date);
             await ReplyConfirmLocalized("event_added").ConfigureAwait(false);
         }
+        
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        private async Task EventDelete(string date)
+        {
+            DateTime Date = Convert.ToDateTime(date);
+
+            bool success = await _service.DeleteEvent(Date);
+            string toSend = success ? "event_deleted" : "event_errored";
+
+            if (success) await ReplyConfirmLocalized(toSend).ConfigureAwait(false);
+            else await ReplyErrorLocalized(toSend).ConfigureAwait(false);
+        }
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireUserPermission(GuildPermission.BanMembers)]
