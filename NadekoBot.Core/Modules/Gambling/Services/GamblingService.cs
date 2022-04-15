@@ -369,6 +369,35 @@ namespace NadekoBot.Modules.Gambling.Services
             return result;
         }
 
+        public async Task<bool> EditEventDate(DateTime date, DateTime newDate)
+        {
+            var result = false;
+            using (var uow = _db.UnitOfWork)
+            {
+                EventSchedule ev = uow.EventSchedule.ByEventDate(date);
+
+                try { ev.Date = newDate; result = true; } catch (NullReferenceException) { }
+
+                await uow.CompleteAsync();
+            }
+
+            return result;
+        }
+
+        public async Task<bool> EditEventDesc(DateTime date, string desc)
+        {
+            var result = false;
+            using (var uow = _db.UnitOfWork)
+            {
+                EventSchedule ev = uow.EventSchedule.ByEventDate(date);
+
+                try { ev.Description = desc; result = true; } catch (NullReferenceException) { }
+
+                await uow.CompleteAsync();
+            }
+
+            return result;
+        }
 
         public int GetUserLevel(IUser user)
         {
