@@ -335,6 +335,8 @@ namespace NadekoBot.Modules.Gambling.Services
 
         public async Task<bool> PlantAsync(ulong gid, IMessageChannel ch, ulong uid, string user, long amount, string pass)
         {
+            pass ??= GenerateCurrencyPassword();
+        
             // normalize it - no more than 10 chars, uppercase 
             pass = pass?.Trim().TrimTo(10, hideDots: true).ToUpperInvariant();
             // has to be either null or alphanumeric
