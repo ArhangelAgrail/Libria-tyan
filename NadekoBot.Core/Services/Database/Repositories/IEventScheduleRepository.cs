@@ -8,5 +8,6 @@ namespace NadekoBot.Core.Services.Database.Repositories
     {
         EventSchedule[] ForId(ulong guildId, ulong userId);
         EventSchedule[] ByDate(ulong guildId, DateTime date);
+        EventSchedule ByEventDate(DateTime date);
     }
 }
