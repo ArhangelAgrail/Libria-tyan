@@ -27,5 +27,13 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
 
             return query.ToArray();
         }
+        
+        public EventSchedule ByEventDate(DateTime date)
+        {
+            var ev = _set.Where(x => x.Date.DayOfYear == date.DayOfYear && x.Date.Year == date.Year)
+                .FirstOrDefault();
+
+            return ev;
+        }
     }
 }
