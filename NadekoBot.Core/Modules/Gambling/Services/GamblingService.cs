@@ -375,7 +375,7 @@ namespace NadekoBot.Modules.Gambling.Services
             using (var uow = _db.UnitOfWork)
             {
                 EventSchedule ev = uow.EventSchedule.ByEventDate(date);
-                try { uow.EventSchedule.Remove(ev); result = true; } catch (NullReferenceException) { }
+                try { uow.EventSchedule.Remove(ev); result = true; } catch (ArgumentNullException) { }
 
                 await uow.CompleteAsync();
             }
