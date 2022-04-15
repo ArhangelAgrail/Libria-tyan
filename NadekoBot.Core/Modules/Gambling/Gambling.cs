@@ -938,7 +938,7 @@ namespace NadekoBot.Modules.Gambling
         {
             DateTime Date = Convert.ToDateTime(date);
 
-            bool success = await _service.DeleteEvent(Date);
+            bool success = await _service.EventDelete(Date);
             string toSend = success ? "event_deleted" : "event_errored";
 
             if (success) await ReplyConfirmLocalized(toSend).ConfigureAwait(false);
