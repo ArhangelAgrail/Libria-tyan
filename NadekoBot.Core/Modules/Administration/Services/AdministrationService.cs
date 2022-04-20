@@ -148,17 +148,13 @@ namespace NadekoBot.Modules.Administration.Services
             }
         }
 
-        public async Task EditMessage(ITextChannel channel, ICommandContext context, ulong messageId, string text)
+        public async Task<bool> EditMessage(ITextChannel channel, ICommandContext context, ulong messageId, string text)
         {
-            var msgs = await channel.GetMessagesAsync().FlattenAsync()
-                   .ConfigureAwait(false);
+            bool result = false;
+            var msg = await channel.GetMessageAsync(messageId);
 
-            IUserMessage msg = (IUserMessage)msgs.FirstOrDefault(x => x.Id == messageId
-                && x.Author.Id == context.Client.CurrentUser.Id
-                && x is IUserMessage);
-
-            if (msg == null)
-                return;
+            if (!(msg is IUserMessage umsg) || msg.Author.Id != context.Client.CurrentUser.Id)
+                return result;
 
             var rep = new ReplacementBuilder()
                     .WithDefault(context)
@@ -167,17 +163,23 @@ namespace NadekoBot.Modules.Administration.Services
             if (CREmbed.TryParse(text, out var crembed))
             {
                 rep.Replace(crembed);
-                await msg.ModifyAsync(x =>
+                await umsg.ModifyAsync(x =>
                 {
                     x.Embed = crembed.ToEmbed().Build();
                     x.Content = crembed.PlainText;
                 }).ConfigureAwait(false);
+                result = true;
             }
             else
             {
-                await msg.ModifyAsync(x => x.Content = text.SanitizeMentions())
-                    .ConfigureAwait(false);
+                await umsg.ModifyAsync(x =>
+                {
+                    x.Content = text.SanitizeMentions();
+                    x.Embed = null;
+                }).ConfigureAwait(false);
+                result = true;
             }
+            return result;
         }
     }
 }
