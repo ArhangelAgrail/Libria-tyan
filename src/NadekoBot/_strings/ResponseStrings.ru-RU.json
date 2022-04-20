@@ -85,6 +85,7 @@
   "administration_menrole": "{0} вызвал оповещение для следующих ролей",
   "administration_message_from_bo": "Сообщение от {0} '[Владелец бота]':",
   "administration_message_sent": "Сообщение отправлено.",
+  "administration_message_edited": "Сообщение отредактровано.",
   "administration_moved": "{0} перемещён из {1} в {2}",
   "administration_msg_del": "Сообщение удалено в #{0}",
   "administration_msg_update": "Сообщение изменено в #{0}",
