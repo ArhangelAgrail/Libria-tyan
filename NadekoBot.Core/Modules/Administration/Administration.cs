@@ -195,7 +195,8 @@ namespace NadekoBot.Modules.Administration
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            await _service.EditMessage(channel, Context, messageId, text).ConfigureAwait(false);
+            bool success = await _service.EditMessage(channel, Context, messageId, text).ConfigureAwait(false);
+            if (success) await ReplyConfirmLocalized("message_edited").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
