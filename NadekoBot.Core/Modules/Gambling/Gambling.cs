@@ -934,7 +934,7 @@ namespace NadekoBot.Modules.Gambling
         
         [NadekoCommand, Usage, Description, Aliases]
         [RequireUserPermission(GuildPermission.BanMembers)]
-        private async Task EventDelete(string date)
+        public async Task EventDelete(string date)
         {
             DateTime Date = Convert.ToDateTime(date);
 
@@ -961,7 +961,7 @@ namespace NadekoBot.Modules.Gambling
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireUserPermission(GuildPermission.BanMembers)]
-        private async Task EditEventDesc(string date, [Remainder]string desc = null)
+        public async Task EditEventDesc(string date, [Remainder]string desc = null)
         {
             DateTime Date = Convert.ToDateTime(date);
 
