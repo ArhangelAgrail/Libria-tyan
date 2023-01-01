@@ -240,7 +240,7 @@
   "gambling_club_currency_left": "В хранилище клуба: {0}{1}",
   "gambling_no_more_cards": "В колоде закончились карты.",
   "gambling_raffled_award": "Ежедневная лотерея",
-  "gambling_raffled_user": "Победитель лотереи {0}",
+  "gambling_raffled_user": "Победитель розыгрыша",
   "gambling_raffled_resultE": "**Общая лотерея:**\n{0} ({2}✧︎) получает {1}\n(*Участников: {3}*)",
   "gambling_raffled_resultS": "**Спонсор сервера:**\n{0} ({2}✧︎) получает {1}\n(*Участников: {3}*)",
   "gambling_raffled_resultB": "**Бустер:**\n{0} ({2}✧︎) получает {1}\n(*Участников: {3}*)",

@@ -300,7 +300,7 @@ namespace NadekoBot.Modules.Gambling
                 return;
             }
             var usr = membersArray[new NadekoRandom().Next(0, membersArray.Length)];
-            await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_user"), $"**{usr.Username}#{usr.Discriminator}**", footer: $"ID: {usr.Id}").ConfigureAwait(false);
+            await Context.Channel.SendConfirmAsync("🎄 " + GetText("raffled_user"), $"{usr.Mention}", footer: $"{usr.Username}#{usr.Discriminator}").ConfigureAwait(false);
         }
 
         [NadekoCommand, Usage, Description, Aliases]
