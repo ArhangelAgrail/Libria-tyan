@@ -337,6 +337,16 @@ namespace NadekoBot.Modules.Gambling
             var amountE = userElvl * 100;
             amountE = amountE < 1000 ? 1000 : amountE;
             await _cs.AddAsync(userE.Id, $"Awarded by everyone raffle.", amountE, gamble: true);
+            
+            try
+            {
+                await (await userE.GetOrCreateDMChannelAsync())
+                    .EmbedAsync(new EmbedBuilder()
+                        .WithOkColor()
+                        .WithTitle($"Вы победили в общей ежедневной лотерее на сервере {Context.Guild.Name}")
+                        .WithDescription($"Ваш выигрыш составляет: {Format.Bold($"{amountE}")}{Bc.BotConfig.CurrencySign}"));
+            }
+            catch { }
 
             /* sponsor raffle */
             var userS = sponsorMembersArray[new NadekoRandom().Next(0, sponsorMembersArray.Length)];
@@ -345,6 +355,16 @@ namespace NadekoBot.Modules.Gambling
             var amountS = userSlvl * 100;
             amountS = amountS < 1000 ? 1000 : amountS;
             await _cs.AddAsync(userS.Id, $"Awarded by sponsor raffle.", amountS, gamble: true);
+            
+            try
+            {
+                await (await userS.GetOrCreateDMChannelAsync())
+                    .EmbedAsync(new EmbedBuilder()
+                        .WithOkColor()
+                        .WithTitle($"Вы победили в ежедневной лотерее на сервере {Context.Guild.Name} среди пользователей с ролью {sponsorRole.Name}")
+                        .WithDescription($"Ваш выигрыш составляет: {Format.Bold($"{amountS}")}{Bc.BotConfig.CurrencySign}"));
+            }
+            catch { }
 
             /* booster raffle */
             var userB = boosterMembersArray[new NadekoRandom().Next(0, boosterMembersArray.Length)];
@@ -353,6 +373,16 @@ namespace NadekoBot.Modules.Gambling
             var amountB = userBlvl * 100;
             amountB = amountB < 1000 ? 1000 : amountB;
             await _cs.AddAsync(userB.Id, $"Awarded by booster raffle.", amountB, gamble: true);
+            
+            try
+            {
+                await (await userB.GetOrCreateDMChannelAsync())
+                    .EmbedAsync(new EmbedBuilder()
+                        .WithOkColor()
+                        .WithTitle($"Вы победили в ежедневной лотерее на сервере {Context.Guild.Name} среди пользователей с ролью {boosterRole.Name}")
+                        .WithDescription($"Ваш выигрыш составляет: {Format.Bold($"{amountB}")}{Bc.BotConfig.CurrencySign}"));
+            }
+            catch { }
 
             /* patreon raffle */
             var userP = patreonMembersArray[new NadekoRandom().Next(0, patreonMembersArray.Length)];
@@ -361,8 +391,17 @@ namespace NadekoBot.Modules.Gambling
             var amountP = userPlvl * 100;
             amountP = amountP < 1000 ? 1000 : amountP;
             await _cs.AddAsync(userP.Id, $"Awarded by patreon raffle.", amountP, gamble: true);
-
-
+                
+            try
+            {
+                await (await userP.GetOrCreateDMChannelAsync())
+                    .EmbedAsync(new EmbedBuilder()
+                        .WithOkColor()
+                        .WithTitle($"Вы победили в ежедневной лотерее на сервере {Context.Guild.Name} среди {patreonRole.Name}")
+                        .WithDescription($"Ваш выигрыш составляет: {Format.Bold($"{amountP}")}{Bc.BotConfig.CurrencySign}"));
+            }
+            catch { }
+            
             await Context.Channel.SendMessageAsync(GetText("raffled_grats", userE.Mention, userS.Mention, userB.Mention, userP.Mention));
             await Context.Channel.SendConfirmAsync("🎟 " + GetText("raffled_award"),
                 $"{GetText("raffled_resultE", userE.Mention, Format.Bold($"{String.Format("{0:#,0}", amountE)}{_bc.BotConfig.CurrencySign}"), userElvl, everyoneMembers.Count())}" +
