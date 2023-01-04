@@ -238,8 +238,8 @@ namespace NadekoBot.Modules.Administration.Services
                             Reputation = 0
                         });
                     }
-                    //else
-                        //w.Reputation += 100;
+                    else
+                        w.Reputation += 100;
 
                     uow.RepLog.Add(new RepLog()
                     {
