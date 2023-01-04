@@ -445,13 +445,15 @@ namespace NadekoBot.Modules.Gambling.Services
             return (w, result, remaining);
         }
 
-        public async Task<bool> GiftWaifuAsync(ulong from, int count, IUser giftedWaifu, WaifuItem itemObj)
+        public async Task<(int, int, bool)> GiftWaifuAsync(ulong from, int count, IUser giftedWaifu, WaifuItem itemObj)
         {
             itemObj.Count = count;
+            int waifuPrice = 0;
+            int itemPrice = 0;
 
             if (!await _cs.RemoveAsync(from, "Bought waifu item", itemObj.Price*count, gamble: true))
             {
-                return false;
+                return (waifuPrice, itemPrice, false);
             }
 
             using (var uow = _db.UnitOfWork)
@@ -475,14 +477,16 @@ namespace NadekoBot.Modules.Gambling.Services
 
                 if (w.Claimer?.UserId == from)
                 {
-                    w.Price += (int)(itemObj.Price * 0.95) * count;
+                    w.Price += itemPrice = (int)(itemObj.Price * 0.95) * count;
                 }
                 else
-                    w.Price += (itemObj.Price / 2) * count;
+                    w.Price += itemPrice = (itemObj.Price / 2) * count;
 
                 await uow.CompleteAsync();
+                
+                waifuPrice = w.Price;
             }
-            return true;
+            return (waifuPrice, itemPrice, true);
         }
 
         public WaifuInfoStats GetFullWaifuInfoAsync(IGuildUser target)
