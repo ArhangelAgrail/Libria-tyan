@@ -30,7 +30,7 @@ namespace NadekoBot.Core.Services.Database.Repositories.Impl
         
         public EventSchedule ByEventDate(DateTime date)
         {
-            var ev = _set.Where(x => x.Date.DayOfYear == date.DayOfYear && x.Date.Year == date.Year)
+            var ev = _set.Where(x => x.Date == date)
                 .FirstOrDefault();
 
             return ev;
