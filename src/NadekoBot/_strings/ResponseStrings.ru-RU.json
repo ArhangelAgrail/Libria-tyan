@@ -885,6 +885,7 @@
   "gambling_waifu_gift_count": "Подарил {0} {1} пользователю {2}",
   "gambling_waifu_gift_shop": "Магазин подарков для Вайфу",
   "gambling_waifu_gift_price": " ‎‏‏‎ ‎└︎ {0}{1}",
+  "gambling_waifu_gift_footer": "Новая цена вайфу: {0} (+{1})",
   "gambling_gifts": "Подарки ({0})",
   "games_nunchi_joined": "Началась игра в нунчи. {0} пользователей присоединились к игре.",
   "games_nunchi_ended": "Игра в нунчи завершилась. {0} выиграл",
