@@ -218,7 +218,7 @@ namespace NadekoBot.Modules.Gambling
 
                         using (var imgStream = bgImage.ToStream())
                         {
-                            await Context.Channel.SendFileAsync(imgStream, "result.png", "**" + Context.User.Username + "** - " + msg + $"\n`{GetText("slot_bet")}:`{amount} `{GetText("won")}:` {amount * result.Multiplier}{Bc.BotConfig.CurrencySign}").ConfigureAwait(false);
+                            await Context.Channel.SendFileAsync(imgStream, "result.png", Context.User.Mention + " - " + msg + $"\n`{GetText("slot_bet")}:` **{amount}**{Bc.BotConfig.CurrencySign} `{GetText("won")}:` **{amount * result.Multiplier}**{Bc.BotConfig.CurrencySign}\n\n{GetText("currency_left", String.Format("{0:#,0}", _service.GetUserCurrency(Context.User)), Bc.BotConfig.CurrencySign)}").ConfigureAwait(false);
                         }
                     }
                 }
