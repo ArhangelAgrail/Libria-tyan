@@ -401,11 +401,15 @@ namespace NadekoBot.Modules.Gambling
                     return;
 
                 var itemObj = WaifuItem.GetItemObject(item, Bc.BotConfig.WaifuGiftMultiplier);
-                bool sucess = await _service.GiftWaifuAsync(Context.User.Id, 1, waifu, itemObj);
+                (int waifuPrice, int itemPrice, bool success) = await _service.GiftWaifuAsync(Context.User.Id, 1, waifu, itemObj);
 
-                if (sucess)
+                if (success)
                 {
-                    await ReplyConfirmLocalized("waifu_gift", Format.Bold(GetText(item.ToString()) + " " + itemObj.ItemEmoji), waifu.Mention);
+                    // await ReplyConfirmLocalized("waifu_gift", Format.Bold(GetText(item.ToString()) + " " + itemObj.ItemEmoji), waifu.Mention);
+                    await Context.Channel.SendConfirmAsync(
+                        text: Context.User.Mention + " " + GetText("waifu_gift", Format.Bold(GetText(item.ToString()) + " " + itemObj.ItemEmoji), waifu.Mention),
+                        footer: GetText("waifu_gift_footer", String.Format("{0:#,0}", waifuPrice) + Bc.BotConfig.CurrencySign, itemPrice)
+                    ).ConfigureAwait(false);
                 }
                 else
                 {
@@ -425,11 +429,17 @@ namespace NadekoBot.Modules.Gambling
                     return;
 
                 var itemObj = WaifuItem.GetItemObject(item, Bc.BotConfig.WaifuGiftMultiplier);
-                bool sucess = await _service.GiftWaifuAsync(Context.User.Id, count, waifu, itemObj);
+                (int waifuPrice, int itemPrice, bool success) = await _service.GiftWaifuAsync(Context.User.Id, count, waifu, itemObj);
 
-                if (sucess)
+                if (success)
                 {
-                    await ReplyConfirmLocalized("waifu_gift_count", Format.Bold(count.ToString()), Format.Bold(GetText(item.ToString()) + " " + itemObj.ItemEmoji), waifu.Mention);
+                    // await ReplyConfirmLocalized("waifu_gift_count", Format.Bold(count.ToString()), Format.Bold(GetText(item.ToString()) + " " + itemObj.ItemEmoji), waifu.Mention);
+                    await Context.Channel.SendConfirmAsync(
+                        text: Context.User.Mention + " " + GetText("waifu_gift_count",
+                            Format.Bold(count.ToString()), 
+                            Format.Bold(GetText(item.ToString()) + " " + itemObj.ItemEmoji), waifu.Mention),
+                        footer: GetText("waifu_gift_footer", String.Format("{0:#,0}", waifuPrice) + Bc.BotConfig.CurrencySign, itemPrice)
+                    ).ConfigureAwait(false);
                 }
                 else
                 {
