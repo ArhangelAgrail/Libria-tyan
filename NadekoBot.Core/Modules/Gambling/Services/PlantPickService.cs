@@ -148,10 +148,11 @@ namespace NadekoBot.Modules.Gambling.Services
             using (var img = Image.Load(curImg, out var format))
             {
                 // choose font size based on the image height, so that it's visible
-                var font = _fonts.NotoSans.CreateFont(img.Height / 10, FontStyle.Bold);
+                var font = _fonts.NotoSans.CreateFont(img.Height / 3, FontStyle.Bold);
                 img.Mutate(x =>
                 {
-                    var max = img.Width;
+                    var maxX = img.Width;
+                    var maxY = img.Height;
                     var rand = new Random();
                     
                     //const string chars = "ABCDEF0123456789";
@@ -166,14 +167,15 @@ namespace NadekoBot.Modules.Gambling.Services
                     // measure the size of the text to be drawing
                     var size = TextMeasurer.Measure(password, new RendererOptions(font, new PointF(0, 0)));
 
-                    var plus = rand.Next(max - (int)size.Width);
+                    var plusX = rand.Next(maxX - (int)size.Width / 3);
+                    var plusY = rand.Next(maxY - (int)size.Height);
 
                     // fill the background with black, add 5 pixels on each side to make it look better
                     x.FillPolygon(Rgba32.FromHex("00000080"),
-                        new PointF(0 + plus, 0),
-                        new PointF(size.Width + plus, 0),
-                        new PointF(size.Width + plus, size.Height),
-                        new PointF(0 + plus, size.Height));
+                        new PointF(0 + plusX, 0 + plusY),
+                        new PointF(size.Width + plusX, 0 + plusY),
+                        new PointF(size.Width + plusX, size.Height + plusY),
+                        new PointF(0 + plusX, size.Height + plusY));
 
                     /*Random random = new Random();
 
@@ -189,7 +191,7 @@ namespace NadekoBot.Modules.Gambling.Services
                     x.DrawText(password,
                         font,
                         Brushes.Solid(Rgba32.White),
-                        new PointF(0 + plus, 0));
+                        new PointF(0 + plusX, 0 + plusY));
                 });
                 // return image as a stream for easy sending
                 return (img.ToStream(format), format.FileExtensions.FirstOrDefault() ?? "png");
