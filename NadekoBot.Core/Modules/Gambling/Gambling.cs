@@ -619,13 +619,6 @@ namespace NadekoBot.Modules.Gambling
                     return;
                 }
 
-                TimeSpan? rem;
-                if ((rem = _cache.AddClubAward(Context.User.Id, 24)) != null)
-                {
-                    await ReplyErrorLocalized("club_already_awarded", rem?.Days, rem?.Hours, rem?.Minutes, rem?.Seconds).ConfigureAwait(false);
-                    return;
-                }
-
                 await _cs.AddAsync(user.Id, "Club Award", amount, gamble: true).ConfigureAwait(false);
                 club.Currency -= amount;
 
